@@ -1,0 +1,15 @@
+---
+
+dependencies: []
+
+galaxy_info:
+  author: klen
+  company: Stouts
+  description: Manage mongodb
+  license: MIT
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  categories:
+  - database:nosql
