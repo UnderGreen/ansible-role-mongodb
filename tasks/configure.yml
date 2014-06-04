@@ -1,0 +1,4 @@
+---
+
+ - name: Configure mongodb
+   template: src=mongodb.conf.j2 dest=/etc/mongodb.conf owner=root group=root mode=0644
