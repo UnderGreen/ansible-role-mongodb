@@ -11,6 +11,7 @@ Ansible role which manage [MongoDB](http://www.mongodb.org/)
 #### Variables
 
 ```yaml
+mongodb_enabled: yes
 mongodb_packages:
   - python-selinux
   - python-pymongo
@@ -33,6 +34,16 @@ mongodb_noscripting: false
 mongodb_notablescan: false
 mongodb_noprealloc: false
 mongodb_replSet: ""                             # Set for enable replication
+
+# Log rotation
+mongodb_logrotate: yes                             # Rotate mongodb logs.
+mongodb_logrotate_options:
+  - compress
+  - copytruncate
+  - daily
+  - dateext
+  - rotate 7
+  - size 10M
 ```
 
 #### Usage

@@ -23,3 +23,13 @@ mongodb_noscripting: false
 mongodb_notablescan: false
 mongodb_noprealloc: false
 mongodb_replSet: ""                             # Set for enable replication
+
+# Log rotation
+mongodb_logrotate: yes                             # Rotate mongodb logs.
+mongodb_logrotate_options:
+  - compress
+  - copytruncate
+  - daily
+  - dateext
+  - rotate 7
+  - size 10M
