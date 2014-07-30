@@ -4,6 +4,6 @@
   when: ansible_os_family == 'Debian'
 
 - name: Ensure mongodb is started
-  service: name=mongodb state=started
+  service: name=mongod state=started
 
 - include: configure.yml
