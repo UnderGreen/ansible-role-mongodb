@@ -4,11 +4,11 @@ mongodb_enabled: yes
 mongodb_packages:
   - python-selinux
   - python-pymongo
-  - mongodb-10gen
+  - mongodb-org
 
 # Configuration
 mongodb_dbpath: /var/lib/mongodb
-mongodb_logpath: /var/log/mongodb/mongodb.log
+mongodb_logpath: /var/log/mongodb/mongod.log
 mongodb_port: 27017
 mongodb_nojournal: true
 mongodb_cpu: true

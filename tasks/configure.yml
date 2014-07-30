@@ -1,7 +1,7 @@
 ---
 
 - name: Configure mongodb
-  template: src=mongodb.conf.j2 dest=/etc/mongodb.conf owner=root group=root mode=0644
+  template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
   notify: mongodb reload
 
 - name: Configure log rotation
