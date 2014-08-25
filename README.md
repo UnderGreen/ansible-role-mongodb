@@ -18,22 +18,29 @@ mongodb_packages:
   - mongodb-10gen
 
 # Configuration
-mongodb_dbpath: /var/lib/mongodb
-mongodb_logpath: /var/log/mongodb/mongodb.log
-mongodb_port: 27017
-mongodb_nojournal: true
-mongodb_cpu: true
-mongodb_verbose: true
-mongodb_quota: false
-mongodb_auth: false
-mongodb_objcheck: false
-mongodb_diaglog: 0
-mongodb_nohints: false
-mongodb_nohttpinterface: false
-mongodb_noscripting: false
-mongodb_notablescan: false
-mongodb_noprealloc: false
-mongodb_replSet: ""                             # Set for enable replication
+# A list of hashes that are used to configure MongoDB. Any valid configuration parameters can be defined here.
+mongodb_conf:
+  dbpath: /var/lib/mongodb/
+  logpath: /var/log/mongodb/mongod.log
+  logappend: "true"
+  port: 27017
+  bind_ip: 127.0.0.1
+  nojournal: "true"
+  # auth: "true"
+  noauth: "true"
+  cpu: "true"
+  verbose: "true"
+  vvvv: "true"
+  quota: "false"
+  auth: "false"
+  objcheck: "false"
+  # diaglog: 0 # deprecated
+  nohints: "false"
+  nohttpinterface: "false"
+  noscripting: "false"
+  notablescan: "false"
+  noprealloc: "false"
+  # replSet: "" # Set for enable replication
 
 # Log rotation
 mongodb_logrotate: yes                             # Rotate mongodb logs.
