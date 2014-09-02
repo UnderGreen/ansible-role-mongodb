@@ -11,29 +11,35 @@ Ansible role which manage [MongoDB](http://www.mongodb.org/)
 #### Variables
 
 ```yaml
+
 mongodb_enabled: yes
 mongodb_packages:
   - python-selinux
   - python-pymongo
-  - mongodb-10gen
+  - mongodb-org
 
-# Configuration
-mongodb_dbpath: /var/lib/mongodb
-mongodb_logpath: /var/log/mongodb/mongodb.log
-mongodb_port: 27017
-mongodb_nojournal: true
-mongodb_cpu: true
-mongodb_verbose: true
-mongodb_quota: false
-mongodb_auth: false
-mongodb_objcheck: false
-mongodb_diaglog: 0
-mongodb_nohints: false
-mongodb_nohttpinterface: false
-mongodb_noscripting: false
-mongodb_notablescan: false
-mongodb_noprealloc: false
-mongodb_replSet: ""                             # Set for enable replication
+mongodb_conf:
+  auth: "false"
+  bind_ip: 127.0.0.1
+  cpu: "true"
+  dbpath: /var/lib/mongodb/
+  # diaglog: 0 # deprecated
+  logappend: "true"
+  logpath: /var/log/mongodb/mongod.log
+  noauth: "true"
+  nohints: "false"
+  nohttpinterface: "false"
+  nojournal: "true"
+  noprealloc: "false"
+  noscripting: "false"
+  notablescan: "false"
+  objcheck: "false"
+  port: 27017
+  quota: "false"
+  # replSet: "" # Set for enable replication
+  verbose: "true"
+  vvvv: "true"
+
 
 # Log rotation
 mongodb_logrotate: yes                             # Rotate mongodb logs.
