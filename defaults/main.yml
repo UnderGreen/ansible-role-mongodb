@@ -7,27 +7,26 @@ mongodb_packages:
   - mongodb-org
 
 mongodb_conf:
-  dbpath: /var/lib/mongodb/
-  logpath: /var/log/mongodb/mongod.log
-  logappend: "true"
-  port: 27017
-  bind_ip: 127.0.0.1
-  nojournal: "true"
-  # auth: "true"
-  noauth: "true"
-  cpu: "true"
-  verbose: "true"
-  vvvv: "true"
-  quota: "false"
   auth: "false"
-  objcheck: "false"
+  bind_ip: 127.0.0.1
+  cpu: "true"
+  dbpath: /var/lib/mongodb/
   # diaglog: 0 # deprecated
+  logappend: "true"
+  logpath: /var/log/mongodb/mongod.log
+  noauth: "true"
   nohints: "false"
   nohttpinterface: "false"
+  nojournal: "true"
+  noprealloc: "false"
   noscripting: "false"
   notablescan: "false"
-  noprealloc: "false"
+  objcheck: "false"
+  port: 27017
+  quota: "false"
   # replSet: "" # Set for enable replication
+  verbose: "true"
+  vvvv: "true"
 
 
 # Log rotation
