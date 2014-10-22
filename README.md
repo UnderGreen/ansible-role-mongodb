@@ -1,7 +1,9 @@
 Stouts.mongo
 ============
 
-[![Build Status](https://travis-ci.org/Stouts/Stouts.nginx.png)](https://travis-ci.org/Stouts/Stouts.mongodb)
+[![Build Status](http://img.shields.io/travis/Stouts/Stouts.mongodb.svg?style=flat-square)](https://travis-ci.org/Stouts/Stouts.mongodb)
+[![Galaxy](http://img.shields.io/badge/galaxy-Stouts.mongodb-blue.svg?style=flat-square)](https://galaxy.mongodb.com/list#/roles/982)
+[![Tag](http://img.shields.io/github/tag/Stouts/Stouts.mongodb.svg?style=flat-square)]()
 
 Ansible role which manage [MongoDB](http://www.mongodb.org/)
 
