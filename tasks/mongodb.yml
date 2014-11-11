@@ -3,8 +3,8 @@
 - include: install.deb.yml
   when: ansible_os_family == 'Debian'
 
-- name: Ensure mongodb is started
-  service: name=mongod state=started
-  changed_when: False
-
 - include: configure.yml
+
+- name: Ensure mongodb is started
+  service: name=mongod state=started enabled=yes
+  changed_when: False
