@@ -64,10 +64,10 @@ Example:
 - hosts: all
 
   roles:
-    - Stouts.mongodb
+  - Stouts.mongodb
 
   vars:
-    port: 27400
+    mongodb_conf_port: 27400
 ```
 
 #### License

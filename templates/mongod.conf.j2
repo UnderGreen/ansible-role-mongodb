@@ -1,5 +1,20 @@
 # {{ ansible_managed }}
 
-{% for k, v in mongodb_conf.iteritems()|sort %}
-{{ k }} = {{ v }}
-{% endfor %}
+auth = {{ mongodb_conf_auth }}
+bind_ip = {{ mongodb_conf_bind_ip }}
+cpu = {{ mongodb_conf_cpu }}
+dbpath = {{ mongodb_conf_dbpath }}
+logappend = {{ mongodb_conf_logappend }}
+logpath = {{ mongodb_conf_logpath }}
+noauth = {{ mongodb_conf_noauth }}
+nohints = {{ mongodb_conf_nohints }}
+nohttpinterface = {{ mongodb_conf_nohttpinterface }}
+nojournal = {{ mongodb_conf_nojournal }}
+noprealloc = {{ mongodb_conf_noprealloc }}
+noscripting = {{ mongodb_conf_noscripting }}
+notablescan = {{ mongodb_conf_notablescan }}
+objcheck = {{ mongodb_conf_objcheck }}
+port = {{ mongodb_conf_port }}
+quota = {{ mongodb_conf_quota }}
+verbose = {{ mongodb_conf_verbose }}
+vvvv = {{ mongodb_conf_vvvv }}
