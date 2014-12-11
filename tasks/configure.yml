@@ -2,8 +2,17 @@
 
 - name: Configure mongodb
   template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
-  notify: mongodb reload
+  notify: mongodb restart
 
 - name: Configure log rotation
   template: src=logrotate.conf.j2 dest=/etc/logrotate.d/mongodb.conf
   when: mongodb_logrotate
+
+- name: Create mongodb user
+  user: name=mongodb group=mongodb
+
+- name: Configure database directory
+  file: state=directory path={{ mongodb_conf_dbpath }} owner=mongodb group=mongodb mode=0755
+
+- name: Configure logs
+  file: state=file path={{ mongodb_conf_logpath }} owner=mongodb group=mongodb mode=0644
