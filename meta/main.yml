@@ -5,7 +5,7 @@ dependencies: []
 galaxy_info:
   author: klen
   company: Stouts
-  description: Manage mongodb
+  description: Manage MongoDB (MMS)
   license: MIT
   platforms:
   - name: Ubuntu

@@ -5,3 +5,6 @@
 
 - name: mongodb restart
   service: name=mongod state=restarted
+
+- name: mongodb-mms-automation-agent restart
+  service: name=mongodb-mms-automation-agent state=restarted
