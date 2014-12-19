@@ -1,0 +1,19 @@
+---
+
+- name: Install MMS agent pt. 1
+  get_url: url={{mongodb_mms_agent_pkg}} dest={{mongodb_conf_dbpath}}/mms-agent.deb
+  register: mongodb_mms_agent_loaded
+
+- name: Install MMS agent pt. 2
+  apt: deb={{mongodb_conf_dbpath}}/mms-agent.deb
+  when: mongodb_mms_agent_loaded.changed
+
+- name: Configure the MMS agent pt. 1
+  file: state=directory path=/etc/mongodb-mms owner={{mongodb_user}} group={{mongodb_user}} mode=0755
+
+- name: Configure the MMS agent pt. 2
+  template: src=automation-agent.config.j2 dest=/etc/mongodb-mms/automation-agent.config
+  notify: mongodb-mms-automation-agent restart
+
+- name: Ensure that the MMS agent is started
+  service: name=mongodb-mms-automation-agent state=started enabled=yes

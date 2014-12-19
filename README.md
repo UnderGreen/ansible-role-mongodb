@@ -6,8 +6,9 @@ Stouts.mongo
 
 Ansible role which manage [MongoDB](http://www.mongodb.org/)
 
-* Install and configure;
+* Install and configure the MongoDB;
 * Provide hanlers for restart and reload;
+* Setup MMS authomation agent;
 
 #### Variables
 
@@ -15,32 +16,40 @@ Ansible role which manage [MongoDB](http://www.mongodb.org/)
 
 mongodb_enabled: yes
 mongodb_packages:
-  - python-selinux
-  - python-pymongo
-  - mongodb-org
+- python-selinux
+- python-pymongo
+- mongodb-org
 
-mongodb_conf:
-  auth: "false"
-  bind_ip: 127.0.0.1
-  cpu: "true"
-  dbpath: /var/lib/mongodb/
-  # diaglog: 0 # deprecated
-  logappend: "true"
-  logpath: /var/log/mongodb/mongod.log
-  noauth: "true"
-  nohints: "false"
-  nohttpinterface: "false"
-  nojournal: "true"
-  noprealloc: "false"
-  noscripting: "false"
-  notablescan: "false"
-  objcheck: "false"
-  port: 27017
-  quota: "false"
-  # replSet: "" # Set for enable replication
-  verbose: "true"
-  vvvv: "true"
+mongodb_user: mongodb
 
+mongodb_conf_auth: no                             # Run with security
+mongodb_conf_bind_ip: 127.0.0.1                   # Comma separated list of ip addresses to listen on
+mongodb_conf_cpu: yes                             # Periodically show cpu and iowait utilization
+mongodb_conf_dbpath: /data/db                     # Directory for datafiles
+mongodb_conf_fork: no                             # Fork server process
+mongodb_conf_httpinterface: no                    # Enable http interface
+mongodb_conf_ipv6: no                             # Enable IPv6 support (disabled by default)
+mongodb_conf_journal: no                          # Enable journaling
+mongodb_conf_logappend: yes                       # Append to logpath instead of over-writing
+mongodb_conf_logpath: /var/log/mongodb/mongod.log # Log file to send write to instead of stdout
+mongodb_conf_maxConns: 1000000                    # Max number of simultaneous connections
+mongodb_conf_noprealloc: no                       # Disable data file preallocation
+mongodb_conf_noscripting: no                      # Disable scripting engine
+mongodb_conf_notablescan: no                      # Do not allow table scans
+mongodb_conf_port: 27017                          # Specify port number
+mongodb_conf_quota: no                            # Limits each database to a certain number of files
+mongodb_conf_quotaFiles: 8                        # Number of quota files
+mongodb_conf_syslog: no                           # Log to system's syslog facility instead of file
+
+# Replica set options:
+mongodb_conf_replSet:                             # Enable replication <setname>[/<optionalseedhostlist>]
+mongodb_conf_replIndexPrefetch: all               # specify index prefetching behavior (if secondary) [none|_id_only|all]
+
+# MMS Agent
+mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_1.4.2.783-1_amd64.deb
+mongodb_mms_group_id: ""
+mongodb_mms_api_key: ""
+mongodb_mms_base_url: https://mms.mongodb.com
 
 # Log rotation
 mongodb_logrotate: yes                             # Rotate mongodb logs.

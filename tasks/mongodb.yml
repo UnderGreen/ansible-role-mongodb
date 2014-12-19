@@ -8,3 +8,6 @@
 - name: Ensure mongodb is started
   service: name=mongod state=started enabled=yes
   changed_when: False
+
+- include: mms-agent.yml
+  when: mongodb_mms_api_key != ""

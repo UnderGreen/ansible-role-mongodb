@@ -9,10 +9,10 @@
   when: mongodb_logrotate
 
 - name: Create mongodb user
-  user: name=mongodb group=mongodb
+  user: name={{mongodb_user}} group={{mongodb_user}}
 
 - name: Configure database directory
-  file: state=directory path={{ mongodb_conf_dbpath }} owner=mongodb group=mongodb mode=0755
+  file: state=directory path={{ mongodb_conf_dbpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0755
 
 - name: Configure logs
-  file: state=file path={{ mongodb_conf_logpath }} owner=mongodb group=mongodb mode=0644
+  file: state=file path={{ mongodb_conf_logpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0644
