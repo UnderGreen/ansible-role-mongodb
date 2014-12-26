@@ -45,6 +45,12 @@ mongodb_conf_syslog: no                           # Log to system's syslog facil
 mongodb_conf_replSet:                             # Enable replication <setname>[/<optionalseedhostlist>]
 mongodb_conf_replIndexPrefetch: all               # specify index prefetching behavior (if secondary) [none|_id_only|all]
 
+mongodb_shell: []                                 # Define mongo shell commands to run
+                                                  # Syntax: mongodb_shell:
+                                                  #          dbname:
+                                                  #           - db.setProfilingLevel(1, 50)
+                                                  
+
 # MMS Agent
 mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_1.4.2.783-1_amd64.deb
 mongodb_mms_group_id: ""
