@@ -15,14 +15,15 @@ Ansible role which manage [MongoDB](http://www.mongodb.org/)
 ```yaml
 
 mongodb_enabled: yes
-mongodb_from_mongodb_repo: yes # If yes, install using MongoDB repo, else use system default repo
+
+mongodb_package: mongodb-org
 
 mongodb_additional_packages:
-  - python-selinux
-  - python-pymongo
+- python-selinux
+- python-pymongo
 
 mongodb_user: mongodb
-mongodb_daemon_name: "{{ 'mongod' if (mongodb_from_mongodb_repo | bool) else 'mongodb' }}"
+mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' == mongodb_package) else 'mongodb' }}"
 
 mongodb_conf_auth: no                             # Run with security
 mongodb_conf_bind_ip: 127.0.0.1                   # Comma separated list of ip addresses to listen on

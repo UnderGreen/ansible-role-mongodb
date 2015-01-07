@@ -1,24 +1,16 @@
 ---
 
+- include_vars: "{{ansible_distribution}}.yml"
+
 - name: Add APT key
   apt_key: url=http://docs.mongodb.org/10gen-gpg-key.asc id=7F0CEB10
-  when: mongodb_from_mongodb_repo | bool
+  when: mongodb_package == 'mongodb-org'
 
-- name: Add APT repository (Ubuntu)
-  apt_repository: repo='deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' update_cache=yes
-  when: ansible_distribution == 'Ubuntu' and (mongodb_from_mongodb_repo | bool)
+- name: Add APT repository
+  apt_repository: repo="{{mongodb_repository}}" update_cache=yes
 
-- name: Add APT repository (Debian)
-  apt_repository: repo='deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen' update_cache=yes
-  when: ansible_distribution == 'Debian' and (mongodb_from_mongodb_repo | bool)
-
-- name: Install MongoDB package from MongoDB repo
-  apt: pkg=mongodb-org state=present
-  when: mongodb_from_mongodb_repo | bool
-
-- name: Install MongoDB package from Ubuntu or Debian official repo
-  apt: pkg=mongodb state=present
-  when: not (mongodb_from_mongodb_repo | bool)
+- name: Install MongoDB package
+  apt: pkg={{mongodb_package}} state=present
 
 - name: Install additional packages
   apt: pkg={{item}}
