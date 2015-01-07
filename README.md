@@ -15,12 +15,14 @@ Ansible role which manage [MongoDB](http://www.mongodb.org/)
 ```yaml
 
 mongodb_enabled: yes
-mongodb_packages:
-- python-selinux
-- python-pymongo
-- mongodb-org
+mongodb_from_mongodb_repo: yes # If yes, install using MongoDB repo, else use system default repo
+
+mongodb_additional_packages:
+  - python-selinux
+  - python-pymongo
 
 mongodb_user: mongodb
+mongodb_daemon_name: "{{ 'mongod' if (mongodb_from_mongodb_repo | bool) else 'mongodb' }}"
 
 mongodb_conf_auth: no                             # Run with security
 mongodb_conf_bind_ip: 127.0.0.1                   # Comma separated list of ip addresses to listen on
@@ -31,7 +33,7 @@ mongodb_conf_httpinterface: no                    # Enable http interface
 mongodb_conf_ipv6: no                             # Enable IPv6 support (disabled by default)
 mongodb_conf_journal: no                          # Enable journaling
 mongodb_conf_logappend: yes                       # Append to logpath instead of over-writing
-mongodb_conf_logpath: /var/log/mongodb/mongod.log # Log file to send write to instead of stdout
+mongodb_conf_logpath: /var/log/mongodb/{{ mongodb_daemon_name }}.log # Log file to send write to instead of stdout
 mongodb_conf_maxConns: 1000000                    # Max number of simultaneous connections
 mongodb_conf_noprealloc: no                       # Disable data file preallocation
 mongodb_conf_noscripting: no                      # Disable scripting engine
@@ -49,7 +51,7 @@ mongodb_shell: {}                                 # Define mongo shell commands 
                                                   # Syntax: mongodb_shell:
                                                   #          dbname:
                                                   #           - db.setProfilingLevel(1, 50)
-                                                  
+
 
 # MMS Agent
 mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_1.4.2.783-1_amd64.deb

@@ -6,7 +6,7 @@
 - include: configure.yml
 
 - name: Ensure mongodb is started
-  service: name=mongod state=started enabled=yes
+  service: name={{ mongodb_daemon_name }} state=started enabled=yes
   changed_when: False
 
 - include: mms-agent.yml
