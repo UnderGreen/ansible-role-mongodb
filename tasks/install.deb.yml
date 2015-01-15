@@ -8,6 +8,7 @@
 
 - name: Add APT repository
   apt_repository: repo="{{mongodb_repository}}" update_cache=yes
+  when: mongodb_package == 'mongodb-org'
 
 - name: Install MongoDB package
   apt: pkg={{mongodb_package}} state=present
