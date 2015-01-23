@@ -4,11 +4,11 @@
 
 - name: Add APT key
   apt_key: url=http://docs.mongodb.org/10gen-gpg-key.asc id=7F0CEB10
-  when: mongodb_package == 'mongodb-org'
+  when: '"mongodb-org" in mongodb_package'
 
 - name: Add APT repository
   apt_repository: repo="{{mongodb_repository}}" update_cache=yes
-  when: mongodb_package == 'mongodb-org'
+  when: '"mongodb-org" in mongodb_package'
 
 - name: Install MongoDB package
   apt: pkg={{mongodb_package}} state=present

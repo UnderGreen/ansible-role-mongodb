@@ -9,7 +9,7 @@ mongodb_additional_packages:
 - python-pymongo
 
 mongodb_user: mongodb
-mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' == mongodb_package) else 'mongodb' }}"
+mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
 mongodb_conf_auth: no                             # Run with security
 mongodb_conf_bind_ip: 127.0.0.1                   # Comma separated list of ip addresses to listen on
