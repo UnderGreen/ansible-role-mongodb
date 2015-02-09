@@ -9,5 +9,8 @@
   service: name={{ mongodb_daemon_name }} state=started enabled=yes
   changed_when: False
 
+- include: authorization.yml
+  when: mongodb_conf_auth == "yes"
+
 - include: mms-agent.yml
   when: mongodb_mms_api_key != ""

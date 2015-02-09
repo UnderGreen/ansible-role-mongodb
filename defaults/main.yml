@@ -76,3 +76,7 @@ mongodb_keyfile_content: |
   ZWLnP/mXKV992/Jhu0Z577DHlh+3JIYx0PceB9yzACJ8MNARHF7QpBkhtuGMGZpF
   T+c73exupZFxItXs1Bnhe3djgE3MKKyYvxNUIbcTJoe7nhVMrwO/7lBSpVLvC4p3
   wR700U0LDaGGQpslGtiE56SemgoP
+
+# password for administrative users
+mongodb_user_admin_password: passw0rd
+mongodb_root_admin_password: passw0rd
