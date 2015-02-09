@@ -1,6 +1,6 @@
 ---
 
-mongodb_enabled: yes
+mongodb_enabled: true
 
 mongodb_package: mongodb-org
 
@@ -11,28 +11,28 @@ mongodb_additional_packages:
 mongodb_user: mongodb
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
-mongodb_conf_auth: no                             # Run with security
+mongodb_conf_auth: "no"                           # Run with security
 mongodb_conf_bind_ip: 127.0.0.1                   # Comma separated list of ip addresses to listen on
-mongodb_conf_cpu: yes                             # Periodically show cpu and iowait utilization
+mongodb_conf_cpu: "yes"                           # Periodically show cpu and iowait utilization
 mongodb_conf_dbpath: /data/db                     # Directory for datafiles
-mongodb_conf_fork: no                             # Fork server process
-mongodb_conf_httpinterface: no                    # Enable http interface
-mongodb_conf_ipv6: no                             # Enable IPv6 support (disabled by default)
-mongodb_conf_journal: no                          # Enable journaling
-mongodb_conf_logappend: yes                       # Append to logpath instead of over-writing
+mongodb_conf_fork: "no"                           # Fork server process
+mongodb_conf_httpinterface: "no"                  # Enable http interface
+mongodb_conf_ipv6: "no"                           # Enable IPv6 support (disabled by default)
+mongodb_conf_journal: "no"                        # Enable journaling
+mongodb_conf_logappend: "yes"                     # Append to logpath instead of over-writing
 mongodb_conf_logpath: /var/log/mongodb/{{ mongodb_daemon_name }}.log # Log file to send write to instead of stdout
 mongodb_conf_maxConns: 1000000                    # Max number of simultaneous connections
-mongodb_conf_noprealloc: no                       # Disable data file preallocation
-mongodb_conf_noscripting: no                      # Disable scripting engine
-mongodb_conf_notablescan: no                      # Do not allow table scans
+mongodb_conf_noprealloc: "no"                     # Disable data file preallocation
+mongodb_conf_noscripting: "no"                    # Disable scripting engine
+mongodb_conf_notablescan: "no"                    # Do not allow table scans
 mongodb_conf_port: 27017                          # Specify port number
-mongodb_conf_quota: no                            # Limits each database to a certain number of files
+mongodb_conf_quota: "no"                          # Limits each database to a certain number of files
 mongodb_conf_quotaFiles: 8                        # Number of quota files
-mongodb_conf_syslog: no                           # Log to system's syslog facility instead of file
+mongodb_conf_syslog: "no"                         # Log to system's syslog facility instead of file
 
 # Replica set options:
 mongodb_conf_replSet:                             # Enable replication <setname>[/<optionalseedhostlist>]
-mongodb_conf_replIndexPrefetch: all               # specify index prefetching behavior (if secondary) [none|_id_only|all]
+mongodb_conf_replIndexPrefetch: "all"             # specify index prefetching behavior (if secondary) [none|_id_only|all]
 
 mongodb_shell: {}                                 # Define mongo shell commands to run
                                                   # Syntax: mongodb_shell:
@@ -47,7 +47,7 @@ mongodb_mms_api_key: ""
 mongodb_mms_base_url: https://mms.mongodb.com
 
 # Log rotation
-mongodb_logrotate: yes                             # Rotate mongodb logs.
+mongodb_logrotate: true                             # Rotate mongodb logs.
 mongodb_logrotate_options:
   - compress
   - copytruncate

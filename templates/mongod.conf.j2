@@ -1,23 +1,23 @@
 # {{ ansible_managed }}
 
-auth = {{ mongodb_conf_auth|to_nice_json }}
+auth = {{ mongodb_conf_auth }}
 bind_ip = {{ mongodb_conf_bind_ip }}
-cpu = {{ mongodb_conf_cpu|to_nice_json }}
+cpu = {{ mongodb_conf_cpu }}
 dbpath = {{ mongodb_conf_dbpath }}
-fork = {{ mongodb_conf_fork|to_nice_json }}
-httpinterface = {{ mongodb_conf_httpinterface|to_nice_json }}
-ipv6 = {{ mongodb_conf_ipv6|to_nice_json }}
-journal = {{ mongodb_conf_journal|to_nice_json }}
-logappend = {{ mongodb_conf_logappend|to_nice_json }}
+fork = {{ mongodb_conf_fork }}
+httpinterface = {{ mongodb_conf_httpinterface }}
+ipv6 = {{ mongodb_conf_ipv6 }}
+journal = {{ mongodb_conf_journal }}
+logappend = {{ mongodb_conf_logappend }}
 logpath = {{ mongodb_conf_logpath }}
 maxConns = {{ mongodb_conf_maxConns }}
-noprealloc = {{ mongodb_conf_noprealloc|to_nice_json }}
-noscripting = {{ mongodb_conf_noscripting|to_nice_json }}
-notablescan = {{ mongodb_conf_notablescan|to_nice_json }}
+noprealloc = {{ mongodb_conf_noprealloc }}
+noscripting = {{ mongodb_conf_noscripting }}
+notablescan = {{ mongodb_conf_notablescan }}
 port = {{ mongodb_conf_port }}
-quota = {{ mongodb_conf_quota|to_nice_json }}
+quota = {{ mongodb_conf_quota }}
 quotaFiles = {{ mongodb_conf_quotaFiles }}
-syslog = {{ mongodb_conf_syslog|to_nice_json }}
+syslog = {{ mongodb_conf_syslog }}
 
 {% if mongodb_conf_replSet %}
 # Replica set options:
