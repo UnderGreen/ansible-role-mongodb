@@ -17,6 +17,15 @@
 - name: Configure logs
   file: state=file path={{ mongodb_conf_logpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0644
 
+- name: Create keyFile
+  copy:
+    dest: "{{ mongodb_conf_keyFile }}"
+    content: "{{ mongodb_keyfile_content }}"
+    owner: "{{ mongodb_user }}"
+    group: "root"
+    mode: 0600
+  when: mongodb_conf_replSet != ""
+
 - name: Run mongoshell commands
   command: mongo {{ item.key }} --eval "{{ item.value|join('\n') }}"
   with_dict: mongodb_shell
