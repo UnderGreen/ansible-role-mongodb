@@ -4,31 +4,31 @@
   apt: name=python-pymongo
 
 - name: create administrative user siteRootAdmin
-  mongodb_user: 
+  mongodb_user:
     database: admin
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     login_host: "{{ mongodb_user_login_host|default('localhost') }}"
   with_items:
-    - { 
-      name: siteRootAdmin, 
+    - {
+      name: "{{ mongodb_root_admin_name }}",
       password: "{{ mongodb_root_admin_password }}",
       roles: "root"
       }
 
 - name: create administrative user siteUserAdmin
-  mongodb_user: 
+  mongodb_user:
     database: admin
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     login_host: "{{ mongodb_user_login_host|default('localhost') }}"
-    login_user: "siteRootAdmin"
+    login_user: "{{ mongodb_root_admin_name }}"
     login_password: "{{ mongodb_root_admin_password }}"
   with_items:
-    - { 
-      name: siteUserAdmin,
+    - {
+      name: "{{ mongodb_user_admin_name }}",
       password: "{{ mongodb_user_admin_password }}",
       roles: "userAdminAnyDatabase"
       }
@@ -40,8 +40,8 @@
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     login_host: "{{ mongodb_user_login_host|default('localhost') }}"
-    login_user: "siteRootAdmin"
+    login_user: "{{ mongodb_root_admin_name }}"
     login_password: "{{ mongodb_root_admin_password }}"
   with_items:
-    - {{ mongodb_users }}
+    - "{{ mongodb_users }}"
   when: mongodb_users is defined

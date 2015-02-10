@@ -41,7 +41,6 @@ mongodb_shell: {}                                 # Define mongo shell commands 
                                                   #          dbname:
                                                   #           - db.setProfilingLevel(1, 50)
 
-
 # MMS Agent
 mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_1.4.2.783-1_amd64.deb
 mongodb_mms_group_id: ""
@@ -59,6 +58,7 @@ mongodb_logrotate_options:
   - size 10M
 
 # password for inter-process authentication
+# please regenerate this file on production environment with command 'openssl rand -base64 741'
 mongodb_keyfile_content: |
   8pYcxvCqoe89kcp33KuTtKVf5MoHGEFjTnudrq5BosvWRoIxLowmdjrmUpVfAivh
   CHjqM6w0zVBytAxH1lW+7teMYe6eDn2S/O/1YlRRiW57bWU3zjliW3VdguJar5i9
@@ -77,6 +77,9 @@ mongodb_keyfile_content: |
   T+c73exupZFxItXs1Bnhe3djgE3MKKyYvxNUIbcTJoe7nhVMrwO/7lBSpVLvC4p3
   wR700U0LDaGGQpslGtiE56SemgoP
 
-# password for administrative users
+# names and passwords for administrative users
+mongodb_user_admin_name: siteUserAdmin
 mongodb_user_admin_password: passw0rd
+
+mongodb_root_admin_name: siteRootAdmin
 mongodb_root_admin_password: passw0rd
