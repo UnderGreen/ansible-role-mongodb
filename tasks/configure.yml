@@ -1,8 +1,22 @@
 ---
 
+- name: Create keyFile
+  copy:
+    dest: "{{ mongodb_conf_keyFile }}"
+    content: "{{ mongodb_keyfile_content }}"
+    owner: "{{ mongodb_user }}"
+    group: "root"
+    mode: 0600
+  when: mongodb_conf_replSet != ''
+
 - name: Configure mongodb
   template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
   notify: mongodb restart
+  register: config_result
+
+- name: mongodb restart
+  service: name={{ mongodb_daemon_name }} state=restarted
+  when: config_result|changed
 
 - name: Configure log rotation
   template: src=logrotate.conf.j2 dest=/etc/logrotate.d/mongodb.conf

@@ -9,7 +9,8 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: "{{ mongodb_user_login_host|default('localhost') }}"
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
+    login_port: "{{ mongodb_login_port|default(27017) }}"
   with_items:
     - {
       name: "{{ mongodb_root_admin_name }}",
@@ -23,7 +24,8 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: "{{ mongodb_user_login_host|default('localhost') }}"
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
+    login_port: "{{ mongodb_login_port|default(27017) }}"
     login_user: "{{ mongodb_root_admin_name }}"
     login_password: "{{ mongodb_root_admin_password }}"
   with_items:
@@ -39,7 +41,8 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: "{{ mongodb_user_login_host|default('localhost') }}"
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
+    login_port: "{{ mongodb_login_port|default(27017) }}"
     login_user: "{{ mongodb_root_admin_name }}"
     login_password: "{{ mongodb_root_admin_password }}"
   with_items:

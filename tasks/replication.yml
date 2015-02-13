@@ -1,29 +1,16 @@
 ---
 
-- name: Create keyFile
-  copy:
-    dest: "{{ mongodb_conf_keyFile }}"
-    content: "{{ mongodb_keyfile_content }}"
-    owner: "{{ mongodb_user }}"
-    group: "root"
-    mode: 0600
-
-- name: Check replication status
-  shell: "{{ item }}"
-  register: replication_status
-  when: mongodb_conf_auth == "yes"
+- name: Replication configuration
+  mongodb_replication:
+    login_host: "{{ mongodb_login_host |default('localhost') }}"
+    login_port: "{{ mongodb_login_port|default(27017) }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
+    replica_set: "{{ mongodb_conf_replSet }}"
+    host_name: "{{ item.host_name }}"
+    host_port: "{{ item.host_port }}"
+    host_type: "{{ item.host_type|default('replica') }}"
+  when: mongodb_conf_auth == "yes" and mongodb_replication_hosts is defined
+  register: mongodb_replication_status
   with_items:
-    - /usr/bin/mongo --username {{ mongodb_root_admin_name }} --password {{ mongodb_root_admin_password }} admin --eval 'printjson(rs.status())' | tail -n +3
-    - /usr/bin/mongo admin --eval 'printjson(rs.status())' | tail -n +3
-  changed_when: false
-
-- debug:
-    msg: "{{ (replication_status.results[0].stdout|from_json).errmsg }}"
-
-- name: Create the file to initialize the mongod replica set
-  template: src=repset_init.js.j2 dest=/tmp/repset_init.js
-  when: mongodb_conf_auth == "yes" and (replication_status.results[0].stdout|from_json).errmsg | search("EMPTYCONFIG")
-
-- name: Initialize replica set
-  shell: /usr/bin/mongo --username {{ mongodb_root_admin_name }} --password {{ mongodb_root_admin_password }} admin /tmp/repset_init.js
-  when: mongodb_conf_auth == "yes" and (replication_status.results[0].stdout|from_json).errmsg | search("EMPTYCONFIG")
+    - "{{ mongodb_replication_params }}"

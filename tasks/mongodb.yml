@@ -12,7 +12,6 @@
 - include: authorization.yml
   when: mongodb_conf_auth == "yes"
 
-- meta: flush handlers
 - include: replication.yml
   when: mongodb_conf_replSet != ""
 
