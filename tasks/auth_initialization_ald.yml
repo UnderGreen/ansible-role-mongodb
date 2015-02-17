@@ -1,8 +1,3 @@
----
-
-- include: auth_initialization_ald.yml
-  when: ansible_local.mongodb.mongodb.mongodb_login_port is defined
-
 - name: create administrative user siteRootAdmin
   mongodb_user:
     database: admin
@@ -10,14 +5,13 @@
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     login_host: 127.0.0.1
+    login_port: "{{ ansible_local.mongodb.mongodb.mongodb_login_port|default(27017) }}"
   with_items:
     - {
       name: "{{ mongodb_root_admin_name }}",
       password: "{{ mongodb_root_admin_password }}",
       roles: "root"
       }
-  register: rootadmin_user_result
-  when: ansible_local.mongodb.mongodb.mongodb_login_port is undefined
 
 - name: create administrative user siteUserAdmin
   mongodb_user:
@@ -26,14 +20,13 @@
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     login_host: 127.0.0.1
+    login_port: "{{ ansible_local.mongodb.mongodb_login_port|default(27017) }}"
   with_items:
     - {
       name: "{{ mongodb_user_admin_name }}",
       password: "{{ mongodb_user_admin_password }}",
       roles: "userAdminAnyDatabase"
       }
-  register: useradmin_user_result
-  when: ansible_local.mongodb.mongodb.mongodb_login_port is undefined
 
 - name: create normal users
   mongodb_user:
@@ -43,21 +36,8 @@
     roles: "{{ item.roles }}"
     replica_set: "{{ mongodb_conf_replSet }}"
     login_host: 127.0.0.1
+    login_port: "{{ ansible_local.mongodb.mongodb_login_port|default(27017) }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
   with_items:
     - "{{ mongodb_users }}"
-  when: mongodb_users is defined and ansible_local.mongodb.mongodb_login_port is undefined
-
-- name: Create facts.d directory
-  file:
-    state: directory
-    recurse: yes
-    path: /etc/ansible/facts.d
-  when: rootadmin_user_result|changed or useradmin_user_result|changed
-
-- name: Create facts file for mongodb
-  copy:
-    dest: /etc/ansible/facts.d/mongodb.fact
-    content: "[mongodb]\nmongodb_login_port={{ mongodb_conf_port }}\n"
-  when: rootadmin_user_result|changed or useradmin_user_result|changed
