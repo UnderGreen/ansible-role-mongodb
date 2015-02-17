@@ -13,6 +13,12 @@
   template: src=logrotate.conf.j2 dest=/etc/logrotate.d/mongodb.conf
   when: mongodb_logrotate
 
+- name: ensure mongodb started and enabled
+  service: name={{ mongodb_daemon_name }} state=started enabled=yes
+
+- include: auth_initialization.yml
+  when: mongodb_conf_auth
+
 - name: Create mongodb user
   user: name={{mongodb_user}} group={{mongodb_user}}
 
