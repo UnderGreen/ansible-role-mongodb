@@ -3,16 +3,17 @@
 dependencies: []
 
 galaxy_info:
-  author: klen
-  company: Stouts
-  description: Manage MongoDB (MMS)
-  license: MIT
+  author: Sergei Antipov
+  company: 2GIS
+  description: Manage MongoDB (MMS) with authentication and replica sets
+  license: GPLv2
   platforms:
   - name: Ubuntu
     versions:
-    - all
+    - trusty
   - name: Debian
     versions:
     - wheezy
   categories:
+  - database
   - database:nosql
