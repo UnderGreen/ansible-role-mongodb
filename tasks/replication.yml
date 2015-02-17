@@ -2,15 +2,26 @@
 
 - name: Replication configuration
   mongodb_replication:
-    login_host: "{{ mongodb_login_host |default('localhost') }}"
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
     login_port: "{{ mongodb_login_port|default(27017) }}"
     login_user: "{{ mongodb_root_admin_name }}"
     login_password: "{{ mongodb_root_admin_password }}"
     replica_set: "{{ mongodb_conf_replSet }}"
     host_name: "{{ item.host_name }}"
-    host_port: "{{ item.host_port }}"
+    host_port: "{{ item.host_port|default(27017) }}"
     host_type: "{{ item.host_type|default('replica') }}"
-  when: mongodb_conf_auth == "yes" and mongodb_replication_hosts is defined
-  register: mongodb_replication_status
+  when: mongodb_conf_auth and mongodb_replication_params is defined
+  with_items:
+    - "{{ mongodb_replication_params }}"
+
+- name: Replication configuration without auth
+  mongodb_replication:
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
+    login_port: "{{ mongodb_login_port|default(27017) }}"
+    replica_set: "{{ mongodb_conf_replSet }}"
+    host_name: "{{ item.host_name }}"
+    host_port: "{{ item.host_port|default(27017) }}"
+    host_type: "{{ item.host_type|default('replica') }}"
+  when: not mongodb_conf_auth and mongodb_replication_params is defined
   with_items:
     - "{{ mongodb_replication_params }}"
