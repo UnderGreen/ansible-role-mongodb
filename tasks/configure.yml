@@ -9,15 +9,6 @@
     mode: 0600
   when: mongodb_conf_replSet != ''
 
-- name: Configure mongodb
-  template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
-  notify: mongodb restart
-  register: config_result
-
-- name: mongodb restart
-  service: name={{ mongodb_daemon_name }} state=restarted
-  when: config_result|changed
-
 - name: Configure log rotation
   template: src=logrotate.conf.j2 dest=/etc/logrotate.d/mongodb.conf
   when: mongodb_logrotate
@@ -31,6 +22,10 @@
 - name: Configure logs
   file: state=file path={{ mongodb_conf_logpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0644
 
-- name: Run mongoshell commands
-  command: mongo {{ item.key }} --eval "{{ item.value|join('\n') }}"
-  with_dict: mongodb_shell
+- name: Configure mongodb
+  template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
+  register: config_result
+
+- name: mongodb restart
+  service: name={{ mongodb_daemon_name }} state=restarted
+  when: config_result|changed
