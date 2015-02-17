@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# (c) 2015, Sergei Antipov
+# (c) 2015, Sergei Antipov, 2GIS LLC
 #
 # This file is part of Ansible
 #
@@ -20,10 +20,9 @@
 DOCUMENTATION = '''
 ---
 module: mongodb_replication
-short_description: Adds or removes a user from a MongoDB database.
+short_description: Adds or removes a node from a MongoDB Replica Set.
 description:
-    - Adds or removes a user from a MongoDB database.
-version_added: "1.1"
+    - Adds or removes host from a MongoDB replica set. Initialize replica set if it needed.
 options:
     login_user:
         description:
@@ -46,37 +45,29 @@ options:
         required: false
         default: 27017
     replica_set:
-        version_added: "1.6"
         description:
             - Replica set to connect to (automatically connects to primary for writes)
         required: false
         default: null
-    database:
+    host_name:
         description:
-            - The name of the database to add/remove the user from
+            - The name of the host to add/remove from replica set
         required: true
-    user:
+    host_port:
         description:
-            - The name of the user to add or remove
+            - The port of the host
         required: true
         default: null
-    password:
+    host_type:
         description:
-            - The password to use for the user
+            - The type of the host in replica set
         required: false
-        default: null
+        default: replica
+        choices: [ "replica", "arbiter" ]
     ssl:
-        version_added: "1.8"
         description:
             - Whether to use an SSL connection when connecting to the database
         default: False
-    roles:
-        version_added: "1.3"
-        description:
-            - "The database user roles valid values are one or more of the following: read, 'readWrite', 'dbAdmin', 'userAdmin', 'clusterAdmin', 'readAnyDatabase', 'readWriteAnyDatabase', 'userAdminAnyDatabase', 'dbAdminAnyDatabase'"
-            - This param requires mongodb 2.4+ and pymongo 2.5+
-        required: false
-        default: "readWrite"
     state:
         state:
         description:
@@ -88,26 +79,24 @@ notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+. This
       can be installed using pip or the OS package manager. @see http://api.mongodb.org/python/current/installation.html
 requirements: [ "pymongo" ]
-author: Elliott Foster
+author: Sergei Antipov
 '''
 
 EXAMPLES = '''
-# Create 'burgers' database user with name 'bob' and password '12345'.
-- mongodb_user: database=burgers name=bob password=12345 state=present
+# Add 'mongo1.dev:27017' host into replica set as replica (Replica will be initiated if it not exists)
+- mongodb_replication: replica_set=replSet host_name=mongo1.dev host_port=27017 state=present
 
-# Create a database user via SSL (MongoDB must be compiled with the SSL option and configured properly)
-- mongodb_user: database=burgers name=bob password=12345 state=present ssl=True
+# Add 'mongo2.dev:30000' host into replica set as arbiter
+- mongodb_replication: replica_set=replSet host_name=mongo2.dev host_port=30000 host_type=arbiter state=present
 
-# Delete 'burgers' database user with name 'bob'.
-- mongodb_user: database=burgers name=bob state=absent
+# Add 'mongo3.dev:27017' host into replica set as replica and authorization params
+- mongodb_replication: replica_set=replSet login_host=mongo1.dev login_user=siteRootAdmin login_password=123456 host_name=mongo3.dev host_port=27017 state=present
 
-# Define more users with various specific roles (if not defined, no roles is assigned, and the user will be added via pre mongo 2.2 style)
-- mongodb_user: database=burgers name=ben password=12345 roles='read' state=present
-- mongodb_user: database=burgers name=jim password=12345 roles='readWrite,dbAdmin,userAdmin' state=present
-- mongodb_user: database=burgers name=joe password=12345 roles='readWriteAnyDatabase' state=present
+# Add 'mongo4.dev:27017' host into replica set as replica via SSL
+- mongodb_replication: replica_set=replSet host_name=mongo4.dev host_port=27017 ssl=True state=present
 
-# add a user to database in a replica set, the primary server is automatically discovered and written to
-- mongodb_user: database=burgers name=bob replica_set=blecher password=12345 roles='readWriteAnyDatabase' state=present
+# Remove 'mongo4.dev:27017' host from the replica set
+- mongodb_replication: replica_set=replSet host_name=mongo4.dev host_port=27017 state=absent
 '''
 
 import ConfigParser
@@ -278,6 +267,7 @@ def main():
             if state == 'present':
                 config = { '_id': "{0}".format(replica_set), 'members': [{ '_id': 0, 'host': "{0}:{1}".format(host_name, host_port)}] }
                 client['admin'].command('replSetInitiate', config)
+                time.sleep(3)
                 replica_set_created = True
                 module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
         except OperationFailure, e:
