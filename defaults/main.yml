@@ -1,11 +1,8 @@
 ---
 
-mongodb_enabled: true
-
 mongodb_package: mongodb-org
 
 mongodb_additional_packages:
-- python-selinux
 - python-pymongo
 
 mongodb_user: mongodb
@@ -35,11 +32,6 @@ mongodb_conf_replSet:                             # Enable replication <setname>
 mongodb_conf_replIndexPrefetch: "all"             # specify index prefetching behavior (if secondary) [none|_id_only|all]
 mongodb_conf_oplogSize: 512                       # specifies a maximum size in megabytes for the replication operation log
 mongodb_conf_keyFile: /etc/mongodb-keyfile        # Specify path to keyfile with password for inter-process authentication
-
-mongodb_shell: {}                                 # Define mongo shell commands to run
-                                                  # Syntax: mongodb_shell:
-                                                  #          dbname:
-                                                  #           - db.setProfilingLevel(1, 50)
 
 # MMS Agent
 mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_1.4.2.783-1_amd64.deb
