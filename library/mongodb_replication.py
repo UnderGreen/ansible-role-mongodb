@@ -106,6 +106,7 @@ try:
     from pymongo.errors import ConnectionFailure
     from pymongo.errors import OperationFailure
     from pymongo.errors import ConfigurationError
+    from pymongo.errors import AutoReconnect
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
     from pymongo import MongoReplicaSetClient
@@ -145,48 +146,62 @@ def check_members(state, module, client, host_name, host_port, host_type):
                 if "{0}:{1}".format(host_name, host_port) not in member['host'] and member['arbiterOnly']:
                     module.exit_json(changed=False, host_name=host_name, host_port=host_port, host_type=host_type)
 
-def add_host(module, client, host_name, host_port, host_type):
-    admin_db = client['admin']
-    local_db = client['local']
+def add_host(module, client, host_name, host_port, host_type, timeout=180):
+    while True:
+        try:
+            admin_db = client['admin']
+            local_db = client['local']
 
-    if local_db.system.replset.count() > 1:
-        module.fail_json(msg='local.system.replset has unexpected contents')
+            if local_db.system.replset.count() > 1:
+                module.fail_json(msg='local.system.replset has unexpected contents')
 
-    cfg = local_db.system.replset.find_one()
-    if not cfg:
-        module.fail_json(msg='no config object retrievable from local.system.replset')
+            cfg = local_db.system.replset.find_one()
+            if not cfg:
+                module.fail_json(msg='no config object retrievable from local.system.replset')
 
-    cfg['version'] += 1
-    max_id = max(cfg['members'], key=lambda x:x['_id'])
-    new_host = { '_id': max_id['_id'] + 1, 'host': "{0}:{1}".format(host_name, host_port) }
-    if host_type == 'arbiter':
-        new_host['arbiterOnly'] = True
+            cfg['version'] += 1
+            max_id = max(cfg['members'], key=lambda x:x['_id'])
+            new_host = { '_id': max_id['_id'] + 1, 'host': "{0}:{1}".format(host_name, host_port) }
+            if host_type == 'arbiter':
+                new_host['arbiterOnly'] = True
 
-    cfg['members'].append(new_host)
-    admin_db.command('replSetReconfig', cfg)
+            cfg['members'].append(new_host)
+            admin_db.command('replSetReconfig', cfg)
+            return
+        except (OperationFailure, AutoReconnect) as e:
+            timeout = timeout - 5
+            if timeout <= 0:
+                module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
+            time.sleep(5)
 
-def remove_host(module, client, host_name):
-    admin_db = client['admin']
-    local_db = client['local']
+def remove_host(module, client, host_name, timeout=180):
+    while True:
+        try:
+            admin_db = client['admin']
+            local_db = client['local']
 
-    if local_db.system.replset.count() > 1:
-        module.fail_json(msg='local.system.replset has unexpected contents')
+            if local_db.system.replset.count() > 1:
+                module.fail_json(msg='local.system.replset has unexpected contents')
 
-    cfg = local_db.system.replset.find_one()
-    if not cfg:
-        module.fail_json(msg='no config object retrievable from local.system.replset')
+            cfg = local_db.system.replset.find_one()
+            if not cfg:
+                module.fail_json(msg='no config object retrievable from local.system.replset')
 
-    cfg['version'] += 1
+            cfg['version'] += 1
 
-    if len(cfg['members']) == 1:
-        module.fail_json(msg="You can't delete last member of replica set")
-    for member in cfg['members']:
-        if host_name in member['host']:
-            cfg['members'].remove(member)
-        else:
-            fail_msg = "couldn't find member with hostname: {0} in replica set members list".format(host_name)
-            module.fail_json(msg=fail_msg)
-    admin_db.command('replSetReconfig', cfg)
+            if len(cfg['members']) == 1:
+                module.fail_json(msg="You can't delete last member of replica set")
+            for member in cfg['members']:
+                if host_name in member['host']:
+                    cfg['members'].remove(member)
+                else:
+                    fail_msg = "couldn't find member with hostname: {0} in replica set members list".format(host_name)
+                    module.fail_json(msg=fail_msg)
+        except (OperationFailure, AutoReconnect) as e:
+            timeout = timeout - 5
+            if timeout <= 0:
+                module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
+            time.sleep(5)
 
 def load_mongocnf():
     config = ConfigParser.RawConfigParser()
@@ -202,6 +217,30 @@ def load_mongocnf():
         return False
 
     return creds
+
+def wait_for_ok_and_master(module, client, timeout = 60):
+    while True:
+        status = client.admin.command('replSetGetStatus', check=False)
+        if status['ok'] == 1 and status['myState'] == 1:
+            return
+
+        timeout = timeout - 1
+        if timeout == 0:
+            module.fail_json(msg='reached timeout while waiting for rs.status() to become ok=1')
+
+        time.sleep(1)
+
+def reconfigure(module,client, rs_config, timeout = 180):
+    while True:
+        try:
+            client['admin'].command('replSetReconfig', rs_config)
+            return
+        except (OperationFailure, AutoReconnect) as e:
+            print e
+            timeout = timeout - 5
+            if timeout <= 0:
+                module.fail_json(msg='reached timeout while waiting for rs.reconfig()')
+            time.sleep(5)
 
 def authenticate(client, login_user, login_password):
     if login_user is None and login_password is None:
@@ -267,7 +306,7 @@ def main():
             if state == 'present':
                 config = { '_id': "{0}".format(replica_set), 'members': [{ '_id': 0, 'host': "{0}:{1}".format(host_name, host_port)}] }
                 client['admin'].command('replSetInitiate', config)
-                time.sleep(3)
+                wait_for_ok_and_master(module, client)
                 replica_set_created = True
                 module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
         except OperationFailure, e:
