@@ -2,6 +2,22 @@
 
 - include_vars: "{{ansible_distribution}}.yml"
 
+- name: Check if systemd is present
+  stat: path=/lib/systemd/system/
+  register: systemd
+
+- name: Add systemd configuration if present
+  copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640
+  when: systemd.stat.exists == true
+
+- name: Add symlink for systemd
+  file: src=/lib/systemd/system/mongodb.service dest=/etc/systemd/system/multi-user.target.wants/mongodb.service state=link
+  when: systemd.stat.exists == true
+  notify: reload systemd
+
+- meta: flush_handlers
+  when: systemd.stat.exists == true
+
 - name: Add APT key
   apt_key: url=http://docs.mongodb.org/10gen-gpg-key.asc id=7F0CEB10
   when: '"mongodb-org" in mongodb_package'
@@ -12,6 +28,9 @@
 
 - name: Install MongoDB package
   apt: pkg={{mongodb_package}} state=present
+  notify: reload systemd
+
+- meta: flush_handlers
 
 - name: Install additional packages
   apt: pkg={{item}}

@@ -1,0 +1,10 @@
+[Unit]
+Description=An object/document-oriented database
+Documentation=man:mongod(1)
+
+[Service]
+User=mongodb
+ExecStart=/usr/bin/mongod --config /etc/mongodb.conf
+
+[Install]
+WantedBy=multi-user.target
