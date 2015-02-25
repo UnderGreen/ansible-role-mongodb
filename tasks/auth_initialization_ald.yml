@@ -41,3 +41,4 @@
     login_password: "{{ mongodb_user_admin_password }}"
   with_items:
     - "{{ mongodb_users }}"
+  when: mongodb_users is defined
