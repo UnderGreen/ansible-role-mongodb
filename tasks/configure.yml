@@ -13,17 +13,12 @@
   template: src=logrotate.conf.j2 dest=/etc/logrotate.d/mongodb.conf
   when: mongodb_logrotate
 
-#- name: reload systemd
-#  shell: systemctl daemon-reload
-#  when: systemd.stat.exists == true
-#  changed_when: false
-
 - name: ensure mongodb started and enabled
   service: name={{ mongodb_daemon_name }} state=started enabled=yes
 
 - name: wait MongoDB port is listening
-  wait_for: host="{{ mongodb_conf_bind_ip }}"port="{{ mongodb_conf_port }}" delay=5 state=started
-  when: systemd.stat.exists == true
+  wait_for: host="{{ mongodb_conf_bind_ip }}"port="{{ mongodb_conf_port }}" delay=10 timeout=60 state=started
+  #when: systemd.stat.exists == true
 
 - include: auth_initialization.yml
   when: mongodb_conf_auth
