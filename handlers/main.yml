@@ -11,3 +11,4 @@
 
 - name: reload systemd
   shell: systemctl daemon-reload
+  when: systemd.stat.exists == true

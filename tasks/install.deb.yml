@@ -3,7 +3,7 @@
 - include_vars: "{{ansible_distribution}}.yml"
 
 - name: Check if systemd is present
-  stat: path=/lib/systemd/system/
+  stat: path=/bin/systemd
   register: systemd
 
 - name: Add systemd configuration if present
@@ -28,9 +28,11 @@
 
 - name: Install MongoDB package
   apt: pkg={{mongodb_package}} state=present
-  notify: reload systemd
 
-- meta: flush_handlers
+- name: reload systemd
+  shell: systemctl daemon-reload
+  changed_when: false
+  when: systemd.stat.exists == true
 
 - name: Install additional packages
   apt: pkg={{item}}
