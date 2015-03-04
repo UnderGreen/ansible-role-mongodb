@@ -2,11 +2,15 @@
 
 - include: install.deb.yml
   when: ansible_os_family == 'Debian'
+  tags: [mongodb]
 
 - include: configure.yml
+  tags: [mongodb]
 
 - include: replication.yml
   when: mongodb_conf_replSet != ""
+  tags: [mongodb]
 
 - include: mms-agent.yml
   when: mongodb_mms_api_key != ""
+  tags: [mongodb]
