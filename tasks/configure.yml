@@ -18,7 +18,7 @@
 
 - name: wait MongoDB port is listening
   wait_for: host="{{ mongodb_conf_bind_ip }}"port="{{ mongodb_conf_port }}" delay=10 timeout=60 state=started
-  #when: systemd.stat.exists == true
+  when: "'systemd' in systemd.stdout"
 
 - include: auth_initialization.yml
   when: mongodb_conf_auth
