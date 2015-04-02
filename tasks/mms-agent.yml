@@ -17,3 +17,4 @@
 
 - name: Ensure that the MMS agent is started
   service: name=mongodb-mms-automation-agent state=started enabled=yes
+  when: mongodb_manager_service

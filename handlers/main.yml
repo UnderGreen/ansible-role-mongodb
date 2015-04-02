@@ -2,13 +2,16 @@
 
 - name: mongodb reload
   service: name={{ mongodb_daemon_name }} state=reloaded
+  when: mongodb_manager_service
 
 - name: mongodb restart
   service: name={{ mongodb_daemon_name }} state=restarted
+  when: mongodb_manager_service
 
 - name: mongodb-mms-automation-agent restart
   service: name=mongodb-mms-automation-agent state=restarted
+  when: mongodb_manager_service
 
 - name: reload systemd
   shell: systemctl daemon-reload
-  when: systemd.stat.exists == true
+  when: systemd.stat.exists == true and mongodb_manager_service
