@@ -15,6 +15,8 @@ mongodb_package: mongodb-org
 mongodb_additional_packages:
 - python-pymongo
 
+mongodb_manager_service: true
+
 mongodb_user: mongodb
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 

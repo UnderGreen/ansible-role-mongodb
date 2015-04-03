@@ -15,6 +15,7 @@
 
 - name: ensure mongodb started and enabled
   service: name={{ mongodb_daemon_name }} state=started enabled=yes
+  when: mongodb_manager_service
 
 - name: wait MongoDB port is listening
   wait_for: host="{{ mongodb_conf_bind_ip }}"port="{{ mongodb_conf_port }}" delay=10 timeout=60 state=started
@@ -38,4 +39,4 @@
 
 - name: mongodb restart
   service: name={{ mongodb_daemon_name }} state=restarted
-  when: config_result|changed
+  when: config_result|changed and mongodb_manager_service
