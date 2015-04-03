@@ -16,7 +16,9 @@ noscripting = {{ mongodb_conf_noscripting|to_nice_json }}
 notablescan = {{ mongodb_conf_notablescan|to_nice_json }}
 port = {{ mongodb_conf_port }}
 quota = {{ mongodb_conf_quota|to_nice_json }}
+{% if mongodb_conf_quota %}
 quotaFiles = {{ mongodb_conf_quotaFiles }}
+{% endif %}
 syslog = {{ mongodb_conf_syslog|to_nice_json }}
 smallfiles = {{ mongodb_conf_smallfiles|to_nice_json }}
 
