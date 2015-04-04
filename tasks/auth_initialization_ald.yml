@@ -1,10 +1,11 @@
+---
 - name: create administrative user siteUserAdmin port=yes
   mongodb_user:
     database: admin
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_iface }}"
     login_port: "{{ ansible_local.mongodb.mongodb.mongodb_login_port }}"
   with_items:
     - {
@@ -19,7 +20,7 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_iface }}"
     login_port: "{{ ansible_local.mongodb.mongodb.mongodb_login_port }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
@@ -30,14 +31,14 @@
       roles: "root"
       }
 
-- name: create normal users
+- name: create normal users port=yes
   mongodb_user:
     database: "{{ item.database }}"
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     replica_set: "{{ mongodb_conf_replSet }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_iface }}"
     login_port: "{{ ansible_local.mongodb.mongodb.mongodb_login_port }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"

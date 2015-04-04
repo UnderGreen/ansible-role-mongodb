@@ -9,7 +9,7 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_iface }}"
   with_items:
     - {
       name: "{{ mongodb_user_admin_name }}",
@@ -25,7 +25,7 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_iface }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
   with_items:
@@ -44,7 +44,7 @@
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     replica_set: "{{ mongodb_conf_replSet }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_iface }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
   with_items:
@@ -56,10 +56,11 @@
     state: directory
     recurse: yes
     path: /etc/ansible/facts.d
-  when: rootadmin_user_result|changed or useradmin_user_result|changed
+  when: (ansible_local.mongodb.mongodb.mongodb_login_port is undefined) and (rootadmin_user_result|changed or useradmin_user_result|changed or config_result|changed)
 
 - name: Create facts file for mongodb
   copy:
     dest: /etc/ansible/facts.d/mongodb.fact
-    content: "[mongodb]\nmongodb_login_port={{ mongodb_conf_port }}\n\n"
-  when: rootadmin_user_result|changed or useradmin_user_result|changed
+    content: "[mongodb]\nmongodb_login_port={{ mongodb_conf_port }}\nmongodb_listen_iface={{ mongodb_conf_bind_ip }}\n"
+  when: (ansible_local.mongodb.mongodb.mongodb_login_port is undefined) and (rootadmin_user_result|changed or useradmin_user_result|changed or config_result|changed)
+

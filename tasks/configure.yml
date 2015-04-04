@@ -1,4 +1,12 @@
 ---
+- name: Register default MongoDB listen interface
+  set_fact: mongodb_listen_iface=127.0.0.1
+  when: ansible_local.mongodb.mongodb.mongodb_listen_iface is undefined
+
+- name: Register MongoDB listen interface
+  set_fact: mongodb_listen_iface={{ ansible_local.mongodb.mongodb.mongodb_listen_iface }}
+  when: ansible_local.mongodb.mongodb.mongodb_listen_iface is defined
+
 
 - name: Create keyFile
   copy:
@@ -17,8 +25,8 @@
   service: name={{ mongodb_daemon_name }} state=started enabled=yes
 
 - name: wait MongoDB port is listening
-  wait_for: host="{{ mongodb_conf_bind_ip }}"port="{{ mongodb_conf_port }}" delay=10 timeout=60 state=started
-  when: "'systemd' in systemd.stdout"
+  wait_for: host="{{ mongodb_listen_iface }}" port="{{ mongodb_conf_port }}" delay=5 timeout=60 state=started
+  #when: "'systemd' in systemd.stdout" #TODO Why only with systemd?
 
 - include: auth_initialization.yml
   when: mongodb_conf_auth
@@ -29,11 +37,17 @@
 - name: Configure database directory
   file: state=directory path={{ mongodb_conf_dbpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0755
 
-- name: Configure logs
-  file: state=file path={{ mongodb_conf_logpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0644
+- name: Create log dir if missing
+  file: state=directory recurse=yes dest={{ mongodb_conf_logpath|dirname }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
+
+- name: Create log if missing
+  file: state=touch dest={{ mongodb_conf_logpath }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
+
+- name: Configure log file
+  file: state=file path={{ mongodb_conf_logpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0755
 
 - name: Configure mongodb
-  template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
+  template: src=mongod.conf.j2 dest=/etc/mongod.conf backup=yes owner=root group=root mode=0644
   register: config_result
 
 - name: mongodb restart
