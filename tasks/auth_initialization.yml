@@ -9,7 +9,7 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_ip }}"
   with_items:
     - {
       name: "{{ mongodb_user_admin_name }}",
@@ -25,7 +25,7 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_ip }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
   with_items:
@@ -44,7 +44,7 @@
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     replica_set: "{{ mongodb_conf_replSet }}"
-    login_host: 127.0.0.1
+    login_host: "{{ mongodb_listen_ip }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
   with_items:
@@ -52,14 +52,10 @@
   when: mongodb_users is defined and ansible_local.mongodb.mongodb.mongodb_login_port is undefined
 
 - name: Create facts.d directory
-  file:
-    state: directory
-    recurse: yes
-    path: /etc/ansible/facts.d
-  when: rootadmin_user_result|changed or useradmin_user_result|changed
+  file: path=/etc/ansible/facts.d state=directory recurse=yes
+  when: (ansible_local.mongodb.mongodb.mongodb_login_port is undefined) and (rootadmin_user_result|changed or useradmin_user_result|changed or config_result|changed)
 
 - name: Create facts file for mongodb
-  copy:
-    dest: /etc/ansible/facts.d/mongodb.fact
-    content: "[mongodb]\nmongodb_login_port={{ mongodb_conf_port }}\n\n"
-  when: rootadmin_user_result|changed or useradmin_user_result|changed
+  template: src=mongodb.fact.j2 dest=/etc/ansible/facts.d/mongodb.fact
+  when: (ansible_local.mongodb.mongodb.mongodb_login_port is undefined) and (rootadmin_user_result|changed or useradmin_user_result|changed or config_result|changed)
+
