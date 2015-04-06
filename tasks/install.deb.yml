@@ -34,6 +34,18 @@
   changed_when: false
   when: "'systemd' in systemd.stdout"
 
-- name: Install additional packages
-  apt: pkg={{item}}
-  with_items: mongodb_additional_packages
+- name: Install PyMongo package
+  apt: pkg=python-pymongo state=latest
+  when: not mongodb_pymongo_from_pip
+
+- name: Install PIP
+  apt: pkg={{ item }}
+  with_items:
+    - python-dev
+    - python-pip
+  when: mongodb_pymongo_from_pip
+
+- name: Install PyMongo from PIP
+  pip: name=pymongo state=latest
+  when: mongodb_pymongo_from_pip
+
