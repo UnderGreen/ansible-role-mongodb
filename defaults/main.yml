@@ -1,6 +1,7 @@
 ---
 
 mongodb_package: mongodb-org
+mongodb_force_wait_for_port: false
 
 mongodb_additional_packages:
 - python-pymongo

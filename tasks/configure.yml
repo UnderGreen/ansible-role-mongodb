@@ -1,11 +1,11 @@
 ---
-- name: Register default MongoDB listen interface
-  set_fact: mongodb_listen_iface=127.0.0.1
-  when: ansible_local.mongodb.mongodb.mongodb_listen_iface is undefined
+- name: Register default MongoDB listen IP
+  set_fact: mongodb_listen_ip=127.0.0.1
+  when: ansible_local.mongodb.mongodb.mongodb_listen_ip is undefined
 
-- name: Register MongoDB listen interface
-  set_fact: mongodb_listen_iface={{ ansible_local.mongodb.mongodb.mongodb_listen_iface }}
-  when: ansible_local.mongodb.mongodb.mongodb_listen_iface is defined
+- name: Register MongoDB listen IP
+  set_fact: mongodb_listen_ip={{ ansible_local.mongodb.mongodb.mongodb_listen_ip }}
+  when: ansible_local.mongodb.mongodb.mongodb_listen_ip is defined
 
 
 - name: Create keyFile
@@ -25,8 +25,8 @@
   service: name={{ mongodb_daemon_name }} state=started enabled=yes
 
 - name: wait MongoDB port is listening
-  wait_for: host="{{ mongodb_listen_iface }}" port="{{ mongodb_conf_port }}" delay=5 timeout=60 state=started
-  #when: "'systemd' in systemd.stdout" #TODO Why only with systemd?
+  wait_for: host="{{ mongodb_listen_ip }}" port="{{ mongodb_conf_port }}" delay=10 timeout=60 state=started
+  when: mongodb_force_wait_for_port or "'systemd' in systemd.stdout"
 
 - include: auth_initialization.yml
   when: mongodb_conf_auth
