@@ -38,7 +38,7 @@
   apt: pkg=python-pymongo state=latest
   when: not mongodb_pymongo_from_pip
 
-- name: Install PIP dependencies
+- name: Install PIP
   apt: pkg={{ item }}
   with_items:
     - python-dev
