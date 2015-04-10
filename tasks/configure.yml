@@ -1,4 +1,5 @@
 ---
+
 - name: Register default MongoDB listen IP
   set_fact: mongodb_listen_ip=127.0.0.1
   when: ansible_local.mongodb.mongodb.mongodb_listen_ip is undefined
@@ -6,7 +7,6 @@
 - name: Register MongoDB listen IP
   set_fact: mongodb_listen_ip={{ ansible_local.mongodb.mongodb.mongodb_listen_ip }}
   when: ansible_local.mongodb.mongodb.mongodb_listen_ip is defined
-
 
 - name: Create keyFile
   copy:
@@ -23,7 +23,16 @@
 
 - name: ensure mongodb started and enabled
   service: name={{ mongodb_daemon_name }} state=started enabled=yes
-  when: mongodb_manager_service
+  when: mongodb_manage_service
+
+- name: get pid of mongod
+  command: pidof mongod
+  register: mongod_pid
+  ignore_errors: True
+
+- name: temporary start mongod if not started
+  command: '/usr/bin/mongod --config /etc/mongod.conf --fork'
+  when: mongod_pid.rc != 0
 
 - name: wait MongoDB port is listening
   wait_for: host="{{ mongodb_listen_ip }}" port="{{ mongodb_conf_port }}" delay=10 timeout=60 state=started
@@ -51,6 +60,15 @@
   template: src=mongod.conf.j2 dest=/etc/mongod.conf backup=yes owner=root group=root mode=0644
   register: config_result
 
+- name: get pid of mongod
+  command: pidof mongod
+  register: mongod_new_pid
+  when: mongod_pid.rc != 0
+
+- name: kill temporary mongod if started
+  command: kill {{ mongod_new_pid.stdout }}
+  when: mongod_pid.rc != 0
+
 - name: mongodb restart
   service: name={{ mongodb_daemon_name }} state=restarted
-  when: config_result|changed and mongodb_manager_service
+  when: config_result|changed and mongodb_manage_service
