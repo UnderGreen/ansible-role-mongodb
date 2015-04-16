@@ -14,6 +14,7 @@ mongodb_package: mongodb-org
 
 mongodb_force_wait_for_port: false                # When not forced, the role will wait for mongod port to become available only with systemd
 mongodb_pymongo_from_pip: false                   # Install latest PyMongo via PIP or package manager
+mongodb_disable_thp: true
 
 mongodb_manage_service: true
 
