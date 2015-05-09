@@ -8,6 +8,8 @@ mongodb_disable_thp: true
 mongodb_manage_service: true
 
 mongodb_user: mongodb
+mongodb_uid:
+mongodb_gid:
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
 mongodb_conf_auth: false                          # Run with security
