@@ -1,5 +1,13 @@
 ---
 
+- name: set mongodb gid
+  group: name=mongodb gid={{ mongodb_gid }} state=present
+  when: mongodb_gid
+
+- name: set mongodb uid
+  user: name=mongodb uid={{ mongodb_uid }} group=mongodb state=present
+  when: mongodb_uid
+
 - name: Register default MongoDB listen IP
   set_fact: mongodb_listen_ip=127.0.0.1
   when: ansible_local.mongodb.mongodb.mongodb_listen_ip is undefined
