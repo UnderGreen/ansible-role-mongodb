@@ -8,6 +8,10 @@
   user: name=mongodb uid={{ mongodb_uid }} group=mongodb state=present
   when: mongodb_uid
 
+- name: reset mongodb folder and subfolders with new uid
+  file: path={{ mongodb_conf_dbpath }} owner=mongodb group=mongodb follow=yes recurse=yes state=directory
+  when: mongodb_uid
+
 - name: Register default MongoDB listen IP
   set_fact: mongodb_listen_ip=127.0.0.1
   when: ansible_local.mongodb.mongodb.mongodb_listen_ip is undefined
