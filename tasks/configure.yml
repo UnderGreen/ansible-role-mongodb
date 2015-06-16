@@ -75,17 +75,19 @@
   template: src=mongod.conf.j2 dest=/etc/mongod.conf backup=yes owner=root group=root mode=0644
   register: config_result
 
-- name: Install disable_thp script
-  copy: src=disable_thp.sh dest=/usr/local/bin/disable_thp.sh mode='u=rwx,g=rx,o=rx'
+- name: Install sysfsutils package
+  apt: name=sysfsutils state=present
   when: ansible_os_family == 'Debian' and mongodb_disable_thp
 
-- name: Disable Linux transparent hugepages now
-  command: /usr/local/bin/disable_thp.sh
+- name: Create sysfs config
+  copy:
+    src: hugepages.conf
+    dest: /etc/sysfs.d/hugepages.conf
+    owner: root
+    group: root
+    mode: 0644
   when: ansible_os_family == 'Debian' and mongodb_disable_thp
-
-- name: Disable Linux transparent hugepages on boot
-  lineinfile: dest=/etc/rc.local regexp='/usr/local/bin/disable_thp.sh' line='if test -f '/usr/local/bin/disable_thp.sh'; /usr/local/bin/disable_thp.sh; fi'
-  when: ansible_os_family == 'Debian' and mongodb_disable_thp
+  notify: restart sysfsutils
 
 - name: get pid of mongod
   command: pidof mongod

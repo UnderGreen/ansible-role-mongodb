@@ -15,3 +15,6 @@
 - name: reload systemd
   shell: systemctl daemon-reload
   when: systemd.stat.exists == true and mongodb_manage_service
+
+- name: restart sysfsutils
+  service: name=sysfsutils state=restarted
