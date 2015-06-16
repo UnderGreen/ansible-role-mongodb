@@ -63,11 +63,13 @@
 - name: Create log dir if missing
   file: state=directory recurse=yes dest={{ mongodb_conf_logpath|dirname }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
 
+- name: Check than logfile exists
+  stat: path={{ mongodb_conf_logpath }}
+  register: logfile_stat
+
 - name: Create log if missing
   file: state=touch dest={{ mongodb_conf_logpath }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
-
-- name: Configure log file
-  file: state=file path={{ mongodb_conf_logpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0755
+  when: logfile_stat is defined and not logfile_stat.stat.exists
 
 - name: Configure mongodb
   template: src=mongod.conf.j2 dest=/etc/mongod.conf backup=yes owner=root group=root mode=0644
