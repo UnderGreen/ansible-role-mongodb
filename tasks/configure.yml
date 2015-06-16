@@ -40,6 +40,7 @@
 - name: get pid of mongod
   command: pidof mongod
   register: mongod_pid
+  changed_when: false
   ignore_errors: True
 
 - name: temporary start mongod if not started
@@ -87,6 +88,7 @@
 - name: get pid of mongod
   command: pidof mongod
   register: mongod_new_pid
+  changed_when: false
   when: mongod_pid.rc != 0
 
 - name: kill temporary mongod if started

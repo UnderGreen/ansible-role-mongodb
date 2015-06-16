@@ -5,6 +5,7 @@
 - name: Check if running on systemd
   command: cat /proc/1/cmdline
   register: systemd
+  changed_when: false
 
 - name: Add systemd configuration if present
   copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640
