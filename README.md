@@ -115,12 +115,20 @@ mongodb_root_admin_password
 ```
 Example vars for replication:
 ```yaml
-mongodb_login_host: 192.168.56.2      # Mongodb master host
-
 # mongodb_replication_params should be configured on each replica set node
 mongodb_replication_params:
   - { host_name: 192.168.56.2, host_port: "{{ mongodb_conf_port }}", host_type: replica }
   # host_type can be replica(default) and arbiter
+```
+And inventory file for replica set:
+```ini
+[mongo_master]
+192.158.56.2 mongodb_master=True # it'n not a really master of MongoDB replica set, 
+                                 # use this variable for replica set init only
+
+[mongo_replicas]
+192.168.56.3
+192.168.56.4
 ```
 
 Licensed under the GPLv2 License. See the [LICENSE.md](LICENSE.md) file for details.
