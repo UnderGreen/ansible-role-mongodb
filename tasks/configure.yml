@@ -1,25 +1,5 @@
 ---
 
-- name: set mongodb gid
-  group: name=mongodb gid={{ mongodb_gid }} state=present
-  when: mongodb_gid
-
-- name: set mongodb uid
-  user: name=mongodb uid={{ mongodb_uid }} group=mongodb state=present
-  when: mongodb_uid
-
-- name: reset mongodb folder and subfolders with new uid
-  file: path={{ mongodb_conf_dbpath }} owner=mongodb group=mongodb follow=yes recurse=yes state=directory
-  when: mongodb_uid
-
-- name: Register default MongoDB listen IP
-  set_fact: mongodb_listen_ip=127.0.0.1
-  when: ansible_local.mongodb.mongodb.mongodb_listen_ip is undefined
-
-- name: Register MongoDB listen IP
-  set_fact: mongodb_listen_ip={{ ansible_local.mongodb.mongodb.mongodb_listen_ip }}
-  when: ansible_local.mongodb.mongodb.mongodb_listen_ip is defined
-
 - name: Create keyFile
   copy:
     dest: "{{ mongodb_conf_keyFile }}"
@@ -33,32 +13,17 @@
   template: src=logrotate.conf.j2 dest=/etc/logrotate.d/mongodb.conf
   when: mongodb_logrotate
 
-- name: ensure mongodb started and enabled
-  service: name={{ mongodb_daemon_name }} state=started enabled=yes
-  when: mongodb_manage_service
+- name: set mongodb gid
+  group: name=mongodb gid={{ mongodb_gid }} state=present
+  when: mongodb_gid
 
-- name: get pid of mongod
-  command: pidof mongod
-  register: mongod_pid
-  changed_when: false
-  ignore_errors: True
+- name: set mongodb uid
+  user: name=mongodb uid={{ mongodb_uid }} group=mongodb state=present
+  when: mongodb_uid
 
-- name: temporary start mongod if not started
-  command: '/usr/bin/mongod --config /etc/mongod.conf --fork'
-  when: mongod_pid.rc != 0
-
-- name: wait MongoDB port is listening
-  wait_for: host="{{ mongodb_listen_ip }}" port="{{ mongodb_conf_port }}" delay=10 timeout=60 state=started
-  when: mongodb_force_wait_for_port or "'systemd' in systemd.stdout"
-
-- include: auth_initialization.yml
-  when: mongodb_conf_auth
-
-- name: Create mongodb user
-  user: name={{mongodb_user}} group={{mongodb_user}}
-
-- name: Configure database directory
-  file: state=directory path={{ mongodb_conf_dbpath }} owner={{mongodb_user}} group={{mongodb_user}} mode=0755
+- name: reset mongodb folder and subfolders with new uid
+  file: path={{ mongodb_conf_dbpath }} owner=mongodb group=mongodb follow=yes recurse=yes state=directory
+  when: mongodb_uid
 
 - name: Create log dir if missing
   file: state=directory recurse=yes dest={{ mongodb_conf_logpath|dirname }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
@@ -88,16 +53,6 @@
     mode: 0644
   when: ansible_os_family == 'Debian' and mongodb_disable_thp
   notify: restart sysfsutils
-
-- name: get pid of mongod
-  command: pidof mongod
-  register: mongod_new_pid
-  changed_when: false
-  when: mongod_pid.rc != 0
-
-- name: kill temporary mongod if started
-  command: kill {{ mongod_new_pid.stdout }}
-  when: mongod_pid.rc != 0
 
 - name: mongodb restart
   service: name={{ mongodb_daemon_name }} state=restarted

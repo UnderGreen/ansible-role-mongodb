@@ -1,0 +1,14 @@
+---
+
+- name: create normal users
+  mongodb_user:
+    database: "{{ item.database }}"
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    roles: "{{ item.roles }}"
+    replica_set: "{{ mongodb_conf_replSet }}"
+    login_user: "{{ mongodb_user_admin_name }}"
+    login_password: "{{ mongodb_user_admin_password }}"
+    login_port: "{{ mongodb_conf_port }}"
+  with_items:
+    - "{{ mongodb_users }}"

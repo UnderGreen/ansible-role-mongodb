@@ -1,0 +1,33 @@
+---
+
+- name: Replication configuration
+  mongodb_replication:
+    login_host: "{{ mongodb_conf_bind_ip|default('localhost') }}"
+    login_port: "{{ mongodb_conf_port|default(27017) }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
+    replica_set: "{{ mongodb_conf_replSet }}"
+    host_name: "{{ item.host_name }}"
+    host_port: "{{ item.host_port|default(27017) }}"
+    host_type: "{{ item.host_type|default('replica') }}"
+  with_items:
+    - "{{ mongodb_replication_params }}"
+  register: mongodb_replica_init
+  ignore_errors: true
+
+- include: auth_initialization.yml
+  when: mongodb_replica_init|failed
+
+- name: Replication configuration
+  mongodb_replication:
+    login_host: "{{ mongodb_conf_bind_ip|default('localhost') }}"
+    login_port: "{{ mongodb_conf_port|default(27017) }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
+    replica_set: "{{ mongodb_conf_replSet }}"
+    host_name: "{{ item.host_name }}"
+    host_port: "{{ item.host_port|default(27017) }}"
+    host_type: "{{ item.host_type|default('replica') }}"
+  with_items:
+    - "{{ mongodb_replication_params }}"
+  when: mongodb_replica_init|failed
