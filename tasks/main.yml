@@ -20,10 +20,6 @@
   when: mongodb_conf_auth and not mongodb_conf_replSet
   tags: [mongodb]
 
-- include: user_add.yml
-  when: mongodb_conf_auth and mongodb_users
-  tags: [mongodb]
-
 - include: mms-agent.yml
   when: mongodb_mms_api_key != ""
   tags: [mongodb]
