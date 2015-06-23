@@ -1,7 +1,9 @@
 ---
+- name: Move back mongod.conf
+  template: src=mongod_init.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
 
-- include: auth_initialization_ald.yml
-  when: ansible_local.mongodb.mongodb.mongodb_login_port is defined
+- name: Restart mongodb service
+  service: name={{ mongodb_daemon_name }} state=restarted
 
 - name: create administrative user siteUserAdmin
   mongodb_user:
@@ -9,15 +11,13 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: "{{ mongodb_listen_ip }}"
+    login_port: "{{ mongodb_conf_port }}"
   with_items:
     - {
       name: "{{ mongodb_user_admin_name }}",
       password: "{{ mongodb_user_admin_password }}",
       roles: "userAdminAnyDatabase"
       }
-  register: useradmin_user_result
-  when: ansible_local.mongodb.mongodb.mongodb_login_port is undefined
 
 - name: create administrative user siteRootAdmin
   mongodb_user:
@@ -25,17 +25,13 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    login_host: "{{ mongodb_listen_ip }}"
-    login_user: "{{ mongodb_user_admin_name }}"
-    login_password: "{{ mongodb_user_admin_password }}"
+    login_port: "{{ mongodb_conf_port }}"
   with_items:
     - {
       name: "{{ mongodb_root_admin_name }}",
       password: "{{ mongodb_root_admin_password }}",
       roles: "root"
       }
-  register: rootadmin_user_result
-  when: ansible_local.mongodb.mongodb.mongodb_login_port is undefined
 
 - name: create normal users
   mongodb_user:
@@ -44,18 +40,14 @@
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
     replica_set: "{{ mongodb_conf_replSet }}"
-    login_host: "{{ mongodb_listen_ip }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
+    login_port: "{{ mongodb_conf_port }}"
   with_items:
     - "{{ mongodb_users }}"
-  when: mongodb_users is defined and ansible_local.mongodb.mongodb.mongodb_login_port is undefined
 
-- name: Create facts.d directory
-  file: path=/etc/ansible/facts.d state=directory recurse=yes
-  when: (ansible_local.mongodb.mongodb.mongodb_login_port is undefined) and (rootadmin_user_result|changed or useradmin_user_result|changed or config_result|changed)
+- name: Move back mongod.conf
+  template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
 
-- name: Create facts file for mongodb
-  template: src=mongodb.fact.j2 dest=/etc/ansible/facts.d/mongodb.fact
-  when: (ansible_local.mongodb.mongodb.mongodb_login_port is undefined) and (rootadmin_user_result|changed or useradmin_user_result|changed or config_result|changed)
-
+- name: Restart mongodb service
+  service: name={{ mongodb_daemon_name }} state=restarted

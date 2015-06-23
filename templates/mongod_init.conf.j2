@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+
+noauth = true
+bind_ip = 127.0.0.1
+cpu = {{ mongodb_conf_cpu|to_nice_json }}
+dbpath = {{ mongodb_conf_dbpath }}
+fork = {{ mongodb_conf_fork|to_nice_json }}
+httpinterface = {{ mongodb_conf_httpinterface|to_nice_json }}
+ipv6 = {{ mongodb_conf_ipv6|to_nice_json }}
+journal = {{ mongodb_conf_journal|to_nice_json }}
+logappend = {{ mongodb_conf_logappend|to_nice_json }}
+logpath = {{ mongodb_conf_logpath }}
+maxConns = {{ mongodb_conf_maxConns }}
+noprealloc = {{ mongodb_conf_noprealloc|to_nice_json }}
+noscripting = {{ mongodb_conf_noscripting|to_nice_json }}
+notablescan = {{ mongodb_conf_notablescan|to_nice_json }}
+port = {{ mongodb_conf_port }}
+quota = {{ mongodb_conf_quota|to_nice_json }}
+{% if mongodb_conf_quota %}
+quotaFiles = {{ mongodb_conf_quotaFiles }}
+{% endif %}
+syslog = {{ mongodb_conf_syslog|to_nice_json }}
+smallfiles = {{ mongodb_conf_smallfiles|to_nice_json }}
