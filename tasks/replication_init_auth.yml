@@ -2,7 +2,7 @@
 
 - name: Replication configuration
   mongodb_replication:
-    login_host: "{{ mongodb_conf_bind_ip|default('localhost') }}"
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
     login_port: "{{ mongodb_conf_port|default(27017) }}"
     login_user: "{{ mongodb_root_admin_name }}"
     login_password: "{{ mongodb_root_admin_password }}"
@@ -20,7 +20,7 @@
 
 - name: Replication configuration
   mongodb_replication:
-    login_host: "{{ mongodb_conf_bind_ip|default('localhost') }}"
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
     login_port: "{{ mongodb_conf_port|default(27017) }}"
     login_user: "{{ mongodb_root_admin_name }}"
     login_password: "{{ mongodb_root_admin_password }}"
