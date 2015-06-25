@@ -45,6 +45,7 @@
     login_port: "{{ mongodb_conf_port }}"
   with_items:
     - "{{ mongodb_users }}"
+  when: mongodb_users
 
 - name: Move back mongod.conf
   template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
