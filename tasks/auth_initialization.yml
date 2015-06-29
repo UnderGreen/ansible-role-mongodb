@@ -4,6 +4,17 @@
 
 - name: Restart mongodb service
   service: name={{ mongodb_daemon_name }} state=restarted
+  when: mongodb_manage_service
+
+- name: get pid of mongodb for non daemon mode
+  shell: "pidof mongod"
+  register: pidof_mongod
+  when: mongodb_manage_service == false
+  ignore_errors: yes
+
+- name: start mongodb daemon
+  shell: "LC_ALL=C /usr/bin/mongod --config /etc/mongod.conf --fork"
+  when: mongodb_manage_service == false and pidof_mongod.rc == 1
 
 - name: create administrative user siteUserAdmin
   mongodb_user:
@@ -52,3 +63,8 @@
 
 - name: Restart mongodb service
   service: name={{ mongodb_daemon_name }} state=restarted
+  when: mongodb_manage_service
+
+- name: stop mongodb if was not started
+  shell: "kill {{ pidof_mongod.stdout }}"
+  when: mongodb_manage_service == false and pidof_mongod.rc == 0
