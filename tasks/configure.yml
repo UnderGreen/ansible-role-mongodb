@@ -44,6 +44,15 @@
   apt: name=sysfsutils state=present
   when: ansible_os_family == 'Debian' and mongodb_disable_thp
 
+- name: Create /etc/sysfs.d direcroty
+  file:
+    path: /etc/sysfs.d
+    group: root
+    state: directory
+    mode: 0755
+    owner: root
+  when: ansible_os_family == 'Debian' and mongodb_disable_thp
+
 - name: Create sysfs config
   copy:
     src: hugepages.conf
