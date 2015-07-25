@@ -27,6 +27,9 @@
   apt_repository: repo="{{mongodb_repository}}" update_cache=yes
   when: '"mongodb-org" in mongodb_package'
 
+- name: Endure /data directory
+  file: path=/data/db state=directory owner=mongodb recurse=yes
+
 - name: Install MongoDB package
   apt: name={{item}} state=present
   with_items:
