@@ -20,12 +20,10 @@
   when: "'systemd' in systemd.stdout"
 
 - name: Add APT key
-  apt_key: url=http://docs.mongodb.org/10gen-gpg-key.asc id=7F0CEB10
-  when: '"mongodb-org" in mongodb_package'
+  apt_key: url="{{mongodb_apt_key_url}}" id="{{mongodb_apt_key_id}}"
 
 - name: Add APT repository
   apt_repository: repo="{{mongodb_repository}}" update_cache=yes
-  when: '"mongodb-org" in mongodb_package'
 
 - name: Endure /data directory
   file: path=/data/db state=directory owner=mongodb recurse=yes
