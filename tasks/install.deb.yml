@@ -25,7 +25,7 @@
 - name: Add APT repository
   apt_repository: repo="{{mongodb_repository}}" update_cache=yes
 
-- name: Endure /data directory
+- name: Ensure /data directory
   file: path=/data/db state=directory owner=mongodb recurse=yes
 
 - name: Install MongoDB package
