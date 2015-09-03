@@ -31,8 +31,8 @@
     - "{{mongodb_package}}"
     - numactl
 
-- name: Ensure /data directory
-  file: path=/data/db state=directory owner=mongodb recurse=yes
+- name: Ensure dbpath directory
+  file: path={{mongodb_conf_dbpath}} state=directory owner=mongodb recurse=yes
 
 - name: reload systemd
   shell: systemctl daemon-reload
