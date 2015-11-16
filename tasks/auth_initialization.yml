@@ -50,13 +50,12 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     roles: "{{ item.roles }}"
-    replica_set: "{{ mongodb_conf_replSet }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
     login_port: "{{ mongodb_conf_port }}"
   with_items:
     - "{{ mongodb_users }}"
-  when: mongodb_users
+  when: mongodb_users is defined and mongodb_users
 
 - name: Move back mongod.conf
   template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
