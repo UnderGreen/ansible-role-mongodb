@@ -7,7 +7,7 @@
   when: mongodb_manage_service
 
 - name: wait MongoDB port is listening
-  wait_for: host="{{ mongodb_conf_bind_ip }}"port="{{ mongodb_conf_port }}" delay=5 state=started
+  wait_for: host=127.0.0.1 port="{{ mongodb_conf_port }}" delay=5 state=started
 
 - name: get pid of mongodb for non daemon mode
   shell: "pidof mongod"
@@ -68,7 +68,7 @@
   when: mongodb_manage_service
 
 - name: wait MongoDB port is listening
-  wait_for: host="{{ mongodb_conf_bind_ip }}"port="{{ mongodb_conf_port }}" delay=5 state=started
+  wait_for: host="{{ mongodb_conf_bind_ip }}" port="{{ mongodb_conf_port }}" delay=5 state=started
 
 - name: stop mongodb if was not started
   shell: "kill {{ pidof_mongod.stdout }}"
