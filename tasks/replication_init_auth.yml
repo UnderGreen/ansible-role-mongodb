@@ -1,5 +1,4 @@
 ---
-
 - name: Replication configuration
   mongodb_replication:
     login_host: "{{ mongodb_login_host|default('localhost') }}"
@@ -10,6 +9,8 @@
     host_name: "{{ item.host_name }}"
     host_port: "{{ item.host_port|default(27017) }}"
     host_type: "{{ item.host_type|default('replica') }}"
+    hidden: "{{ item.hidden|default(false) }}"
+    priority: "{{ item.priority|default(1.0) }}"
   with_items:
     - "{{ mongodb_replication_params }}"
   register: mongodb_replica_init
@@ -28,6 +29,8 @@
     host_name: "{{ item.host_name }}"
     host_port: "{{ item.host_port|default(27017) }}"
     host_type: "{{ item.host_type|default('replica') }}"
+    hidden: "{{ item.hidden|default(false) }}"
+    priority: "{{ item.priority|default(1.0) }}"
   with_items:
     - "{{ mongodb_replication_params }}"
   when: mongodb_replica_init|failed

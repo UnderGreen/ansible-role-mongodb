@@ -300,8 +300,8 @@ def main():
             host_port=dict(default='27017'),
             host_type=dict(default='replica', choices=['replica','arbiter']),
             ssl=dict(default=False),
-            build_indexes = dict(type='bool', choices=BOOLEANS, default='yes'),
-            hidden = dict(type='bool', choices=BOOLEANS, default='no'),
+            build_indexes = dict(type='bool', default='yes'),
+            hidden = dict(type='bool', default='no'),
             priority = dict(default='1.0'),
             slave_delay = dict(type='int', default='0'),
             votes = dict(type='int', default='1'),
@@ -322,6 +322,7 @@ def main():
     host_type = module.params['host_type']
     ssl = module.params['ssl']
     state = module.params['state']
+    priority = float(module.params['priority'])
 
     replica_set_created = False
 
@@ -340,7 +341,9 @@ def main():
             client = MongoClient(login_host, int(login_port), ssl=ssl)
             authenticate(client, login_user, login_password)
             if state == 'present':
-                config = { '_id': "{0}".format(replica_set), 'members': [{ '_id': 0, 'host': "{0}:{1}".format(host_name, host_port)}] }
+                new_host = { '_id': 0, 'host': "{0}:{1}".format(host_name, host_port) }
+                if priority != 1.0: new_host['priority'] = priority
+                config = { '_id': "{0}".format(replica_set), 'members': [new_host] }
                 client['admin'].command('replSetInitiate', config)
                 wait_for_ok_and_master(module, client)
                 replica_set_created = True
