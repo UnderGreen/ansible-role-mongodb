@@ -10,6 +10,8 @@
     host_name: "{{ item.host_name }}"
     host_port: "{{ item.host_port|default(27017) }}"
     host_type: "{{ item.host_type|default('replica') }}"
+    hidden: "{{ item.hidden|default(false) }}"
+    priority: "{{ item.priority|default(1.0) }}"
   when: mongodb_conf_auth and mongodb_replication_params is defined
   with_items:
     - "{{ mongodb_replication_params }}"
@@ -22,6 +24,8 @@
     host_name: "{{ item.host_name }}"
     host_port: "{{ item.host_port|default(27017) }}"
     host_type: "{{ item.host_type|default('replica') }}"
+    hidden: "{{ item.hidden|default(false) }}"
+    priority: "{{ item.priority|default(1.0) }}"
   when: not mongodb_conf_auth and mongodb_replication_params is defined
   with_items:
     - "{{ mongodb_replication_params }}"
