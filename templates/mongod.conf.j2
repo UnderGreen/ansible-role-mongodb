@@ -27,5 +27,7 @@ smallfiles = {{ mongodb_conf_smallfiles|to_nice_json }}
 replSet = {{ mongodb_conf_replSet }}
 replIndexPrefetch = {{ mongodb_conf_replIndexPrefetch }}
 oplogSize = {{ mongodb_conf_oplogSize }}
+{% endif %}
+{% if mongodb_conf_replSet and mongodb_conf_auth %}
 keyFile = {{ mongodb_conf_keyFile }}
 {% endif %}
