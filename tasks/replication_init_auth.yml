@@ -11,6 +11,7 @@
     host_type: "{{ item.host_type|default('replica') }}"
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
+  when: mongodb_replication_params is defined
   with_items:
     - "{{ mongodb_replication_params }}"
   register: mongodb_replica_init
@@ -31,6 +32,7 @@
     host_type: "{{ item.host_type|default('replica') }}"
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
+  when: mongodb_replication_params is defined
   with_items:
     - "{{ mongodb_replication_params }}"
   when: mongodb_replica_init|failed
