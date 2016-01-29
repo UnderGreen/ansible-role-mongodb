@@ -13,7 +13,7 @@
     priority: "{{ item.priority|default(1.0) }}"
   when: mongodb_replication_params is defined
   with_items:
-    - "{{ mongodb_replication_params }}"
+    - "{{ mongodb_replication_params|default([]) }}"
   register: mongodb_replica_init
   ignore_errors: true
 
@@ -34,5 +34,5 @@
     priority: "{{ item.priority|default(1.0) }}"
   when: mongodb_replication_params is defined
   with_items:
-    - "{{ mongodb_replication_params }}"
+    - "{{ mongodb_replication_params|default([]) }}"
   when: mongodb_replica_init|failed
