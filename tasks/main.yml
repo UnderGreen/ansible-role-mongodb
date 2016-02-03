@@ -8,12 +8,12 @@
   tags: [mongodb]
 
 - include: replication_init_auth.yml
-  when: ( mongodb_conf_replSet is defined and mongodb_conf_auth
+  when: ( mongodb_conf_replSet and mongodb_conf_auth
         and mongodb_master is defined and mongodb_master )
   tags: [mongodb]
 
 - include: replication.yml
-  when: mongodb_conf_replSet is defined
+  when: mongodb_conf_replSet
   tags: [mongodb]
 
 - include: auth_initialization.yml
