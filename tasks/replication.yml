@@ -14,7 +14,7 @@
     priority: "{{ item.priority|default(1.0) }}"
   when: mongodb_conf_auth and mongodb_replication_params is defined
   with_items:
-    - "{{ mongodb_replication_params }}"
+    - "{{ mongodb_replication_params|default([]) }}"
 
 - name: Replication configuration without auth
   mongodb_replication:
@@ -28,4 +28,4 @@
     priority: "{{ item.priority|default(1.0) }}"
   when: not mongodb_conf_auth and mongodb_replication_params is defined
   with_items:
-    - "{{ mongodb_replication_params }}"
+    - "{{ mongodb_replication_params|default([]) }}"
