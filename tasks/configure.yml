@@ -66,3 +66,14 @@
 - name: mongodb restart
   service: name={{ mongodb_daemon_name }} state=restarted
   when: config_result|changed and mongodb_manage_service
+
+- name: Set fact about wait_for host address
+  set_fact:
+    wait_for_host: 127.0.0.1
+  when: mongodb_conf_bind_ip == "0.0.0.0"
+  
+- name: Wait when mongodb is started
+  wait_for:
+    host: "{{ wait_for_host | default(mongodb_conf_bind_ip) }}"
+    port: "{{ mongodb_conf_port }}"
+    timeout: 120
