@@ -146,6 +146,14 @@ else:
 # =========================================
 # MongoDB module specific support methods.
 #
+def check_compatibility(module, client):
+    srv_info = client.server_info()
+    if LooseVersion(srv_info['version']) >= LooseVersion('3.0') and LooseVersion(PyMongoVersion) <= LooseVersion('3.0'):
+        module.fail_json(msg=' (Note: you must use pymongo 3.0+ with MongoDB >= 3.0)')
+    elif LooseVersion(srv_info['version']) >= LooseVersion('2.6') and LooseVersion(PyMongoVersion) <= LooseVersion('2.7'):
+        module.fail_json(msg=' (Note: you must use pymongo 2.7.x-2.9.x with MongoDB 2.6)')
+    elif LooseVersion(PyMongoVersion) <= LooseVersion('2.5'):
+        module.fail_json(msg=' (Note: you must be on mongodb 2.4+ and pymongo 2.5+ to use the roles param)')
 
 def check_members(state, module, client, host_name, host_port, host_type):
     admin_db = client['admin']
@@ -331,6 +339,7 @@ def main():
             module.fail_json(msg='replica_set parameter is required')
         else:
             client = MongoReplicaSetClient(login_host, int(login_port), replicaSet=replica_set, ssl=ssl)
+            check_compatibility(module, client)
 
         authenticate(client, login_user, login_password)
 
@@ -339,6 +348,7 @@ def main():
     except ConfigurationError:
         try:
             client = MongoClient(login_host, int(login_port), ssl=ssl)
+            check_compatibility(module, client)
             authenticate(client, login_user, login_password)
             if state == 'present':
                 new_host = { '_id': 0, 'host': "{0}:{1}".format(host_name, host_port) }
