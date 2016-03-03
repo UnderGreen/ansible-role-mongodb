@@ -1,6 +1,7 @@
 ---
 
 mongodb_package: mongodb-org
+mongodb_version: "2.6"
 mongodb_apt_key_url: http://docs.mongodb.org/10gen-gpg-key.asc
 mongodb_apt_key_id: 7F0CEB10
 mongodb_force_wait_for_port: false

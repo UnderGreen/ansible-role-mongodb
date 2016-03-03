@@ -22,8 +22,15 @@
 - name: Add APT key
   apt_key: url="{{mongodb_apt_key_url}}" id="{{mongodb_apt_key_id}}"
 
+- name: Fail when used wrong mongodb_version variable
+  fail:
+    msg: "mongodb_version variable should be '2.6', '3.0' or '3.2'"
+  when: mongodb_version is not defined or mongodb_repository[item] is not defined
+  with_items: "{{ mongodb_version[0:3] }}"
+  
 - name: Add APT repository
-  apt_repository: repo="{{mongodb_repository}}" update_cache=yes
+  apt_repository: repo="{{ mongodb_repository[item] }}" update_cache=yes
+  with_items: "{{ mongodb_version[0:3] }}"
 
 - name: Install MongoDB package
   apt: name={{item}} state=present
