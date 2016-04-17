@@ -1,14 +1,14 @@
 ---
 
 mongodb_package: mongodb-org
-mongodb_version: "2.6"
-mongodb_apt_key_url: http://docs.mongodb.org/10gen-gpg-key.asc
-mongodb_apt_key_id: 7F0CEB10
-mongodb_force_wait_for_port: false
-mongodb_pymongo_from_pip: false                   # Install latest PyMongo via PIP or package manager
-mongodb_pymongo_pip_version: "2.9"
-mongodb_disable_thp: true
+mongodb_version: "3.2"
+mongodb_apt_keyserver: keyserver.ubuntu.com
+mongodb_apt_key_id: "{{ 'EA312927' if mongodb_version[0:3] == '3.2' else '7F0CEB10' }}"
+mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
 
+mongodb_force_wait_for_port: false
+mongodb_disable_thp: true
+mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
 
 mongodb_user: mongodb
@@ -16,31 +16,45 @@ mongodb_uid:
 mongodb_gid:
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
-mongodb_conf_auth: false                          # Run with security
-mongodb_conf_bind_ip: 127.0.0.1                   # Comma separated list of ip addresses to listen on
-mongodb_conf_cpu: true                            # Periodically show cpu and iowait utilization
-mongodb_conf_dbpath: /data/db                     # Directory for datafiles
-mongodb_conf_fork: false                          # Fork server process
-mongodb_conf_httpinterface: false                 # Enable http interface
-mongodb_conf_ipv6: false                          # Enable IPv6 support (disabled by default)
-mongodb_conf_journal: true                        # Enable journaling
-mongodb_conf_logappend: true                      # Append to logpath instead of over-writing
-mongodb_conf_logpath: /var/log/mongodb/{{ mongodb_daemon_name }}.log # Log file to send write to instead of stdout
-mongodb_conf_maxConns: 1000000                    # Max number of simultaneous connections
-mongodb_conf_noprealloc: false                    # Disable data file preallocation
-mongodb_conf_smallfiles: false                    # Disable smallfiles option
-mongodb_conf_noscripting: false                   # Disable scripting engine
-mongodb_conf_notablescan: false                   # Do not allow table scans
-mongodb_conf_port: 27017                          # Specify port number
-mongodb_conf_quota: false                         # Limits each database to a certain number of files
-mongodb_conf_quotaFiles: 8                        # Number of quota files
-mongodb_conf_syslog: false                        # Log to system's syslog facility instead of file
+## net Options
+mongodb_net_bindip: 127.0.0.1                    # Comma separated list of ip addresses to listen on
+mongodb_net_http_enabled: false                  # Enable http interface
+mongodb_net_ipv6: false                          # Enable IPv6 support (disabled by default)
+mongodb_net_maxconns: 65536                      # Max number of simultaneous connections
+mongodb_net_port: 27017                          # Specify port number
 
-# Replica set options:
-mongodb_conf_replSet:                             # Enable replication <setname>[/<optionalseedhostlist>]
-mongodb_conf_replIndexPrefetch: "all"             # specify index prefetching behavior (if secondary) [none|_id_only|all]
-mongodb_conf_oplogSize: 512                       # specifies a maximum size in megabytes for the replication operation log
-mongodb_conf_keyFile: /etc/mongodb-keyfile        # Specify path to keyfile with password for inter-process authentication
+## processManagement Options
+mongodb_processmanagement_fork: false            # Fork server process
+
+## security Options
+# Disable or enable security. Possible values: 'disabled', 'enabled'
+mongodb_security_authorization: "disabled"
+mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
+
+## storage Options
+mongodb_storage_dbpath: /data/db                 # Directory for datafiles
+# The storage engine for the mongod database. Available values:
+# 'mmapv1', 'wiredTiger'
+mongodb_storage_engine: "{{ 'mmapv1' if mongodb_version[0:3] == '3.0' else 'wiredTiger' }}"
+# mmapv1 specific options
+mongodb_storage_quota_enforced: false            # Limits each database to a certain number of files
+mongodb_storage_quota_maxfiles: 8                # Number of quota files per DB
+mongodb_storage_smallfiles: false                # Very useful for non-data nodes
+
+mongodb_storage_journal_enabled: true            # Enable journaling
+mongodb_storage_prealloc: true                   # Enable data file preallocation
+
+## systemLog Options
+## The destination to which MongoDB sends all log output. Specify either 'file' or 'syslog'.
+## If you specify 'file', you must also specify mongodb_systemlog_path.
+mongodb_systemlog_destination: "file"
+mongodb_systemlog_logappend: true                                        # Append to logpath instead of over-writing
+mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log file to send write to instead of stdout
+
+## replication Options
+mongodb_replication_replset:                      # Enable replication <setname>[/<optionalseedhostlist>]
+mongodb_replication_replindexprefetch: "all"      # specify index prefetching behavior (if secondary) [none|_id_only|all]
+mongodb_replication_oplogsize: 1024               # specifies a maximum size in megabytes for the replication operation log
 
 # MMS Agent
 mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_1.4.2.783-1_amd64.deb

@@ -7,7 +7,7 @@
   when: mongodb_manage_service
 
 - name: wait MongoDB port is listening
-  wait_for: host=127.0.0.1 port="{{ mongodb_conf_port }}" delay=5 state=started
+  wait_for: host=127.0.0.1 port="{{ mongodb_net_port }}" delay=5 state=started
 
 - name: get pid of mongodb for non daemon mode
   shell: "pidof mongod"
@@ -24,8 +24,9 @@
     database: admin
     name: "{{ item.name }}"
     password: "{{ item.password }}"
+    update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_port: "{{ mongodb_conf_port }}"
+    login_port: "{{ mongodb_net_port }}"
   with_items:
     - {
       name: "{{ mongodb_user_admin_name }}",
@@ -38,27 +39,15 @@
     database: admin
     name: "{{ item.name }}"
     password: "{{ item.password }}"
+    update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_port: "{{ mongodb_conf_port }}"
+    login_port: "{{ mongodb_net_port }}"
   with_items:
     - {
       name: "{{ mongodb_root_admin_name }}",
       password: "{{ mongodb_root_admin_password }}",
       roles: "root"
       }
-
-- name: create normal users
-  mongodb_user:
-    database: "{{ item.database }}"
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
-    roles: "{{ item.roles }}"
-    login_user: "{{ mongodb_user_admin_name }}"
-    login_password: "{{ mongodb_user_admin_password }}"
-    login_port: "{{ mongodb_conf_port }}"
-  with_items:
-    - "{{ mongodb_users }}"
-  when: mongodb_users is defined and mongodb_users
 
 - name: Move back mongod.conf
   template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
@@ -68,7 +57,7 @@
   when: mongodb_manage_service
 
 - name: wait MongoDB port is listening
-  wait_for: host="{{ mongodb_conf_bind_ip }}" port="{{ mongodb_conf_port }}" delay=5 state=started
+  wait_for: host="{{ mongodb_net_bindip }}" port="{{ mongodb_net_port }}" delay=5 state=started
 
 - name: stop mongodb if was not started
   shell: "kill {{ pidof_mongod.stdout }}"

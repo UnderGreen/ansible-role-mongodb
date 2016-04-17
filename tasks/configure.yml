@@ -2,12 +2,12 @@
 
 - name: Create keyFile
   copy:
-    dest: "{{ mongodb_conf_keyFile }}"
+    dest: "{{ mongodb_security_keyfile }}"
     content: "{{ mongodb_keyfile_content }}"
     owner: "{{ mongodb_user }}"
     group: "root"
     mode: 0600
-  when: mongodb_conf_replSet != ''
+  when: mongodb_replication_replset and  mongodb_replication_replset != ''
 
 - name: Configure log rotation
   template: src=logrotate.conf.j2 dest=/etc/logrotate.d/mongodb.conf
@@ -22,18 +22,18 @@
   when: mongodb_uid
 
 - name: reset mongodb folder and subfolders with new uid
-  file: path={{ mongodb_conf_dbpath }} owner=mongodb group=mongodb follow=yes recurse=yes state=directory
+  file: path={{ mongodb_storage_dbpath }} owner=mongodb group=mongodb follow=yes recurse=yes state=directory
   when: mongodb_uid
 
 - name: Create log dir if missing
-  file: state=directory recurse=yes dest={{ mongodb_conf_logpath|dirname }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
+  file: state=directory recurse=yes dest={{ mongodb_systemlog_path|dirname }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
 
 - name: Check than logfile exists
-  stat: path={{ mongodb_conf_logpath }}
+  stat: path={{ mongodb_systemlog_path }}
   register: logfile_stat
 
 - name: Create log if missing
-  file: state=touch dest={{ mongodb_conf_logpath }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
+  file: state=touch dest={{ mongodb_systemlog_path }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
   when: logfile_stat is defined and not logfile_stat.stat.exists
 
 - name: Configure mongodb
@@ -70,10 +70,10 @@
 - name: Set fact about wait_for host address
   set_fact:
     wait_for_host: 127.0.0.1
-  when: mongodb_conf_bind_ip == "0.0.0.0"
+  when: mongodb_net_bindip == "0.0.0.0"
   
 - name: Wait when mongodb is started
   wait_for:
-    host: "{{ wait_for_host | default(mongodb_conf_bind_ip) }}"
-    port: "{{ mongodb_conf_port }}"
+    host: "{{ wait_for_host | default(mongodb_net_bindip) }}"
+    port: "{{ mongodb_net_port }}"
     timeout: 120

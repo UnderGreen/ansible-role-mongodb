@@ -1,33 +1,55 @@
 # {{ ansible_managed }}
 
-auth = {{ mongodb_conf_auth|to_nice_json }}
-bind_ip = {{ mongodb_conf_bind_ip }}
-cpu = {{ mongodb_conf_cpu|to_nice_json }}
-dbpath = {{ mongodb_conf_dbpath }}
-fork = {{ mongodb_conf_fork|to_nice_json }}
-httpinterface = {{ mongodb_conf_httpinterface|to_nice_json }}
-ipv6 = {{ mongodb_conf_ipv6|to_nice_json }}
-journal = {{ mongodb_conf_journal|to_nice_json }}
-logappend = {{ mongodb_conf_logappend|to_nice_json }}
-logpath = {{ mongodb_conf_logpath }}
-maxConns = {{ mongodb_conf_maxConns }}
-noprealloc = {{ mongodb_conf_noprealloc|to_nice_json }}
-noscripting = {{ mongodb_conf_noscripting|to_nice_json }}
-notablescan = {{ mongodb_conf_notablescan|to_nice_json }}
-port = {{ mongodb_conf_port }}
-quota = {{ mongodb_conf_quota|to_nice_json }}
-{% if mongodb_conf_quota %}
-quotaFiles = {{ mongodb_conf_quotaFiles }}
-{% endif %}
-syslog = {{ mongodb_conf_syslog|to_nice_json }}
-smallfiles = {{ mongodb_conf_smallfiles|to_nice_json }}
+net:
+  bindIp: {{ mongodb_net_bindip }}
+  http:
+    enabled: {{ mongodb_net_http_enabled | to_nice_json }}
+  ipv6: {{ mongodb_net_ipv6 | to_nice_json }}
+  maxIncomingConnections: {{ mongodb_net_maxconns }}
+  port: {{ mongodb_net_port }}
 
-{% if mongodb_conf_replSet %}
-# Replica set options:
-replSet = {{ mongodb_conf_replSet }}
-replIndexPrefetch = {{ mongodb_conf_replIndexPrefetch }}
-oplogSize = {{ mongodb_conf_oplogSize }}
+processManagement:
+  fork: {{ mongodb_processmanagement_fork | to_nice_json}}
+
+{% if mongodb_replication_replset -%}
+replication:
+  oplogSizeMB: {{ mongodb_replication_oplogsize | int }}
+  replSetName: {{ mongodb_replication_replset }}
+  {% if mongodb_storage_engine == 'mmapv1' -%}
+  secondaryIndexPrefetch: {{ mongodb_replication_replindexprefetch }}
+  {% endif %}
 {% endif %}
-{% if mongodb_conf_replSet and mongodb_conf_auth %}
-keyFile = {{ mongodb_conf_keyFile }}
-{% endif %}
+  
+security:
+  authorization: {{ mongodb_security_authorization }}
+  {% if mongodb_replication_replset and mongodb_security_authorization == 'enabled' -%}
+  keyFile: {{ mongodb_security_keyfile }}
+  {% endif %}
+
+storage:
+  dbPath: {{ mongodb_storage_dbpath }}
+  {% if mongodb_version[0:3]|float >= 3.0 -%}
+  engine: {{ mongodb_storage_engine }}
+  {% endif -%}
+  journal:
+    enabled: {{ mongodb_storage_journal_enabled | to_nice_json }}
+  {% if mongodb_storage_engine == 'mmapv1' -%}
+  mmapv1:
+    quota:
+      enforced: {{ mongodb_storage_quota_enforced | to_nice_json }}
+      maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
+    smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
+  {% endif -%}
+  {% if mongodb_version[0:3] == '2.6' -%}
+  quota:
+    enforced: {{ mongodb_storage_quota_enforced | to_nice_json }}
+    maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
+  preallocDataFiles: {{ mongodb_storage_prealloc | to_nice_json }}
+  smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
+  {% endif %}
+
+systemLog:
+  destination: {{ mongodb_systemlog_destination }}
+  logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
+  path: {{ mongodb_systemlog_path }}
+

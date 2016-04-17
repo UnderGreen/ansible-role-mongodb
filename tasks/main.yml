@@ -1,25 +1,65 @@
 ---
 
-- include: install.deb.yml
+- name: Include installation on Debian-based OS
+  include: install.deb.yml
   when: ansible_os_family == 'Debian'
   tags: [mongodb]
 
-- include: configure.yml
+- name: Include configuration.yml
+  include: configure.yml
   tags: [mongodb]
 
-- include: replication_init_auth.yml
-  when: ( mongodb_conf_replSet  != "" and mongodb_conf_auth
+- name: Include replication and auth configuration
+  include: replication_init_auth.yml
+  when: ( mongodb_replication_replset
+        and mongodb_replication_replset != ''
+        and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   tags: [mongodb]
 
-- include: replication.yml
-  when: mongodb_conf_replSet != ""
+- name: Include replication configuration
+  include: replication.yml
+  when: mongodb_replication_replset and mongodb_replication_replset != ''
   tags: [mongodb]
 
-- include: auth_initialization.yml
-  when: mongodb_conf_auth and not mongodb_conf_replSet
+- name: Check user admin is exists
+  command: >
+    mongo --quiet -u {{ mongodb_user_admin_name }} \
+          -p {{ mongodb_user_admin_password }} --eval 'db.version()' admin
+  register: mongodb_user_admin_check
+  changed_when: false
+  ignore_errors: true
+  when: ( mongodb_security_authorization == 'enabled'
+          and (not mongodb_replication_replset
+          or mongodb_replication_replset == '') )
   tags: [mongodb]
 
-- include: mms-agent.yml
+- name: Include authorization configuration
+  include: auth_initialization.yml
+  when: ( mongodb_security_authorization == 'enabled'
+          and (not mongodb_replication_replset
+          or mongodb_replication_replset == '')
+          and mongodb_user_admin_check.rc != 0 )
+  tags: [mongodb]
+
+- name: create normal users
+  mongodb_user:
+    database: "{{ item.database }}"
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    update_password: "{{ mongodb_user_update_password }}"
+    roles: "{{ item.roles }}"
+    login_user: "{{ mongodb_user_admin_name }}"
+    login_password: "{{ mongodb_user_admin_password }}"
+    login_port: "{{ mongodb_net_port }}"
+    login_database: "admin"
+  with_items:
+    - "{{ mongodb_users | default([]) }}"
+  when: mongodb_security_authorization == 'enabled'
+  tags: [mongodb]
+
+
+- name: Include MMS Agent configuration
+  include: mms-agent.yml
   when: mongodb_mms_api_key != ""
   tags: [mongodb]

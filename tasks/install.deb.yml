@@ -20,17 +20,23 @@
   when: "'systemd' in systemd.stdout"
 
 - name: Add APT key
-  apt_key: url="{{mongodb_apt_key_url}}" id="{{mongodb_apt_key_id}}"
-
+  apt_key:
+    keyserver: "{{mongodb_apt_keyserver}}"
+    id: "{{mongodb_apt_key_id}}"
+  when: mongodb_package == 'mongodb-org'
+  
 - name: Fail when used wrong mongodb_version variable
   fail:
     msg: "mongodb_version variable should be '2.6', '3.0' or '3.2'"
-  when: mongodb_version is not defined or mongodb_repository[item] is not defined
+  when: (mongodb_package == 'mongodb-org' and
+        (mongodb_version is not defined
+        or mongodb_repository[item] is not defined))
   with_items: "{{ mongodb_version[0:3] }}"
   
 - name: Add APT repository
   apt_repository: repo="{{ mongodb_repository[item] }}" update_cache=yes
   with_items: "{{ mongodb_version[0:3] }}"
+  when: mongodb_package == 'mongodb-org'
 
 - name: Install MongoDB package
   apt: name={{item}} state=present
@@ -39,7 +45,7 @@
     - numactl
 
 - name: Ensure dbpath directory
-  file: path={{mongodb_conf_dbpath}} state=directory owner=mongodb recurse=yes
+  file: path={{mongodb_storage_dbpath}} state=directory owner=mongodb recurse=yes
 
 - name: reload systemd
   shell: systemctl daemon-reload
@@ -58,5 +64,5 @@
   when: mongodb_pymongo_from_pip
 
 - name: Install PyMongo from PIP
-  pip: name=pymongo version="{{ mongodb_pymongo_pip_version }}" state=present
+  pip: name=pymongo state=latest
   when: mongodb_pymongo_from_pip

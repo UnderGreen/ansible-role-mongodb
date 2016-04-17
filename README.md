@@ -1,7 +1,6 @@
 Ansible role for MongoDB
 ============
-This repository forked from [Stouts.mongodb](https://github.com/Stouts/Stouts.mongodb).  
-Ansible role which manage [MongoDB](http://www.mongodb.org/)
+Ansible role which manage [MongoDB](http://www.mongodb.org/).
 
 * Install and configure the MongoDB;
 * Provide handlers for restart and reload;
@@ -10,10 +9,20 @@ Ansible role which manage [MongoDB](http://www.mongodb.org/)
 #### Variables
 
 ```yaml
+# You can use this variable to control installation source of MongoDB
+# 'mongodb' will be installed from Debian/Ubuntu repos
+# 'mongodb-org' will be installed from MongoDB official repos
 mongodb_package: mongodb-org
 
+# You can control installed version via this param.
+# Should be '2.6', '3.0' or '3.2'. This role does't support MongoDB < 2.4.
+# I will recommend you to use latest version of MongoDB.
+mongodb_version: "3.2"
+
 mongodb_force_wait_for_port: false                # When not forced, the role will wait for mongod port to become available only with systemd
-mongodb_pymongo_from_pip: false                   # Install latest PyMongo via PIP or package manager
+mongodb_pymongo_from_pip: true                    # Install latest PyMongo via PIP or package manager
+mongodb_pymongo_pip_version: "3.2.2"
+
 mongodb_disable_thp: true
 
 mongodb_manage_service: true
@@ -22,32 +31,45 @@ mongodb_user: mongodb
 mongodb_uid:
 mongodb_gid:
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
+## net Options
+mongodb_net_bindip: 127.0.0.1                    # Comma separated list of ip addresses to listen on
+mongodb_net_http_enabled: false                  # Enable http interface
+mongodb_net_ipv6: false                          # Enable IPv6 support (disabled by default)
+mongodb_net_maxconns: 65536                      # Max number of simultaneous connections
+mongodb_net_port: 27017                          # Specify port number
 
-mongodb_conf_auth: false                          # Run with security
-mongodb_conf_bind_ip: 127.0.0.1                   # Comma separated list of ip addresses to listen on
-mongodb_conf_cpu: true                            # Periodically show cpu and iowait utilization
-mongodb_conf_dbpath: /data/db                     # Directory for datafiles
-mongodb_conf_fork: false                          # Fork server process
-mongodb_conf_httpinterface: false                 # Enable http interface
-mongodb_conf_ipv6: false                          # Enable IPv6 support (disabled by default)
-mongodb_conf_journal: true                        # Enable journaling
-mongodb_conf_logappend: true                      # Append to logpath instead of over-writing
-mongodb_conf_logpath: /var/log/mongodb/{{ mongodb_daemon_name }}.log # Log file to send write to instead of stdout
-mongodb_conf_maxConns: 1000000                    # Max number of simultaneous connections
-mongodb_conf_noprealloc: false                    # Disable data file preallocation
-mongodb_conf_smallfiles: false                    # Disable smallfiles option
-mongodb_conf_noscripting: false                   # Disable scripting engine
-mongodb_conf_notablescan: false                   # Do not allow table scans
-mongodb_conf_port: 27017                          # Specify port number
-mongodb_conf_quota: false                         # Limits each database to a certain number of files
-mongodb_conf_quotaFiles: 8                        # Number of quota files
-mongodb_conf_syslog: false                        # Log to system's syslog facility instead of file
+## processManagement Options
+mongodb_processmanagement_fork: false            # Fork server process
 
-# Replica set options:
-mongodb_conf_replSet:                             # Enable replication <setname>[/<optionalseedhostlist>]
-mongodb_conf_replIndexPrefetch: "all"             # specify index prefetching behavior (if secondary) [none|_id_only|all]
-mongodb_conf_oplogSize: 512                       # specifies a maximum size in megabytes for the replication operation log
-mongodb_conf_keyFile: /etc/mongodb-keyfile        # Specify path to keyfile with password for inter-process authentication
+## security Options
+# Disable or enable security. Possible values: 'disabled', 'enabled'
+mongodb_security_authorization: "disabled"
+mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
+
+## storage Options
+mongodb_storage_dbpath: /data/db                 # Directory for datafiles
+# The storage engine for the mongod database. Available values:
+# 'mmapv1', 'wiredTiger'
+mongodb_storage_engine: "{{ 'mmapv1' if mongodb_version[0:3] == '3.0' else 'wiredTiger' }}"
+# mmapv1 specific options
+mongodb_storage_quota_enforced: false            # Limits each database to a certain number of files
+mongodb_storage_quota_maxfiles: 8                # Number of quota files per DB
+mongodb_storage_smallfiles: false                # Very useful for non-data nodes
+
+mongodb_storage_journal_enabled: true            # Enable journaling
+mongodb_storage_prealloc: true                   # Disable data file preallocation
+
+## systemLog Options
+## The destination to which MongoDB sends all log output. Specify either 'file' or 'syslog'.
+## If you specify 'file', you must also specify mongodb_systemlog_path.
+mongodb_systemlog_destination: "file"
+mongodb_systemlog_logappend: true                                        # Append to logpath instead of over-writing
+mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log file to send write to instead of stdout
+
+## replication Options
+mongodb_replication_replset:                      # Enable replication <setname>[/<optionalseedhostlist>]
+mongodb_replication_replindexprefetch: "all"      # specify index prefetching behavior (if secondary) [none|_id_only|all]
+mongodb_replication_oplogsize: 1024               # specifies a maximum size in megabytes for the replication operation log
 
 # MMS Agent
 mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_1.4.2.783-1_amd64.deb
@@ -99,7 +121,7 @@ Add `greendayonfire.mongodb` to your roles and set vars in your playbook file.
 
 Example vars for authorization:
 ```yaml
-mongodb_conf_auth: true
+mongodb_security_authorization: true
 mongodb_users:
   - {
     name: testUser,
@@ -112,23 +134,34 @@ Required vars to change on production:
 ```yaml
 mongodb_user_admin_password
 mongodb_root_admin_password
+
+# if you use replication and authorization
+mongodb_security_keyfile
 ```
 Example vars for replication:
 ```yaml
+# It's a 'master' node
+mongodb_login_host: 192.168.56.2
+
 # mongodb_replication_params should be configured on each replica set node
 mongodb_replication_params:
-  - { host_name: 192.168.56.2, host_port: "{{ mongodb_conf_port }}", host_type: replica }
+  - { host_name: 192.168.56.2, host_port: "{{ mongodb_net_port }}", host_type: replica }
   # host_type can be replica(default) and arbiter
 ```
 And inventory file for replica set:
 ```ini
 [mongo_master]
-192.158.56.2 mongodb_master=True # it'n not a really master of MongoDB replica set, 
+192.158.56.2 mongodb_master=True # it is't a really master of MongoDB replica set,
                                  # use this variable for replica set init only
+								 # or when master is moved from initial master node
 
 [mongo_replicas]
 192.168.56.3
 192.168.56.4
+
+[mongo:children]
+mongo_master
+mongo_replicas
 ```
 
 Licensed under the GPLv2 License. See the [LICENSE.md](LICENSE.md) file for details.

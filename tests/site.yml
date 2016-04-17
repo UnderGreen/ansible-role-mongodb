@@ -1,0 +1,39 @@
+# test.yml
+---
+
+- hosts: localhost
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Run MongoDB cluster in Docker
+      docker:
+        name: "{{ item }}"
+        image: "{{ image_name }}"
+        command: "/sbin/init"
+        state: started
+      with_items:
+        - mongo1
+        - mongo2
+        - mongo3
+        
+- hosts: "{{ target }}"
+  become: no
+  gather_facts: yes
+  roles:
+    - role: greendayonfire.mongodb
+      when: "'mongo' in group_names"
+
+- hosts: localhost
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Run MongoDB cluster in Docker
+      docker:
+        name: "{{ item }}"
+        image: "{{ image_name }}"
+        command: "/sbin/init"
+        state: absent
+      with_items:
+        - mongo1
+        - mongo2
+        - mongo3

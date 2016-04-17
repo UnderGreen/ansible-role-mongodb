@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# (c) 2015, Sergei Antipov, 2GIS LLC
+# (c) 2015-2016, Sergei Antipov, 2GIS LLC
 #
 # This file is part of Ansible
 #
@@ -23,6 +23,7 @@ module: mongodb_replication
 short_description: Adds or removes a node from a MongoDB Replica Set.
 description:
     - Adds or removes host from a MongoDB replica set. Initialize replica set if it needed.
+version_added: "2.1"
 options:
     login_user:
         description:
@@ -104,10 +105,10 @@ options:
         default: present
         choices: [ "present", "absent" ]
 notes:
-    - Requires the pymongo Python package on the remote host, version 2.4.2+. This
+    - Requires the pymongo Python package on the remote host, version 3.0+. It
       can be installed using pip or the OS package manager. @see http://api.mongodb.org/python/current/installation.html
 requirements: [ "pymongo" ]
-author: Sergei Antipov
+author: "Sergei Antipov @UnderGreen"
 '''
 
 EXAMPLES = '''
@@ -135,6 +136,7 @@ try:
     from pymongo.errors import OperationFailure
     from pymongo.errors import ConfigurationError
     from pymongo.errors import AutoReconnect
+    from pymongo.errors import ServerSelectionTimeoutError
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
     from pymongo import MongoReplicaSetClient
@@ -147,13 +149,11 @@ else:
 # MongoDB module specific support methods.
 #
 def check_compatibility(module, client):
+    if LooseVersion(PyMongoVersion) <= LooseVersion('3.0'):
+        module.fail_json(msg='Note: you must use pymongo 3.0+')
     srv_info = client.server_info()
-    if LooseVersion(srv_info['version']) >= LooseVersion('3.0') and LooseVersion(PyMongoVersion) <= LooseVersion('3.0'):
-        module.fail_json(msg=' (Note: you must use pymongo 3.0+ with MongoDB >= 3.0)')
-    elif LooseVersion(srv_info['version']) >= LooseVersion('2.6') and LooseVersion(PyMongoVersion) <= LooseVersion('2.7'):
-        module.fail_json(msg=' (Note: you must use pymongo 2.7.x-2.9.x with MongoDB 2.6)')
-    elif LooseVersion(PyMongoVersion) <= LooseVersion('2.5'):
-        module.fail_json(msg=' (Note: you must be on mongodb 2.4+ and pymongo 2.5+ to use the roles param)')
+    if LooseVersion(srv_info['version']) >= LooseVersion('3.2') and LooseVersion(PyMongoVersion) <= LooseVersion('3.2'):
+        module.fail_json(msg=' (Note: you must use pymongo 3.2+ with MongoDB >= 3.2)')
 
 def check_members(state, module, client, host_name, host_port, host_type):
     admin_db = client['admin']
@@ -219,7 +219,7 @@ def add_host(module, client, host_name, host_port, host_type, timeout=180, **kwa
             cfg['members'].append(new_host)
             admin_db.command('replSetReconfig', cfg)
             return
-        except (OperationFailure, AutoReconnect) as e:
+        except (OperationFailure, AutoReconnect), e:
             timeout = timeout - 5
             if timeout <= 0:
                 module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
@@ -248,7 +248,7 @@ def remove_host(module, client, host_name, timeout=180):
                 else:
                     fail_msg = "couldn't find member with hostname: {0} in replica set members list".format(host_name)
                     module.fail_json(msg=fail_msg)
-        except (OperationFailure, AutoReconnect) as e:
+        except (OperationFailure, AutoReconnect), e:
             timeout = timeout - 5
             if timeout <= 0:
                 module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
@@ -292,6 +292,7 @@ def authenticate(client, login_user, login_password):
 
     if login_user is not None and login_password is not None:
         client.admin.authenticate(login_user, login_password)
+
 # =========================================
 # Module execution.
 #
@@ -307,7 +308,7 @@ def main():
             host_name=dict(default='localhost'),
             host_port=dict(default='27017'),
             host_type=dict(default='replica', choices=['replica','arbiter']),
-            ssl=dict(default=False),
+            ssl=dict(default='false'),
             build_indexes = dict(type='bool', default='yes'),
             hidden = dict(type='bool', default='no'),
             priority = dict(default='1.0'),
@@ -338,17 +339,15 @@ def main():
         if replica_set is None:
             module.fail_json(msg='replica_set parameter is required')
         else:
-            client = MongoReplicaSetClient(login_host, int(login_port), replicaSet=replica_set, ssl=ssl)
-            check_compatibility(module, client)
+            client = MongoClient(login_host, int(login_port), replicaSet=replica_set,
+                                 ssl=ssl, serverSelectionTimeoutMS=5000)
 
         authenticate(client, login_user, login_password)
+        client['admin'].command('replSetGetStatus')
 
-    except ConnectionFailure, e:
-        module.fail_json(msg='unable to connect to database: %s' % str(e))
-    except ConfigurationError:
+    except ServerSelectionTimeoutError:
         try:
             client = MongoClient(login_host, int(login_port), ssl=ssl)
-            check_compatibility(module, client)
             authenticate(client, login_user, login_password)
             if state == 'present':
                 new_host = { '_id': 0, 'host': "{0}:{1}".format(host_name, host_port) }
@@ -360,7 +359,10 @@ def main():
                 module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
         except OperationFailure, e:
             module.fail_json(msg='Unable to initiate replica set: %s' % str(e))
+    except ConnectionFailure, e:
+        module.fail_json(msg='unable to connect to database: %s' % str(e))
 
+    check_compatibility(module, client)
     check_members(state, module, client, host_name, host_port, host_type)
 
     if state == 'present':

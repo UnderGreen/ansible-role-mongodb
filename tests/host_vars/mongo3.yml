@@ -1,0 +1,9 @@
+---
+mongodb_net_port: 30000
+mongodb_storage_journal_enabled: false
+mongodb_storage_smallfiles: true
+mongodb_storage_prealloc: false
+mongodb_replication_params:
+  - host_name: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"
+    host_port: "{{ mongodb_net_port }}"
+    host_type: arbiter

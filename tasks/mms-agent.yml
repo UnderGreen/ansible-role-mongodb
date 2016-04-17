@@ -1,11 +1,11 @@
 ---
 
 - name: Install MMS agent pt. 1
-  get_url: url={{mongodb_mms_agent_pkg}} dest={{mongodb_conf_dbpath}}/mms-agent.deb
+  get_url: url={{mongodb_mms_agent_pkg}} dest={{mongodb_storage_dbpath}}/mms-agent.deb
   register: mongodb_mms_agent_loaded
 
 - name: Install MMS agent pt. 2
-  apt: deb={{mongodb_conf_dbpath}}/mms-agent.deb
+  apt: deb={{mongodb_storage_dbpath}}/mms-agent.deb
   when: mongodb_mms_agent_loaded.changed
 
 - name: Configure the MMS agent pt. 1

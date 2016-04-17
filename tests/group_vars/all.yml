@@ -1,0 +1,15 @@
+---
+
+image_name: "ubuntu-upstart:14.04"
+mongodb_version: "3.0"
+mongodb_storage_dbpath: /var/lib/mongodb
+mongodb_net_bindip: 0.0.0.0
+mongodb_login_host: "{{ hostvars[groups['mongo_master'][0]].ansible_default_ipv4.address }}"
+
+mongodb_users:
+  - {
+    name: testUser,
+    password: passw0rd,
+    roles: readWrite,
+    database: admin
+  }
