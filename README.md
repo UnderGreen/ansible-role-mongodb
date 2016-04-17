@@ -19,12 +19,9 @@ mongodb_package: mongodb-org
 # I will recommend you to use latest version of MongoDB.
 mongodb_version: "3.2"
 
-mongodb_force_wait_for_port: false                # When not forced, the role will wait for mongod port to become available only with systemd
-mongodb_pymongo_from_pip: true                    # Install latest PyMongo via PIP or package manager
-mongodb_pymongo_pip_version: "3.2.2"
-
-mongodb_disable_thp: true
-
+mongodb_force_wait_for_port: false               # When not forced, the role will wait for mongod port to become available only with systemd
+mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
+mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
 
 mongodb_user: mongodb
@@ -76,16 +73,6 @@ mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb
 mongodb_mms_group_id: ""
 mongodb_mms_api_key: ""
 mongodb_mms_base_url: https://mms.mongodb.com
-
-# Log rotation
-mongodb_logrotate: true                             # Rotate mongodb logs.
-mongodb_logrotate_options:
-  - compress
-  - copytruncate
-  - daily
-  - dateext
-  - rotate 7
-  - size 10M
 
 # password for inter-process authentication
 # please regenerate this file on production environment with command 'openssl rand -base64 741'

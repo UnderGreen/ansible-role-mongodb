@@ -9,10 +9,6 @@
     mode: 0600
   when: mongodb_replication_replset and  mongodb_replication_replset != ''
 
-- name: Configure log rotation
-  template: src=logrotate.conf.j2 dest=/etc/logrotate.d/mongodb.conf
-  when: mongodb_logrotate
-
 - name: set mongodb gid
   group: name=mongodb gid={{ mongodb_gid }} state=present
   when: mongodb_gid
@@ -39,29 +35,6 @@
 - name: Configure mongodb
   template: src=mongod.conf.j2 dest=/etc/mongod.conf backup=yes owner=root group=root mode=0644
   register: config_result
-
-- name: Install sysfsutils package
-  apt: name=sysfsutils state=present
-  when: ansible_os_family == 'Debian' and mongodb_disable_thp
-
-- name: Create /etc/sysfs.d direcroty
-  file:
-    path: /etc/sysfs.d
-    group: root
-    state: directory
-    mode: 0755
-    owner: root
-  when: ansible_os_family == 'Debian' and mongodb_disable_thp
-
-- name: Create sysfs config
-  copy:
-    src: hugepages.conf
-    dest: /etc/sysfs.d/hugepages.conf
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_os_family == 'Debian' and mongodb_disable_thp
-  notify: restart sysfsutils
 
 - name: mongodb restart
   service: name={{ mongodb_daemon_name }} state=restarted
