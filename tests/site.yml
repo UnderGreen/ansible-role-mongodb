@@ -21,5 +21,12 @@
   gather_facts: yes
   roles:
     - role: greendayonfire.mongodb
-      when: "'mongo' in group_names"
-      
+      when: "'mongo_master' in group_names"
+
+- hosts: "{{ target }}"
+  become: no
+  gather_facts: yes
+  roles:
+    - role: greendayonfire.mongodb
+      when: "'mongo_replicas' in group_names"
+

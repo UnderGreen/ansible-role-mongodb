@@ -4,10 +4,10 @@ localhost	ansible_connection=local ansible_python_interpreter=python2
 [mongo_master]
 mongo1		ansible_connection=docker ansible_python_interpreter=python2
 
-[mongo_slave]
+[mongo_replicas]
 mongo2		ansible_connection=docker ansible_python_interpreter=python2
 mongo3		ansible_connection=docker ansible_python_interpreter=python2
 
 [mongo:children]
 mongo_master
-mongo_slave
+mongo_replicas
