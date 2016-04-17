@@ -6,12 +6,12 @@ env:
   - >
     distribution=ubuntu-upstart
     version=14.04
-  - >
-    distribution=ubuntu-upstart
-    version=12.04
-  - >
-    distribution=debian
-    version=7
+#  - >
+#    distribution=ubuntu-upstart
+#    version=12.04
+#  - >
+#    distribution=debian
+#    version=7
 
 services:
   - docker
@@ -20,22 +20,22 @@ before_install:
   - sudo apt-get update
   # Latest Ansible install
   - sudo apt-add-repository -y ppa:ansible/ansible
-  - sudo apt-get update -o Dir::Etc::sourcelist="sources.list.d/ansible-ansible-precise.list" \
-    -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
+  - sudo apt-get update
   - sudo apt-get install ansible python-pip -y
-  - sudo pip install docker-py
+  - sudo pip install docker-py==1.5.0
   # Pull docker image
-  - docker pull ${distribution}:${version}
+  - sudo docker pull ${distribution}:${version}
+  - sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
   
 script:
-  - ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1
+  - sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1
     # Idempotence test
   - >
-    ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1
+    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
 
     # Delete all containers
-  - docker kill mongo{1,2,3} && docker rm mongo{1,2,3}
+  - sudo docker kill mongo{1,2,3} && docker rm mongo{1,2,3}
   
