@@ -1,4 +1,4 @@
-Ansible role for MongoDB
+Ansible role for MongoDB [![Build Status](https://travis-ci.org/UnderGreen/ansible-role-mongodb.svg?branch=master)](https://travis-ci.org/UnderGreen/ansible-role-mongodb)
 ============
 Ansible role which manage [MongoDB](http://www.mongodb.org/).
 
