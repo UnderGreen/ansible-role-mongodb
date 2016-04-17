@@ -3,8 +3,16 @@ Ansible role for MongoDB
 Ansible role which manage [MongoDB](http://www.mongodb.org/).
 
 * Install and configure the MongoDB;
+* Configure mongodb users
+* Configure replication
 * Provide handlers for restart and reload;
 * Setup MMS authomation agent;
+
+MongoDB support matrix:
+
+| Distribution | MongoDB 2.6 | MongoDB 3.0 | MongoDB 3.2 |
+| ------------ |:-----------:|:-----------:|:-----------:|
+| Ubuntu 14.04 | :white_check_mark: | :white_check_mark: | :white_check_mark:|
 
 #### Variables
 
