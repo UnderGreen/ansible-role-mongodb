@@ -15,6 +15,18 @@ env:
     DISTRIBUTION=ubuntu-upstart
     DIST_VERSION=14.04
     MONGODB_VERSION=2.6
+  - >
+    DISTRIBUTION=ubuntu-upstart
+    DIST_VERSION=12.04
+    MONGODB_VERSION=3.2
+  - >
+    DISTRIBUTION=ubuntu-upstart
+    DIST_VERSION=12.04
+    MONGODB_VERSION=3.0
+  - >
+    DISTRIBUTION=ubuntu-upstart
+    DIST_VERSION=12.04
+    MONGODB_VERSION=2.6
 #  - >
 #    distribution=ubuntu-upstart
 #    version=12.04
