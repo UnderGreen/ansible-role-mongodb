@@ -10,9 +10,18 @@ Ansible role which manage [MongoDB](http://www.mongodb.org/).
 
 MongoDB support matrix:
 
-| Distribution | MongoDB 2.6 | MongoDB 3.0 | MongoDB 3.2 |
-| ------------ |:-----------:|:-----------:|:-----------:|
-| Ubuntu 14.04 | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+| Distribution | MongoDB 2.4 | MongoDB 2.6 | MongoDB 3.0 | MongoDB 3.2 |
+| ------------ |:-----------:|:-----------:|:-----------:|:-----------:|
+| Ubuntu 14.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+| Ubuntu 12.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+| Ubuntu 16.04 | :no_entry: | :x: | :x: | :x:|
+| Debian 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang:|
+| Debian 8.x | :no_entry: | :x: | :x: | :x:|
+
+:white_check_mark: - fully tested, should work fine  
+:interrobang: - will be added testing suite soon  
+:x: - don't have official support  
+:no_entry: - does't have support, because used old format of configuration files
 
 #### Variables
 
