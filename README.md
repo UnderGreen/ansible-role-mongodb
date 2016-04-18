@@ -91,6 +91,16 @@ mongodb_mms_group_id: ""
 mongodb_mms_api_key: ""
 mongodb_mms_base_url: https://mms.mongodb.com
 
+# Log rotation
+mongodb_logrotate: true                             # Rotate mongodb logs.
+mongodb_logrotate_options:
+  - compress
+  - copytruncate
+  - daily
+  - dateext
+  - rotate 7
+  - size 10M
+
 # password for inter-process authentication
 # please regenerate this file on production environment with command 'openssl rand -base64 741'
 mongodb_keyfile_content: |
@@ -138,6 +148,7 @@ Required vars to change on production:
 ```yaml
 mongodb_user_admin_password
 mongodb_root_admin_password
+mongodb_root_backup_name
 
 # if you use replication and authorization
 mongodb_security_keyfile

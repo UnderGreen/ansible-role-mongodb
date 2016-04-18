@@ -49,6 +49,21 @@
       roles: "root"
       }
 
+- name: create backup user "backupuser"
+  mongodb_user:
+    database: admin
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    update_password: "{{ mongodb_user_update_password }}"
+    roles: "{{ item.roles }}"
+    login_port: "{{ mongodb_net_port }}"
+  with_items:
+    - {
+      name: "{{ mongodb_root_backup_name }}",
+      password: "{{ mongodb_root_backup_password }}",
+      roles: "backup,clusterMonitor"
+      }
+
 - name: Move back mongod.conf
   template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
 
