@@ -7,3 +7,5 @@ mongodb_repository:
 
 mongodb_repository_gpgkey:
   "3.2": "https://www.mongodb.org/static/pgp/server-3.2.asc"
+
+mongodb_pidfile_path: "{{ '/var/run/mongodb/mongod.pid' if ('mongodb-org' in mongodb_package) else '' }}"

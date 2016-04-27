@@ -10,6 +10,9 @@ net:
 
 processManagement:
   fork: {{ mongodb_processmanagement_fork | to_nice_json}}
+  {% if mongodb_pidfile_path is defined and mongodb_pidfile_path != '' -%}
+  pidFilePath: {{ mongodb_pidfile_path }}
+  {% endif %}
 
 {% if mongodb_replication_replset -%}
 replication:
