@@ -23,7 +23,9 @@ mongodb_net_maxconns: 65536                      # Max number of simultaneous co
 mongodb_net_port: 27017                          # Specify port number
 
 ## processManagement Options
-mongodb_processmanagement_fork: false            # Fork server process
+# Fork server process
+# Enabled by default for RedHat as the init scripts assume forking is enabled.
+mongodb_processmanagement_fork: "{{ 'RedHat' == ansible_os_family }}"
 
 ## security Options
 # Disable or enable security. Possible values: 'disabled', 'enabled'
