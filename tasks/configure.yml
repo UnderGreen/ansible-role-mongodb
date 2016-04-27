@@ -32,6 +32,13 @@
   file: state=touch dest={{ mongodb_systemlog_path }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
   when: logfile_stat is defined and not logfile_stat.stat.exists
 
+- name: Ensure dbpath directory
+  file:
+    path: "{{ mongodb_storage_dbpath }}"
+    state: directory
+    owner: "{{ mongodb_user }}"
+    recurse: yes
+
 - name: Configure mongodb
   template: src=mongod.conf.j2 dest=/etc/mongod.conf backup=yes owner=root group=root mode=0644
   register: config_result
