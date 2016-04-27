@@ -16,6 +16,10 @@ galaxy_info:
   - name: Debian
     versions:
     - wheezy
+  - name: EL
+    versions:
+      - 6
+      - 7
   galaxy_tags:
   - database
   - database:nosql
