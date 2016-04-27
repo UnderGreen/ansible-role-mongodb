@@ -1,7 +1,5 @@
 ---
 
-- include_vars: "{{ansible_distribution}}.yml"
-
 - name: Check if running on systemd
   command: cat /proc/1/cmdline
   register: systemd

@@ -1,8 +1,13 @@
 ---
 
+- name: Include OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+
 - name: Include installation on Debian-based OS
-  include: install.deb.yml
-  when: ansible_os_family == 'Debian'
+  include: "install.{{ ansible_os_family | lower }}.yml"
   tags: [mongodb]
 
 - name: Include configuration.yml

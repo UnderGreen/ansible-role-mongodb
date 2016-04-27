@@ -1,0 +1,8 @@
+[mongodb-org-{{ mongodb_version }}]
+name=MongoDB {{ mongodb_version }} Repository
+baseurl={{ mongodb_repository[item] }}
+gpgcheck={{ mongodb_repository_gpgkey[item] is defined | ternary(1,0) }}
+{% if mongodb_repository_gpgkey[item] is defined %}
+gpgkey={{ mongodb_repository_gpgkey[item] }}
+{% endif %}
+enabled=1
