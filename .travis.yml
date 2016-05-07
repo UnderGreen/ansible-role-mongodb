@@ -39,14 +39,13 @@ services:
 
 before_install:
   - sudo apt-get update
-  # Latest Ansible install
-  - sudo apt-add-repository -y ppa:ansible/ansible
-  - sudo apt-get update
-  - sudo apt-get install ansible python-pip -y
+  - sudo apt-get install python-pip -y
+  # 2.0.2 is unable to connect using the docker connection driver
+  - sudo pip install ansible==2.0.1.0
   - sudo pip install docker-py==1.5.0
   # Pull docker image
   - sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}
-  - sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
+  - ln -s ${PWD} tests/greendayonfire.mongodb
   
 script:
   # Test 1
