@@ -45,7 +45,7 @@ before_install:
   - sudo pip install docker-py==1.5.0
   # Pull docker image
   - sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}
-  - sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
+  - ln -s ${PWD} tests/greendayonfire.mongodb
   
 script:
   # Test 1
