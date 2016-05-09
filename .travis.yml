@@ -44,13 +44,18 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install ansible python-pip -y
   - sudo pip install docker-py==1.5.0
-  # Pull docker image
-  - sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}
+  # Pull docker image or build it
+  - >
+    if [ -f tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION} ]; then
+    sudo docker build --rm=true --file=tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION}
+    --tag ${DISTRIBUTION}:${DIST_VERSION} tests; else sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}; fi
   - sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
   
 script:
   # Test 1
-  - sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION}
+  - >
+    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION}
+    -e image_name=${DISTRIBUTION}:${DIST_VERSION}
     # Idempotence test
   - >
     sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION}
