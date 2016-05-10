@@ -47,6 +47,9 @@
   service: name={{ mongodb_daemon_name }} state=restarted
   when: config_result|changed and mongodb_manage_service
 
+- name: Ensure service is started
+  service: name={{ mongodb_daemon_name }} state=started
+
 - name: Set fact about wait_for host address
   set_fact:
     wait_for_host: 127.0.0.1
