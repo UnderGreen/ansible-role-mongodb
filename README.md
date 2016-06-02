@@ -135,7 +135,7 @@ Add `greendayonfire.mongodb` to your roles and set vars in your playbook file.
 
 Example vars for authorization:
 ```yaml
-mongodb_security_authorization: true
+mongodb_security_authorization: "enabled"
 mongodb_users:
   - {
     name: testUser,
