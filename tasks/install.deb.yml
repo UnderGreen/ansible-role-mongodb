@@ -6,6 +6,7 @@
   command: cat /proc/1/cmdline
   register: systemd
   changed_when: false
+  always_run: yes # side-effect free, so it can be run in check-mode as well
 
 - name: Add systemd configuration if present
   copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640

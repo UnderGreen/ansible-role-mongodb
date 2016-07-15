@@ -28,6 +28,7 @@
           -p {{ mongodb_user_admin_password }} --eval 'db.version()' admin
   register: mongodb_user_admin_check
   changed_when: false
+  always_run: yes # side-effect free, so it can be run in check-mode as well
   ignore_errors: true
   when: ( mongodb_security_authorization == 'enabled'
           and (not mongodb_replication_replset
