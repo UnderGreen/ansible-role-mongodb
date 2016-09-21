@@ -33,6 +33,7 @@
       password: "{{ mongodb_user_admin_password }}",
       roles: "userAdminAnyDatabase"
       }
+  no_log: true
 
 - name: create administrative user siteRootAdmin
   mongodb_user:
@@ -48,6 +49,7 @@
       password: "{{ mongodb_root_admin_password }}",
       roles: "root"
       }
+  no_log: true
 
 - name: create backup user "backupuser"
   mongodb_user:
@@ -63,6 +65,7 @@
       password: "{{ mongodb_root_backup_password }}",
       roles: "backup,clusterMonitor"
       }
+  no_log: true
 
 - name: Move back mongod.conf
   template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
