@@ -3,22 +3,22 @@
 - include_vars: "{{ansible_distribution}}.yml"
 
 - name: Check if running on systemd
-  command: cat /proc/1/cmdline
-  register: systemd
+  stat: path=/sbin/init
+  register: sbin_init
   changed_when: false
   always_run: yes # side-effect free, so it can be run in check-mode as well
 
 - name: Add systemd configuration if present
   copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640
-  when: "'systemd' in systemd.stdout"
+  when: sbin_init.stat.islnk is defined and sbin_init.stat.islnk
 
 - name: Add symlink for systemd
   file: src=/lib/systemd/system/mongodb.service dest=/etc/systemd/system/multi-user.target.wants/mongodb.service state=link
-  when: "'systemd' in systemd.stdout"
+  when: sbin_init.stat.islnk is defined and sbin_init.stat.islnk
   notify: reload systemd
 
 - meta: flush_handlers
-  when: "'systemd' in systemd.stdout"
+  when: sbin_init.stat.islnk is defined and sbin_init.stat.islnk
 
 - name: Add APT key
   apt_key:
@@ -48,7 +48,7 @@
 - name: reload systemd
   shell: systemctl daemon-reload
   changed_when: false
-  when: "'systemd' in systemd.stdout"
+  when: sbin_init.stat.islnk is defined and sbin_init.stat.islnk
 
 - name: Install PyMongo package
   apt: pkg=python-pymongo state=latest
