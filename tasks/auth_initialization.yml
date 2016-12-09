@@ -1,9 +1,9 @@
 ---
 - name: Move back mongod.conf
-  template: src=mongod_init.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
+  template: src=mongod_init.conf.j2 dest={{mongodb_config}} owner=root group=root mode=0644
 
-- name: Restart mongodb service
-  service: name={{ mongodb_daemon_name }} state=restarted
+- name: Restart mongodb service {{ mongodb_service }}
+  service: name={{ mongodb_service }} state=restarted
   when: mongodb_manage_service
 
 - name: wait MongoDB port is listening
@@ -16,7 +16,7 @@
   ignore_errors: yes
 
 - name: start mongodb daemon
-  shell: "LC_ALL=C /usr/bin/mongod --config /etc/mongod.conf --fork"
+  shell: "LC_ALL=C /usr/bin/mongod --config {{mongodb_config}} --fork"
   when: mongodb_manage_service == false and pidof_mongod.rc == 1
 
 - name: create administrative user siteUserAdmin
@@ -68,10 +68,10 @@
   no_log: true
 
 - name: Move back mongod.conf
-  template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
+  template: src=mongod.conf.j2 dest={{mongodb_config}} owner=root group=root mode=0644
 
-- name: Restart mongodb service
-  service: name={{ mongodb_daemon_name }} state=restarted
+- name: Restart mongodb service {{ mongodb_service }}
+  service: name={{ mongodb_service }} state=restarted
   when: mongodb_manage_service
 
 - name: wait MongoDB port is listening

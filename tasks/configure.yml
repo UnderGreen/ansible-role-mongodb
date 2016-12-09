@@ -24,6 +24,9 @@
 - name: Create log dir if missing
   file: state=directory recurse=yes dest={{ mongodb_systemlog_path|dirname }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
 
+- name: Create pid dir if missing
+  file: state=directory recurse=yes dest={{ mongodb_pid_directory }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
+
 - name: Check than logfile exists
   stat: path={{ mongodb_systemlog_path }}
   register: logfile_stat
@@ -40,15 +43,15 @@
     recurse: yes
 
 - name: Configure mongodb
-  template: src=mongod.conf.j2 dest=/etc/mongod.conf backup=yes owner=root group=root mode=0644
+  template: src=mongod.conf.j2 dest={{mongodb_config}} backup=yes owner=root group=root mode=0644
   register: config_result
 
 - name: mongodb restart
-  service: name={{ mongodb_daemon_name }} state=restarted
+  service: name={{ mongodb_service }} state=restarted
   when: config_result|changed and mongodb_manage_service
 
 - name: Ensure service is started
-  service: name={{ mongodb_daemon_name }} state=started
+  service: name={{ mongodb_service }} state=started
 
 - name: Set fact about wait_for host address
   set_fact:

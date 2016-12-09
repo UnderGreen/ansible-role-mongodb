@@ -10,6 +10,7 @@ net:
 
 processManagement:
   fork: {{ mongodb_processmanagement_fork | to_nice_json }}
+  pidFilePath: {{ mongodb_processmanagement_pid_file_path }}
 
 security:
   authorization: 'disabled'

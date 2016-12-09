@@ -1,11 +1,11 @@
 ---
 
 - name: mongodb reload
-  service: name={{ mongodb_daemon_name }} state=reloaded
+  service: name={{ mongodb_service }} state=reloaded
   when: mongodb_manage_service
 
 - name: mongodb restart
-  service: name={{ mongodb_daemon_name }} state=restarted
+  service: name={{ mongodb_service }} state=restarted
   when: mongodb_manage_service
 
 - name: mongodb-mms-automation-agent restart

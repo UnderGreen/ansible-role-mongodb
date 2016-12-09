@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+#
+[Unit]
+Description=An object/document-oriented database
+Documentation=man:mongod(1)
+
+[Service]
+User={{mongodb_user}}
+ExecStart=/usr/bin/mongod --quiet --config {{mongodb_config}}
+LimitFSIZE=infinity
+LimitCPU=infinity
+LimitAS=infinity
+LimitNOFILE=64000
+LimitNPROC=64000
+TasksMax=infinity
+TasksAccounting=false
+
+# Recommended limits for for mongod as specified in
+# http://docs.mongodb.org/manual/reference/ulimit/#recommended-settings
+
+[Install]
+WantedBy=multi-user.target
