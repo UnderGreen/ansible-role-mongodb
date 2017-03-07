@@ -5,6 +5,8 @@ Documentation=man:mongod(1)
 [Service]
 User=mongodb
 ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+LimitNOFILE=65535
+LimitNPROC=65535
 
 [Install]
 WantedBy=multi-user.target
