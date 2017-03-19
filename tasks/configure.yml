@@ -50,13 +50,9 @@
 - name: Ensure service is started
   service: name={{ mongodb_daemon_name }} state=started
 
-- name: Set fact about wait_for host address
-  set_fact:
-    wait_for_host: 127.0.0.1
-  when: mongodb_net_bindip == "0.0.0.0"
-  
 - name: Wait when mongodb is started
   wait_for:
-    host: "{{ wait_for_host | default(mongodb_net_bindip) }}"
+    host: "{{ item }}"
     port: "{{ mongodb_net_port }}"
     timeout: 120
+  with_items: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list }}"
