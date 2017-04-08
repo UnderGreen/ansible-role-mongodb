@@ -2,7 +2,7 @@
 
 mongodb_package: mongodb-org
 mongodb_version: "3.2"
-mongodb_apt_keyserver: keyserver.ubuntu.com
+mongodb_apt_keyserver: keyserver.ubuntu.com:80
 mongodb_apt_key_id: "{{ 'EA312927' if mongodb_version[0:3] == '3.2' else '7F0CEB10' }}"
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
 
