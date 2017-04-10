@@ -25,7 +25,8 @@
 - name: Check user admin is exists
   command: >
     mongo --quiet -u {{ mongodb_user_admin_name }} \
-          -p {{ mongodb_user_admin_password }} --eval 'db.version()' admin
+          -p {{ mongodb_user_admin_password }} --port {{ mongodb_net_port }} --eval 'db.version()' admin
+
   register: mongodb_user_admin_check
   changed_when: false
   always_run: yes # side-effect free, so it can be run in check-mode as well
