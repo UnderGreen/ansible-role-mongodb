@@ -27,8 +27,8 @@
 
 - name: Add APT key
   apt_key:
-    keyserver: "{{mongodb_apt_keyserver}}"
-    id: "{{mongodb_apt_key_id}}"
+    keyserver: "{{ mongodb_apt_keyserver }}"
+    id: "{{ mongodb_apt_key_id[mongodb_major_version] }}"
   when: mongodb_package == 'mongodb-org'
 
 - name: Fail when used wrong mongodb_version variable
