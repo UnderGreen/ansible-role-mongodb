@@ -1,4 +1,7 @@
 ---
+mongodb_service: mongod
+mongodb_config: /etc/{{mongodb_service}}.conf
+mongodb_pid_directory: /var/run/mongodb
 
 mongodb_package: mongodb-org
 mongodb_version: "3.4"
@@ -16,9 +19,10 @@ mongodb_user_update_password: "on_create"        # MongoDB user password update 
 mongodb_manage_service: true
 
 mongodb_user: mongodb
+mongodb_group: mongodb
 mongodb_uid:
 mongodb_gid:
-mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
+mongodb_logfile_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
 ## net Options
 mongodb_net_bindip: 127.0.0.1                    # Comma separated list of ip addresses to listen on
@@ -29,6 +33,7 @@ mongodb_net_port: 27017                          # Specify port number
 
 ## processManagement Options
 mongodb_processmanagement_fork: false            # Fork server process
+mongodb_processmanagement_pid_file_path: "{{mongodb_pid_directory}}/{{mongodb_service}}.pid"            # Path to pid file
 
 ## security Options
 # Disable or enable security. Possible values: 'disabled', 'enabled'
@@ -53,7 +58,7 @@ mongodb_storage_prealloc: true                   # Enable data file preallocatio
 ## If you specify 'file', you must also specify mongodb_systemlog_path.
 mongodb_systemlog_destination: "file"
 mongodb_systemlog_logappend: true                                        # Append to logpath instead of over-writing
-mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log file to send write to instead of stdout
+mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_logfile_name }}.log   # Log file to send write to instead of stdout
 
 ## replication Options
 mongodb_replication_replset:                      # Enable replication <setname>[/<optionalseedhostlist>]

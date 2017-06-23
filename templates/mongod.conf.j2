@@ -10,6 +10,7 @@ net:
 
 processManagement:
   fork: {{ mongodb_processmanagement_fork | to_nice_json}}
+  pidFilePath: {{ mongodb_processmanagement_pid_file_path }}
 
 {% if mongodb_replication_replset -%}
 replication:
@@ -50,5 +51,7 @@ storage:
 
 systemLog:
   destination: {{ mongodb_systemlog_destination }}
-  logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
-  path: {{ mongodb_systemlog_path }}
+  {% if mongodb_systemlog_destination == 'file' %}
+    logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
+    path: {{ mongodb_systemlog_path }}
+  {% endif %}
