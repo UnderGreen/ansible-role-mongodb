@@ -1,6 +1,6 @@
 Ansible role for MongoDB [![Build Status](https://travis-ci.org/UnderGreen/ansible-role-mongodb.svg?branch=master)](https://travis-ci.org/UnderGreen/ansible-role-mongodb)
 ============
-Ansible role which manage [MongoDB](http://www.mongodb.org/).
+Ansible role which manages [MongoDB](http://www.mongodb.org/).
 
 * Install and configure the MongoDB;
 * Configure mongodb users
@@ -10,17 +10,15 @@ Ansible role which manage [MongoDB](http://www.mongodb.org/).
 
 MongoDB support matrix:
 
-| Distribution | MongoDB 2.4 | MongoDB 2.6 | MongoDB 3.0 | MongoDB 3.2 |
-| ------------ |:-----------:|:-----------:|:-----------:|:-----------:|
-| Ubuntu 14.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Ubuntu 12.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Ubuntu 16.04 | :no_entry: | :x: | :x: | :x:|
-| Debian 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang:|
-| Debian 8.x | :no_entry: | :x: | :x: | :x:|
-| CentOS 6.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: |
-| CentOS 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: |
-| RHEL 6.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: |
-| RHEL 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: |
+| Distribution | MongoDB 2.4 | MongoDB 2.6 | MongoDB 3.0 | MongoDB 3.2 | MongoDB 3.4 |
+| ------------ |:-----------:|:-----------:|:-----------:|:-----------:|:-----------:|
+| Ubuntu 14.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:| :x:|
+| Ubuntu 12.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:| :x:|
+| Ubuntu 16.04 | :no_entry: | :x: | :x: | :x:| :x:|
+| Debian 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang:| :x:|
+| Debian 8.x | :no_entry: | :x: | :x: | :x:| :x:|
+| RHEL 6.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: | :interrobang |
+| RHEL 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: | :interrobang |
 
 :white_check_mark: - fully tested, should work fine  
 :interrobang: - will be added testing suite soon  
@@ -36,9 +34,9 @@ MongoDB support matrix:
 mongodb_package: mongodb-org
 
 # You can control installed version via this param.
-# Should be '2.6', '3.0' or '3.2'. This role does't support MongoDB < 2.4.
+# Should be '2.6', '3.0', '3.2' or '3.4'. This role does't support MongoDB < 2.4.
 # I will recommend you to use latest version of MongoDB.
-mongodb_version: "3.2"
+mongodb_version: "3.4"
 
 mongodb_force_wait_for_port: false               # When not forced, the role will wait for mongod port to become available only with systemd
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
@@ -139,7 +137,7 @@ Add `greendayonfire.mongodb` to your roles and set vars in your playbook file.
 
 Example vars for authorization:
 ```yaml
-mongodb_security_authorization: true
+mongodb_security_authorization: "enabled"
 mongodb_users:
   - {
     name: testUser,

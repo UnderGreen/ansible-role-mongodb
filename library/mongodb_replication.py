@@ -23,7 +23,7 @@ module: mongodb_replication
 short_description: Adds or removes a node from a MongoDB Replica Set.
 description:
     - Adds or removes host from a MongoDB replica set. Initialize replica set if it needed.
-version_added: "2.1"
+version_added: "2.2"
 options:
     login_user:
         description:
@@ -56,7 +56,7 @@ options:
         required: true
     host_port:
         description:
-            - The port of the host
+            - The port of the host, which should be added/deleted from RS
         required: true
         default: null
     host_type:
@@ -128,6 +128,23 @@ EXAMPLES = '''
 - mongodb_replication: replica_set=replSet host_name=mongo4.dev host_port=27017 state=absent
 '''
 
+RETURN = '''
+host_name:
+  description: The name of the host to add/remove from replica set
+  returned: success
+  type: string
+  sample: "mongo3.dev"
+host_port:
+  description: The port of the host, which should be added/deleted from RS
+  returned: success
+  type: int
+  sample: 27017
+host_type:
+  description: The type of the host in replica set
+  returned: success
+  type: string
+  sample: "replica"
+'''
 import ConfigParser
 import time
 from distutils.version import LooseVersion
