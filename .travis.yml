@@ -77,21 +77,12 @@ before_install:
   
 script:
   # Test 1
-<<<<<<< HEAD
-  - sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION} 
-    # Idempotence test
   - >
     sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION}
-    | grep -q 'changed=0.*failed=0'
-=======
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION}
-    -e image_name=${DISTRIBUTION}:${DIST_VERSION}
     # Idempotence test
   - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION}
-    -e image_name=${DISTRIBUTION}:${DIST_VERSION} | grep -q 'changed=0.*failed=0'
->>>>>>> 9ba2bbc86a637ae1250cab42ce4f1192f6979fb6
+    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION} 
+    | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
 
