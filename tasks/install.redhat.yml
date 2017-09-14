@@ -32,16 +32,6 @@
     state: latest
   when: not mongodb_pymongo_from_pip
 
-# - name: Install python-devel
-#   yum:
-#     name: "python-devel"
-#   when: mongodb_pymongo_from_pip
-
-# - name: Install PIP
-#   yum:
-#     name: "python-pip"
-#   when: mongodb_pymongo_from_pip
-
 - name: Install PIP
   yum:
     name: "{{ item }}"

@@ -20,6 +20,10 @@
 - hosts: "{{ target }}"
   become: no
   gather_facts: yes
+  pre_tasks:
+    - name: Show hostvars
+      debug:
+        var: "hostvars[inventory_hostname]['ansible_default_ipv4']"
   roles:
     - role: greendayonfire.mongodb
       when: "'mongo_master' in group_names"
