@@ -11,11 +11,12 @@
         image: "{{ image_name }}"
         command: "/sbin/init"
         state: started
+        privileged: true
       with_items:
         - mongo1
         - mongo2
         - mongo3
-        
+
 - hosts: "{{ target }}"
   become: no
   gather_facts: yes

@@ -1,5 +1,9 @@
 ---
 
+- name: Establish some role-related facts
+  set_fact:
+    mongodb_major_version: "{{ mongodb_version[0:3] }}"
+
 - name: Add YUM repository
   template:
     src: mongodb.repo.j2
@@ -16,11 +20,27 @@
     - "{{ mongodb_package }}"
     - numactl
 
+# This step is needed when running CentOS in Docker since the docker image does not come with EPEL installed by default
+- name: Install EPEL release
+  yum:
+    name: epel-release
+    state: present
+
 - name: Install PyMongo package
   yum:
     name: python-pymongo
     state: latest
   when: not mongodb_pymongo_from_pip
+
+# - name: Install python-devel
+#   yum:
+#     name: "python-devel"
+#   when: mongodb_pymongo_from_pip
+
+# - name: Install PIP
+#   yum:
+#     name: "python-pip"
+#   when: mongodb_pymongo_from_pip
 
 - name: Install PIP
   yum:
