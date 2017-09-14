@@ -51,6 +51,10 @@ env:
     DISTRIBUTION=centos
     DIST_VERSION=7
     MONGODB_VERSION=3.2
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=7
+    MONGODB_VERSION=3.4
 #  - >
 #    distribution=ubuntu-upstart
 #    version=12.04
