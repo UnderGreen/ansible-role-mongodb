@@ -4,7 +4,7 @@ FROM centos:7
 RUN yum install iproute -y 
 
 # This step is needed since standard CentOS docker image does not come with EPEL installed by default
-RUN yum install epel-release
+RUN yum install epel-release -y
 
 # we can has SSH
 EXPOSE 22
