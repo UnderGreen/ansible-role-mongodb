@@ -20,12 +20,6 @@
     - "{{ mongodb_package }}"
     - numactl
 
-# This step is needed when running CentOS in Docker since the docker image does not come with EPEL installed by default
-- name: Install EPEL release
-  yum:
-    name: epel-release
-    state: present
-
 - name: Install PyMongo package
   yum:
     name: python-pymongo

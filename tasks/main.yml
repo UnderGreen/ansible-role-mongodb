@@ -27,11 +27,10 @@
   when: mongodb_replication_replset and mongodb_replication_replset != ''
   tags: [mongodb]
 
-- name: Check user admin is exists
+- name: Check where admin user already exists
   command: >
     mongo --quiet -u {{ mongodb_user_admin_name }} \
           -p {{ mongodb_user_admin_password }} --port {{ mongodb_net_port }} --eval 'db.version()' admin
-
   register: mongodb_user_admin_check
   changed_when: false
   always_run: yes # side-effect free, so it can be run in check-mode as well
@@ -39,7 +38,7 @@
   when: ( mongodb_security_authorization == 'enabled'
           and (not mongodb_replication_replset
           or mongodb_replication_replset == '') )
-  # no_log: true
+  no_log: true
   tags: [mongodb]
 
 - name: Include authorization configuration

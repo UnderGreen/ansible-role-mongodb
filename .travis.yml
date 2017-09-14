@@ -53,7 +53,7 @@ env:
   #   MONGODB_VERSION=3.2
   - >
     DISTRIBUTION=centos
-    DIST_VERSION=7
+    DIST_VERSION=7-builded
     MONGODB_VERSION=3.4
 #  - >
 #    distribution=ubuntu-upstart
