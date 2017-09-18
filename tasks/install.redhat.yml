@@ -4,6 +4,11 @@
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
 
+- name: Install EPEL release repository
+  package:
+    name: epel-release
+    state: present
+
 - name: Add YUM repository
   template:
     src: mongodb.repo.j2
