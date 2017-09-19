@@ -17,6 +17,8 @@ MongoDB support matrix:
 | Ubuntu 16.04 | :no_entry: | :x: | :x: | :x:| :x:|
 | Debian 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang:| :x:|
 | Debian 8.x | :no_entry: | :x: | :x: | :x:| :x:|
+| RHEL 6.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: | :interrobang: |
+| RHEL 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: | :interrobang: |
 
 :white_check_mark: - fully tested, should work fine  
 :interrobang: - will be added testing suite soon  
@@ -41,7 +43,7 @@ mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PI
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
 
-mongodb_user: mongodb
+mongodb_user: "{{ 'mongod' if ('RedHat' == ansible_os_family) else 'mongodb' }}"
 mongodb_uid:
 mongodb_gid:
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"

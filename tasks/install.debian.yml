@@ -1,7 +1,5 @@
 ---
 
-- include_vars: "{{ansible_distribution}}.yml"
-
 - name: Check if running on systemd
   stat: path=/sbin/init
   register: sbin_init

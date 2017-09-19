@@ -1,0 +1,46 @@
+---
+
+- name: Establish some role-related facts
+  set_fact:
+    mongodb_major_version: "{{ mongodb_version[0:3] }}"
+
+- name: Install EPEL release repository
+  package:
+    name: epel-release
+    state: present
+
+- name: Add YUM repository
+  template:
+    src: mongodb.repo.j2
+    dest: /etc/yum.repos.d/mongodb.repo
+    mode: 0644
+  with_items: "{{ mongodb_version[0:3] }}"
+  when: mongodb_package == 'mongodb-org'
+
+- name: Install MongoDB package
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ mongodb_package }}"
+    - numactl
+
+- name: Install PyMongo package
+  yum:
+    name: python-pymongo
+    state: latest
+  when: not mongodb_pymongo_from_pip
+
+- name: Install PIP
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - python-devel
+    - python-pip
+  when: mongodb_pymongo_from_pip
+
+- name: Install PyMongo from PIP
+  pip:
+    name: pymongo
+    state: latest
+  when: mongodb_pymongo_from_pip

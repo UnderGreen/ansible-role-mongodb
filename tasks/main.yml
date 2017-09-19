@@ -1,8 +1,13 @@
 ---
 
+- name: Include OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+
 - name: Include installation on Debian-based OS
-  include: install.deb.yml
-  when: ansible_os_family == 'Debian'
+  include: "install.{{ ansible_os_family | lower }}.yml"
   tags: [mongodb]
 
 - name: Include configuration.yml
@@ -22,11 +27,10 @@
   when: mongodb_replication_replset and mongodb_replication_replset != ''
   tags: [mongodb]
 
-- name: Check user admin is exists
+- name: Check where admin user already exists
   command: >
     mongo --quiet -u {{ mongodb_user_admin_name }} \
           -p {{ mongodb_user_admin_password }} --port {{ mongodb_net_port }} --eval 'db.version()' admin
-
   register: mongodb_user_admin_check
   changed_when: false
   always_run: yes # side-effect free, so it can be run in check-mode as well

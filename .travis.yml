@@ -6,6 +6,10 @@ env:
   - >
     DISTRIBUTION=ubuntu-upstart
     DIST_VERSION=14.04
+    MONGODB_VERSION=3.4
+  - >
+    DISTRIBUTION=ubuntu-upstart
+    DIST_VERSION=14.04
     MONGODB_VERSION=3.2
   - >
     DISTRIBUTION=ubuntu-upstart
@@ -18,6 +22,10 @@ env:
   - >
     DISTRIBUTION=ubuntu-upstart
     DIST_VERSION=12.04-builded
+    MONGODB_VERSION=3.4
+  - >
+    DISTRIBUTION=ubuntu-upstart
+    DIST_VERSION=12.04-builded
     MONGODB_VERSION=3.2
   - >
     DISTRIBUTION=ubuntu-upstart
@@ -27,6 +35,44 @@ env:
     DISTRIBUTION=ubuntu-upstart
     DIST_VERSION=12.04-builded
     MONGODB_VERSION=2.6
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=6-builded
+    MONGODB_VERSION=2.6
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=6-builded
+    MONGODB_VERSION=3.0
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=6-builded
+    MONGODB_VERSION=3.2
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=6-builded
+    MONGODB_VERSION=3.4
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=7-builded
+    MONGODB_VERSION=2.6
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=7-builded
+    MONGODB_VERSION=3.0
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=7-builded
+    MONGODB_VERSION=3.2
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=7-builded
+    MONGODB_VERSION=3.4
+#  - >
+#    distribution=ubuntu-upstart
+#    version=12.04
+#  - >
+#    distribution=debian
+#    version=7
 
 services:
   - docker
@@ -44,16 +90,15 @@ before_install:
     sudo docker build --rm=true --file=tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION}
     --tag ${DISTRIBUTION}:${DIST_VERSION} tests; else sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}; fi
   - sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
-  
+
 script:
   # Test 1
   - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION}
-    -e image_name=${DISTRIBUTION}:${DIST_VERSION}
+    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION}
     # Idempotence test
   - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION}
-    -e image_name=${DISTRIBUTION}:${DIST_VERSION} | grep -q 'changed=0.*failed=0'
+    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION} 
+    | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
 
