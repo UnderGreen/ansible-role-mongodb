@@ -97,3 +97,6 @@ mongodb_root_admin_password: passw0rd
 
 mongodb_root_backup_name: "backupuser"
 mongodb_root_backup_password: "passw0rd"
+
+# setParameter config
+mongodb_set_parameters:
