@@ -60,23 +60,7 @@ services:
   - docker
 
 before_install:
-  - sudo apt-get update
-  # Latest Ansible install
-  - sudo apt-add-repository -y ppa:ansible/ansible
-  - sudo apt-get update
-  - sudo apt-get install ansible python-pip -y
-  - ansible --version
-  - sudo pip install docker-py==1.5.0
-  # Pull docker image or build it
-  - >
-    if [ -f tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION} ]
-    then
-        sudo docker build --rm=true --file=tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION}
-        --tag ${DISTRIBUTION}:${DIST_VERSION} tests
-    else
-        sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}
-    fi
-  - sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
+  - bash tests/scripts/before_install.sh
 
 script:
   # Test 1
