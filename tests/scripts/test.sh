@@ -2,14 +2,13 @@
 # -*- mode: sh; -*-
 
 # File: test.sh
-# Time-stamp: <2018-02-15 15:53:53>
+# Time-stamp: <2018-02-15 17:02:22>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
 # set -o xtrace
 set -o nounset
 set -o errexit
-set -o pipefail
 
 # Test 1
 ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION}
