@@ -88,9 +88,13 @@ before_install:
   - sudo pip install docker-py==1.5.0
   # Pull docker image or build it
   - >
-    if [ -f tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION} ]; then
-    sudo docker build --rm=true --file=tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION}
-    --tag ${DISTRIBUTION}:${DIST_VERSION} tests; else sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}; fi
+    if [ -f tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION} ]
+    then
+        sudo docker build --rm=true --file=tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION}
+        --tag ${DISTRIBUTION}:${DIST_VERSION} tests
+    else
+        sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}
+    fi
   - sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
 
 script:
