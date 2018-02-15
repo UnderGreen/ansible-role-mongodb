@@ -2,7 +2,7 @@
 # -*- mode: sh; -*-
 
 # File: before_install.sh
-# Time-stamp: <2018-02-15 14:26:31>
+# Time-stamp: <2018-02-15 14:40:30>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
@@ -12,7 +12,7 @@ set -o errexit
 set -o pipefail
 
 # Latest Ansible install
-pip install docker ansible
+pip install docker-py ansible
 ansible --version
 docker version
 # Pull docker image or build it
