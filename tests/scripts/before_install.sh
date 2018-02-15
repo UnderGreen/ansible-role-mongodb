@@ -2,7 +2,7 @@
 # -*- mode: sh; -*-
 
 # File: before_install.sh
-# Time-stamp: <2018-02-15 13:30:08>
+# Time-stamp: <2018-02-15 13:35:13>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
@@ -12,6 +12,7 @@ set -o errexit
 set -o pipefail
 
 sudo apt-get update
+sudo apt-get install apt-transport-https
 # Latest Ansible install
 sudo apt-add-repository -y ppa:ansible/ansible
 sudo apt-get update
