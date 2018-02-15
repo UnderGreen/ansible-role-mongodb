@@ -2,7 +2,7 @@
 # -*- mode: sh; -*-
 
 # File: before_install.sh
-# Time-stamp: <2018-02-15 14:10:38>
+# Time-stamp: <2018-02-15 14:15:57>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
@@ -11,10 +11,8 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-sudo apt-get update
-sudo apt-get install apt-transport-https
 # Latest Ansible install
-sudo pip install docker ansible
+pip install docker ansible
 ansible --version
 docker version
 # Pull docker image or build it
