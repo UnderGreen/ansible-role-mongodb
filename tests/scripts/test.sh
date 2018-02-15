@@ -2,7 +2,7 @@
 # -*- mode: sh; -*-
 
 # File: test.sh
-# Time-stamp: <2018-02-15 15:25:12>
+# Time-stamp: <2018-02-15 15:53:53>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
@@ -30,7 +30,7 @@ ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e image_name=${
 docker kill mongo{1,2,3} && docker rm mongo{1,2,3}
 
 # Test 3
-ansible-playbook -i tests/hosts tests/site.yml -e target=mongo -e image_name=${DISTRIBUTION}:${DIST_VERSION} -e mongodb_version=${MONGODB_VERSION} -e mongodb_replication_replset='testrs' -vvv
+ansible-playbook -i tests/hosts tests/site.yml -e target=mongo -e image_name=${DISTRIBUTION}:${DIST_VERSION} -e mongodb_version=${MONGODB_VERSION} -e mongodb_replication_replset='testrs'
 # Idempotence test
 ansible-playbook -i tests/hosts tests/site.yml -e target=mongo -e image_name=${DISTRIBUTION}:${DIST_VERSION} -e mongodb_version=${MONGODB_VERSION} -e mongodb_replication_replset='testrs' \
     | grep -q 'changed=0.*failed=0' \
