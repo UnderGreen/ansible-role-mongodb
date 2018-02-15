@@ -4,6 +4,8 @@
 dist: trusty
 sudo: required
 language: python
+python:
+  - "3.6"
 env:
   - >
     DISTRIBUTION=ubuntu-upstart
@@ -60,7 +62,7 @@ env:
 services:
   - docker
 
-before_install:
+install:
   - bash tests/scripts/before_install.sh
 
 script:

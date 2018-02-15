@@ -2,7 +2,7 @@
 # -*- mode: sh; -*-
 
 # File: before_install.sh
-# Time-stamp: <2018-02-15 13:35:13>
+# Time-stamp: <2018-02-15 13:41:50>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
@@ -17,7 +17,6 @@ sudo apt-get install apt-transport-https
 sudo apt-add-repository -y ppa:ansible/ansible
 sudo apt-get update
 sudo apt-get install ansible python-pip -y
-python --version
 ansible --version
 docker version
 sudo pip install docker-py
