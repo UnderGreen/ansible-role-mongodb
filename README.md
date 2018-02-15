@@ -13,16 +13,15 @@ MongoDB support matrix:
 | Distribution | MongoDB 2.4 | MongoDB 2.6 | MongoDB 3.0 | MongoDB 3.2 | MongoDB 3.4 |
 | ------------ |:-----------:|:-----------:|:-----------:|:-----------:|:-----------:|
 | Ubuntu 14.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:| :x:|
-| Ubuntu 12.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:| :x:|
 | Ubuntu 16.04 | :no_entry: | :x: | :x: | :x:| :x:|
 | Debian 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang:| :x:|
 | Debian 8.x | :no_entry: | :x: | :x: | :x:| :x:|
 | RHEL 6.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: | :interrobang: |
 | RHEL 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: | :interrobang: |
 
-:white_check_mark: - fully tested, should work fine  
-:interrobang: - will be added testing suite soon  
-:x: - don't have official support  
+:white_check_mark: - fully tested, should work fine
+:interrobang: - will be added testing suite soon
+:x: - don't have official support
 :no_entry: - does't have support, because used old format of configuration files
 
 #### Variables
@@ -89,7 +88,7 @@ mongodb_replication_oplogsize: 1024               # specifies a maximum size in 
 
 ## setParameter options
 # Configure setParameter option.
-# Example : 
+# Example :
 mongodb_set_parameters: { "enableLocalhostAuthBypass": "true", "authenticationMechanisms": "SCRAM-SHA-1,MONGODB-CR" }
 
 # MMS Agent
