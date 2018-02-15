@@ -1,6 +1,7 @@
 # .travis.yml
 ---
 
+dist: trusty
 sudo: required
 env:
   - >
@@ -83,6 +84,7 @@ before_install:
   - sudo apt-add-repository -y ppa:ansible/ansible
   - sudo apt-get update
   - sudo apt-get install ansible python-pip -y
+  - ansible --version
   - sudo pip install docker-py==1.5.0
   # Pull docker image or build it
   - >
@@ -97,7 +99,7 @@ script:
     sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION}
     # Idempotence test
   - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION} 
+    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION}
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
@@ -148,4 +150,3 @@ script:
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
-
