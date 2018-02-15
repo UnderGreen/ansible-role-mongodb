@@ -2,7 +2,7 @@
 # -*- mode: sh; -*-
 
 # File: before_install.sh
-# Time-stamp: <2018-02-15 14:46:52>
+# Time-stamp: <2018-02-15 14:59:13>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
@@ -14,6 +14,7 @@ set -o pipefail
 # Latest Ansible install
 pip install docker-py ansible
 echo "Debugging information"
+which python
 pip list
 ansible --version
 docker version
