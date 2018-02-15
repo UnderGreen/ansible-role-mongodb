@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# (c) 2015-2016, Sergei Antipov, 2GIS LLC
+# (c) 2015-2018, Sergei Antipov, 2GIS LLC
 #
 # This file is part of Ansible
 #
@@ -318,7 +318,7 @@ def main():
     module = AnsibleModule(
         argument_spec = dict(
             login_user=dict(default=None),
-            login_password=dict(default=None),
+            login_password=dict(default=None, no_log=True),
             login_host=dict(default='localhost'),
             login_port=dict(default='27017'),
             replica_set=dict(default=None),
