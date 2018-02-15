@@ -2,7 +2,7 @@
 # -*- mode: sh; -*-
 
 # File: before_install.sh
-# Time-stamp: <2018-02-15 14:15:57>
+# Time-stamp: <2018-02-15 14:26:31>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
@@ -24,4 +24,4 @@ else
     sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}
 fi
 
-sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
+ln -s ${PWD} tests/greendayonfire.mongodb
