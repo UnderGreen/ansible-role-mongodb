@@ -1,7 +1,9 @@
 # {{ ansible_managed }}
 
 net:
+  {% if mongodb_net_bindip is defined and mongodb_net_bindip != "" %}
   bindIp: {{ mongodb_net_bindip }}
+  {% endif %}
   http:
     enabled: {{ mongodb_net_http_enabled | to_nice_json }}
   ipv6: {{ mongodb_net_ipv6 | to_nice_json }}
