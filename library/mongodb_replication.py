@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# (c) 2015-2016, Sergei Antipov, 2GIS LLC
+# (c) 2015-2018, Sergei Antipov, 2GIS LLC
 #
 # This file is part of Ansible
 #
@@ -23,7 +23,7 @@ module: mongodb_replication
 short_description: Adds or removes a node from a MongoDB Replica Set.
 description:
     - Adds or removes host from a MongoDB replica set. Initialize replica set if it needed.
-version_added: "2.2"
+version_added: "2.4"
 options:
     login_user:
         description:
@@ -105,7 +105,7 @@ options:
         default: present
         choices: [ "present", "absent" ]
 notes:
-    - Requires the pymongo Python package on the remote host, version 3.0+. It
+    - Requires the pymongo Python package on the remote host, version 3.2+. It
       can be installed using pip or the OS package manager. @see http://api.mongodb.org/python/current/installation.html
 requirements: [ "pymongo" ]
 author: "Sergei Antipov @UnderGreen"
@@ -166,11 +166,14 @@ else:
 # MongoDB module specific support methods.
 #
 def check_compatibility(module, client):
-    if LooseVersion(PyMongoVersion) <= LooseVersion('3.0'):
-        module.fail_json(msg='Note: you must use pymongo 3.0+')
     srv_info = client.server_info()
-    if LooseVersion(srv_info['version']) >= LooseVersion('3.2') and LooseVersion(PyMongoVersion) <= LooseVersion('3.2'):
-        module.fail_json(msg=' (Note: you must use pymongo 3.2+ with MongoDB >= 3.2)')
+    if LooseVersion(PyMongoVersion) <= LooseVersion('3.2'):
+        module.fail_json(msg='Note: you must use pymongo 3.2+')
+    if LooseVersion(srv_info['version']) >= LooseVersion('3.4') and LooseVersion(PyMongoVersion) <= LooseVersion('3.4'):
+        module.fail_json(msg='Note: you must use pymongo 3.4+ with MongoDB 3.4.x')
+    if LooseVersion(srv_info['version']) >= LooseVersion('3.6') and LooseVersion(PyMongoVersion) <= LooseVersion('3.6'):
+        module.fail_json(msg='Note: you must use pymongo 3.6+ with MongoDB 3.6.x')
+
 
 def check_members(state, module, client, host_name, host_port, host_type):
     admin_db = client['admin']
@@ -236,7 +239,7 @@ def add_host(module, client, host_name, host_port, host_type, timeout=180, **kwa
             cfg['members'].append(new_host)
             admin_db.command('replSetReconfig', cfg)
             return
-        except (OperationFailure, AutoReconnect), e:
+        except (OperationFailure, AutoReconnect) as e:
             timeout = timeout - 5
             if timeout <= 0:
                 module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
@@ -265,7 +268,7 @@ def remove_host(module, client, host_name, timeout=180):
                 else:
                     fail_msg = "couldn't find member with hostname: {0} in replica set members list".format(host_name)
                     module.fail_json(msg=fail_msg)
-        except (OperationFailure, AutoReconnect), e:
+        except (OperationFailure, AutoReconnect) as e:
             timeout = timeout - 5
             if timeout <= 0:
                 module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
@@ -318,7 +321,7 @@ def main():
     module = AnsibleModule(
         argument_spec = dict(
             login_user=dict(default=None),
-            login_password=dict(default=None),
+            login_password=dict(default=None, no_log=True),
             login_host=dict(default='localhost'),
             login_port=dict(default='27017'),
             replica_set=dict(default=None),
@@ -374,9 +377,9 @@ def main():
                 wait_for_ok_and_master(module, client)
                 replica_set_created = True
                 module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
-        except OperationFailure, e:
+        except OperationFailure as e:
             module.fail_json(msg='Unable to initiate replica set: %s' % str(e))
-    except ConnectionFailure, e:
+    except ConnectionFailure as e:
         module.fail_json(msg='unable to connect to database: %s' % str(e))
 
     check_compatibility(module, client)
@@ -394,13 +397,13 @@ def main():
                         priority        = float(module.params['priority']),
                         slave_delay     = module.params['slave_delay'],
                         votes           = module.params['votes'])
-        except OperationFailure, e:
+        except OperationFailure as e:
             module.fail_json(msg='Unable to add new member to replica set: %s' % str(e))
 
     elif state == 'absent':
         try:
             remove_host(module, client, host_name)
-        except OperationFailure, e:
+        except OperationFailure as e:
             module.fail_json(msg='Unable to remove member of replica set: %s' % str(e))
 
     module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)

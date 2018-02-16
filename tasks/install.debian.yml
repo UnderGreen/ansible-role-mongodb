@@ -4,7 +4,7 @@
   stat: path=/sbin/init
   register: sbin_init
   changed_when: false
-  always_run: yes # side-effect free, so it can be run in check-mode as well
+  check_mode: no
 
 - name: Establish some role-related facts
   set_fact:

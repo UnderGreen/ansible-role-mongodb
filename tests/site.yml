@@ -6,7 +6,7 @@
   gather_facts: no
   tasks:
     - name: Run MongoDB cluster in Docker
-      docker:
+      docker_container:
         name: "{{ item }}"
         image: "{{ image_name }}"
         command: "/sbin/init"
@@ -31,4 +31,3 @@
   roles:
     - role: greendayonfire.mongodb
       when: "'mongo_replicas' in group_names"
-
