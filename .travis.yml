@@ -1,7 +1,12 @@
 # .travis.yml
 ---
 
+dist: trusty
 sudo: required
+language: python
+python:
+  - "2.7"
+  - "3.6"
 env:
   - >
     DISTRIBUTION=ubuntu-upstart
@@ -12,38 +17,6 @@ env:
     DIST_VERSION=14.04
     MONGODB_VERSION=3.2
   - >
-    DISTRIBUTION=ubuntu-upstart
-    DIST_VERSION=14.04
-    MONGODB_VERSION=3.0
-  - >
-    DISTRIBUTION=ubuntu-upstart
-    DIST_VERSION=14.04
-    MONGODB_VERSION=2.6
-  - >
-    DISTRIBUTION=ubuntu-upstart
-    DIST_VERSION=12.04-builded
-    MONGODB_VERSION=3.4
-  - >
-    DISTRIBUTION=ubuntu-upstart
-    DIST_VERSION=12.04-builded
-    MONGODB_VERSION=3.2
-  - >
-    DISTRIBUTION=ubuntu-upstart
-    DIST_VERSION=12.04-builded
-    MONGODB_VERSION=3.0
-  - >
-    DISTRIBUTION=ubuntu-upstart
-    DIST_VERSION=12.04-builded
-    MONGODB_VERSION=2.6
-  - >
-    DISTRIBUTION=centos
-    DIST_VERSION=6-builded
-    MONGODB_VERSION=2.6
-  - >
-    DISTRIBUTION=centos
-    DIST_VERSION=6-builded
-    MONGODB_VERSION=3.0
-  - >
     DISTRIBUTION=centos
     DIST_VERSION=6-builded
     MONGODB_VERSION=3.2
@@ -54,22 +27,11 @@ env:
   - >
     DISTRIBUTION=centos
     DIST_VERSION=7-builded
-    MONGODB_VERSION=2.6
-  - >
-    DISTRIBUTION=centos
-    DIST_VERSION=7-builded
-    MONGODB_VERSION=3.0
-  - >
-    DISTRIBUTION=centos
-    DIST_VERSION=7-builded
     MONGODB_VERSION=3.2
   - >
     DISTRIBUTION=centos
     DIST_VERSION=7-builded
     MONGODB_VERSION=3.4
-#  - >
-#    distribution=ubuntu-upstart
-#    version=12.04
 #  - >
 #    distribution=debian
 #    version=7
@@ -77,75 +39,8 @@ env:
 services:
   - docker
 
-before_install:
-  - sudo apt-get update
-  # Latest Ansible install
-  - sudo apt-add-repository -y ppa:ansible/ansible
-  - sudo apt-get update
-  - sudo apt-get install ansible python-pip -y
-  - sudo pip install docker-py==1.5.0
-  # Pull docker image or build it
-  - >
-    if [ -f tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION} ]; then
-    sudo docker build --rm=true --file=tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION}
-    --tag ${DISTRIBUTION}:${DIST_VERSION} tests; else sudo docker pull ${DISTRIBUTION}:${DIST_VERSION}; fi
-  - sudo ln -s ${PWD} /etc/ansible/roles/greendayonfire.mongodb
+install:
+  - bash tests/scripts/before_install.sh
 
 script:
-  # Test 1
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION}
-    # Idempotence test
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e mongodb_version=${MONGODB_VERSION} -e image_name=${DISTRIBUTION}:${DIST_VERSION} 
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
-
-    # Delete all containers
-  - sudo docker kill mongo{1,2,3} && docker rm mongo{1,2,3}
-
-  # Test 2
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e image_name=${DISTRIBUTION}:${DIST_VERSION}
-    -e mongodb_version=${MONGODB_VERSION} -e mongodb_security_authorization='enabled'
-    # Idempotence test
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo1 -e image_name=${DISTRIBUTION}:${DIST_VERSION}
-    -e mongodb_version=${MONGODB_VERSION} -e mongodb_security_authorization='enabled'
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
-
-    # Delete all containers
-  - sudo docker kill mongo{1,2,3} && docker rm mongo{1,2,3}
-
-  # Test 3
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo -e image_name=${DISTRIBUTION}:${DIST_VERSION}
-    -e mongodb_version=${MONGODB_VERSION} -e mongodb_replication_replset='testrs'
-    # Idempotence test
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo -e image_name=${DISTRIBUTION}:${DIST_VERSION}
-    -e mongodb_version=${MONGODB_VERSION} -e mongodb_replication_replset='testrs'
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
-
-    # Delete all containers
-  - sudo docker kill mongo{1,2,3} && docker rm mongo{1,2,3}
-
-  # Test 4
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo -e image_name=${DISTRIBUTION}:${DIST_VERSION}
-    -e mongodb_version=${MONGODB_VERSION} -e mongodb_replication_replset='testrs'
-    -e mongodb_security_authorization='enabled'
-    # Idempotence test
-  - >
-    sudo ansible-playbook -i tests/hosts tests/site.yml -e target=mongo -e image_name=${DISTRIBUTION}:${DIST_VERSION}
-    -e mongodb_version=${MONGODB_VERSION} -e mongodb_replication_replset='testrs'
-    -e mongodb_security_authorization='enabled'
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
-
+  - bash tests/scripts/test.sh
