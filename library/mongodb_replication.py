@@ -23,7 +23,7 @@ module: mongodb_replication
 short_description: Adds or removes a node from a MongoDB Replica Set.
 description:
     - Adds or removes host from a MongoDB replica set. Initialize replica set if it needed.
-version_added: "2.2"
+version_added: "2.4"
 options:
     login_user:
         description:
@@ -105,7 +105,7 @@ options:
         default: present
         choices: [ "present", "absent" ]
 notes:
-    - Requires the pymongo Python package on the remote host, version 3.0+. It
+    - Requires the pymongo Python package on the remote host, version 3.2+. It
       can be installed using pip or the OS package manager. @see http://api.mongodb.org/python/current/installation.html
 requirements: [ "pymongo" ]
 author: "Sergei Antipov @UnderGreen"
@@ -166,11 +166,14 @@ else:
 # MongoDB module specific support methods.
 #
 def check_compatibility(module, client):
-    if LooseVersion(PyMongoVersion) <= LooseVersion('3.0'):
-        module.fail_json(msg='Note: you must use pymongo 3.0+')
     srv_info = client.server_info()
-    if LooseVersion(srv_info['version']) >= LooseVersion('3.2') and LooseVersion(PyMongoVersion) <= LooseVersion('3.2'):
-        module.fail_json(msg=' (Note: you must use pymongo 3.2+ with MongoDB >= 3.2)')
+    if LooseVersion(PyMongoVersion) <= LooseVersion('3.2'):
+        module.fail_json(msg='Note: you must use pymongo 3.2+')
+    if LooseVersion(srv_info['version']) >= LooseVersion('3.4') and LooseVersion(PyMongoVersion) <= LooseVersion('3.4'):
+        module.fail_json(msg='Note: you must use pymongo 3.4+ with MongoDB 3.4.x')
+    if LooseVersion(srv_info['version']) >= LooseVersion('3.6') and LooseVersion(PyMongoVersion) <= LooseVersion('3.6'):
+        module.fail_json(msg='Note: you must use pymongo 3.6+ with MongoDB 3.6.x')
+
 
 def check_members(state, module, client, host_name, host_port, host_type):
     admin_db = client['admin']

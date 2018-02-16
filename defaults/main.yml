@@ -1,13 +1,12 @@
 ---
 
 mongodb_package: mongodb-org
-mongodb_version: "3.4"
+mongodb_version: "3.6"
 mongodb_apt_keyserver: keyserver.ubuntu.com
 mongodb_apt_key_id:
-  "2.6": "7F0CEB10"
-  "3.0": "7F0CEB10"
   "3.2": "EA312927"
   "3.4": "0C49F3730359A14518585931BC711F9BA15703C6"
+  "3.6": "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
 
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
 
@@ -41,7 +40,7 @@ mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with 
 mongodb_storage_dbpath: /data/db                 # Directory for datafiles
 # The storage engine for the mongod database. Available values:
 # 'mmapv1', 'wiredTiger'
-mongodb_storage_engine: "{{ 'mmapv1' if mongodb_version[0:3] == '3.0' else 'wiredTiger' }}"
+mongodb_storage_engine: "wiredTiger"
 # mmapv1 specific options
 mongodb_storage_quota_enforced: false            # Limits each database to a certain number of files
 mongodb_storage_quota_maxfiles: 8                # Number of quota files per DB
@@ -95,8 +94,8 @@ mongodb_user_admin_password: passw0rd
 mongodb_root_admin_name: siteRootAdmin
 mongodb_root_admin_password: passw0rd
 
-mongodb_root_backup_name: "backupuser"
-mongodb_root_backup_password: "passw0rd"
+mongodb_root_backup_name: backupuser
+mongodb_root_backup_password: passw0rd
 
 # setParameter config
 mongodb_set_parameters:
