@@ -16,7 +16,7 @@
   register: mongodb_replica_init
   ignore_errors: true
 
-- include_tasks: auth_initialization.yml
+- include: auth_initialization.yml
   when: mongodb_replica_init|failed
 
 - name: Replication configuration | 2nd Pt
