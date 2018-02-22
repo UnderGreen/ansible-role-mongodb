@@ -18,14 +18,6 @@
         - mongo3
 
 - hosts: "{{ target }}"
-  gather_facts: false
-  tasks:
-    - name: Install Python 2.x
-      raw: test -e /usr/bin/python || (apt update && apt install -y python-minimal) || true
-      register: test
-      changed_when: test.stdout
-
-- hosts: "{{ target }}"
   become: no
   gather_facts: yes
   roles:

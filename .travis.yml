@@ -6,19 +6,18 @@ sudo: required
 language: python
 python:
   - "2.7"
-  - "3.6"
 env:
   - >
     DISTRIBUTION=ubuntu
-    DIST_VERSION=16.04
+    DIST_VERSION=16_04-builded
     MONGODB_VERSION=3.6
   - >
     DISTRIBUTION=ubuntu
-    DIST_VERSION=16.04
+    DIST_VERSION=16_04-builded
     MONGODB_VERSION=3.4
   - >
     DISTRIBUTION=ubuntu
-    DIST_VERSION=16.04
+    DIST_VERSION=16_04-builded
     MONGODB_VERSION=3.2
   - >
     DISTRIBUTION=ubuntu-upstart
