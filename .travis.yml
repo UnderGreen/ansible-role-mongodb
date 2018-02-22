@@ -32,6 +32,30 @@ env:
     DIST_VERSION=14.04
     MONGODB_VERSION=3.2
   - >
+    DISTRIBUTION=debian
+    DIST_VERSION=9-builded
+    MONGODB_VERSION=3.6
+  - >
+    DISTRIBUTION=debian
+    DIST_VERSION=9-builded
+    MONGODB_VERSION=3.4
+  - >
+    DISTRIBUTION=debian
+    DIST_VERSION=9-builded
+    MONGODB_VERSION=3.2
+  - >
+    DISTRIBUTION=debian
+    DIST_VERSION=8-builded
+    MONGODB_VERSION=3.6
+  - >
+    DISTRIBUTION=debian
+    DIST_VERSION=8-builded
+    MONGODB_VERSION=3.4
+  - >
+    DISTRIBUTION=debian
+    DIST_VERSION=8-builded
+    MONGODB_VERSION=3.2
+  - >
     DISTRIBUTION=centos
     DIST_VERSION=6-builded
     MONGODB_VERSION=3.6
