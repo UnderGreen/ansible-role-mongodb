@@ -34,14 +34,6 @@ env:
   - >
     DISTRIBUTION=debian
     DIST_VERSION=9-builded
-    MONGODB_VERSION=3.6
-  - >
-    DISTRIBUTION=debian
-    DIST_VERSION=9-builded
-    MONGODB_VERSION=3.4
-  - >
-    DISTRIBUTION=debian
-    DIST_VERSION=9-builded
     MONGODB_VERSION=3.2
   - >
     DISTRIBUTION=debian

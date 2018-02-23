@@ -301,7 +301,7 @@ def load_mongocnf():
 
     return creds
 
-def wait_for_ok_and_master(module, client, timeout = 120):
+def wait_for_ok_and_master(module, client, timeout = 60):
     while True:
         status = client.admin.command('replSetGetStatus', check=False)
         if status['ok'] == 1 and status['myState'] == 1:
@@ -400,7 +400,7 @@ def main():
                 "username": login_user,
                 "password": login_password,
                 "authsource": login_database,
-                "serverselectiontimeoutms": 110000,
+                "serverselectiontimeoutms": 30000,
             }
 
             if ssl:
