@@ -14,6 +14,7 @@
 - name: Overwrite mongodb_version especially for Debian 9
   set_fact:
     mongodb_major_version: "3.2"
+  when: ansible_distribution_release == "stretch"
 
 - name: Add APT key
   apt_key:
