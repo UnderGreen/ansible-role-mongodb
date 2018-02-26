@@ -19,10 +19,10 @@ MongoDB support matrix:
 | RHEL 6.x | :no_entry: | :no_entry: | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
 | RHEL 7.x | :no_entry: | :no_entry: | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
 
-:white_check_mark: - fully tested, should works fine
-:interrobang: - maybe works, not tested
-:x: - don't have official support
-:no_entry: - MongoDB has reached EOL
+- :white_check_mark: - fully tested, should works fine
+- :interrobang: - maybe works, not tested
+- :x: - don't have official support
+- :no_entry: - MongoDB has reached EOL
 
 #### Variables
 
