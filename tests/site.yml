@@ -20,7 +20,6 @@
 - hosts: "{{ target }}"
   become: no
   gather_facts: yes
-
   roles:
     - role: greendayonfire.mongodb
       when: "'mongo_master' in group_names"

@@ -1,0 +1,7 @@
+FROM ubuntu:16.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && \
+    apt install --yes python-minimal iproute2 && \
+    rm /lib/systemd/system/getty@.service

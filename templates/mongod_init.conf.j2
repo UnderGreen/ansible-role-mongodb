@@ -2,8 +2,10 @@
 
 net:
   bindIp: '127.0.0.1'
+  {% if mongodb_major_version | version_compare("3.6", "<") -%}
   http:
     enabled: {{ mongodb_net_http_enabled | to_nice_json }}
+  {% endif -%}
   ipv6: {{ mongodb_net_ipv6 | to_nice_json }}
   maxIncomingConnections: {{ mongodb_net_maxconns }}
   port: {{ mongodb_net_port }}
@@ -13,13 +15,13 @@ processManagement:
   {% if mongodb_pidfile_path is defined and mongodb_pidfile_path != '' -%}
   pidFilePath: {{ mongodb_pidfile_path }}
   {% endif %}
-  
+
 security:
   authorization: 'disabled'
 
 storage:
   dbPath: {{ mongodb_storage_dbpath }}
-  {% if mongodb_major_version|float >= 3.0 -%}
+  {% if mongodb_major_version | version_compare("3.0", ">=") -%}
   engine: {{ mongodb_storage_engine }}
   {% endif -%}
   journal:
@@ -30,13 +32,6 @@ storage:
       enforced: {{ mongodb_storage_quota_enforced | to_nice_json }}
       maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
     smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
-  {% endif -%}
-  {% if mongodb_major_version == '2.6' -%}
-  quota:
-    enforced: {{ mongodb_storage_quota_enforced | to_nice_json }}
-    maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
-  preallocDataFiles: {{ mongodb_storage_prealloc | to_nice_json }}
-  smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
   {% endif %}
 
 systemLog:
