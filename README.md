@@ -10,19 +10,19 @@ Ansible role which manages [MongoDB](http://www.mongodb.org/).
 
 MongoDB support matrix:
 
-| Distribution | MongoDB 2.4 | MongoDB 2.6 | MongoDB 3.0 | MongoDB 3.2 | MongoDB 3.4 |
-| ------------ |:-----------:|:-----------:|:-----------:|:-----------:|:-----------:|
-| Ubuntu 14.04 | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:| :x:|
-| Ubuntu 16.04 | :no_entry: | :x: | :x: | :x:| :x:|
-| Debian 8.x | :no_entry: | :x: | :x: | :x:| :x:|
-| Debian 9.x | :no_entry: | :x: | :x: | :x:| :x:|
-| RHEL 6.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: | :interrobang: |
-| RHEL 7.x | :no_entry: | :interrobang: | :interrobang: | :interrobang: | :interrobang: |
+| Distribution | MongoDB 2.4 | MongoDB 2.6 | MongoDB 3.0 | MongoDB 3.2 | MongoDB 3.4 | MongoDB 3.6 |
+| ------------ |:-----------:|:-----------:|:-----------:|:-----------:|:-----------:|:-----------:|
+| Ubuntu 14.04 | :no_entry: | :no_entry: | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:|
+| Ubuntu 16.04 | :no_entry: | :no_entry: | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:|
+| Debian 8.x | :no_entry: | :no_entry: | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:|
+| Debian 9.x | :no_entry: | :no_entry: | :no_entry: | :white_check_mark:| :x:| :x:|
+| RHEL 6.x | :no_entry: | :no_entry: | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+| RHEL 7.x | :no_entry: | :no_entry: | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
 
-:white_check_mark: - fully tested, should work fine
-:interrobang: - will be added testing suite soon
+:white_check_mark: - fully tested, should works fine
+:interrobang: - maybe works, not tested
 :x: - don't have official support
-:no_entry: - does't have support, because used old format of configuration files
+:no_entry: - MongoDB has reached EOL
 
 #### Variables
 
@@ -33,9 +33,9 @@ MongoDB support matrix:
 mongodb_package: mongodb-org
 
 # You can control installed version via this param.
-# Should be '2.6', '3.0', '3.2' or '3.4'. This role does't support MongoDB < 2.4.
+# Should be '3.2', '3.4', '3.6'. This role doesn't support MongoDB < 3.2.
 # I will recommend you to use latest version of MongoDB.
-mongodb_version: "3.4"
+mongodb_version: "3.6"
 
 mongodb_force_wait_for_port: false               # When not forced, the role will wait for mongod port to become available only with systemd
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
