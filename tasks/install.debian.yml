@@ -11,17 +11,10 @@
     mongodb_is_systemd: "{{ sbin_init.stat.islnk is defined and sbin_init.stat.islnk }}"
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
 
-- name: Add systemd configuration if present
-  copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640
-  when: mongodb_is_systemd
-
-- name: Add symlink for systemd
-  file: src=/lib/systemd/system/mongodb.service dest=/etc/systemd/system/multi-user.target.wants/mongodb.service state=link
-  when: mongodb_is_systemd
-  notify: reload systemd
-
-- meta: flush_handlers
-  when: mongodb_is_systemd
+- name: Overwrite mongodb_version especially for Debian 9
+  set_fact:
+    mongodb_major_version: "3.2"
+  when: ansible_distribution_release == "stretch"
 
 - name: Add APT key
   apt_key:
@@ -47,9 +40,20 @@
     - "{{mongodb_package}}"
     - numactl
 
+- name: Add systemd configuration if present
+  copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640
+  when: mongodb_is_systemd
+
+- name: Add symlink for systemd
+  file: src=/lib/systemd/system/mongodb.service dest=/etc/systemd/system/multi-user.target.wants/mongodb.service state=link
+  when: mongodb_is_systemd
+  notify: reload systemd
+
 - name: reload systemd
   shell: systemctl daemon-reload
-  changed_when: false
+  when: mongodb_is_systemd and mongodb_manage_service
+
+- meta: flush_handlers
   when: mongodb_is_systemd
 
 - name: Install PyMongo package

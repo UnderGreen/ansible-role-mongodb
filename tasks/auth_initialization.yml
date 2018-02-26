@@ -1,5 +1,5 @@
 ---
-- name: Move back mongod.conf
+- name: Use different mongod.conf for auth initialization
   template: src=mongod_init.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
 
 - name: Restart mongodb service
@@ -77,7 +77,3 @@
 - name: Wait MongoDB port is listening
   wait_for: host="{{ item }}" port="{{ mongodb_net_port }}" delay=5 state=started
   with_items: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list }}"
-
-- name: stop mongodb if was not started
-  shell: "kill {{ pidof_mongod.stdout }}"
-  when: mongodb_manage_service == false and pidof_mongod.rc == 0
