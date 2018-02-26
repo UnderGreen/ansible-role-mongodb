@@ -37,7 +37,6 @@ mongodb_package: mongodb-org
 # I will recommend you to use latest version of MongoDB.
 mongodb_version: "3.6"
 
-mongodb_force_wait_for_port: false               # When not forced, the role will wait for mongod port to become available only with systemd
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
