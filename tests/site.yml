@@ -17,14 +17,21 @@
         - mongo2
         - mongo3
 
-- hosts: "{{ target }}"
+- hosts: mongo
+  become: no
+  gather_facts: no
+  tasks:
+    - name: gather tasks from all hosts
+      setup:
+
+- hosts: "{{ target | default('mongo') }}"
   become: no
   gather_facts: yes
   roles:
     - role: greendayonfire.mongodb
       when: "'mongo_master' in group_names"
 
-- hosts: "{{ target }}"
+- hosts: "{{ target | default('mongo') }}"
   become: no
   gather_facts: yes
   roles:
