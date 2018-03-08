@@ -38,5 +38,6 @@ systemLog:
   destination: {{ mongodb_systemlog_destination }}
   {% if mongodb_systemlog_destination == 'file' -%}
   logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
+  logRotate: {{ mongodb_systemlog_logrotate }}
   path: {{ mongodb_systemlog_path }}
   {% endif -%}
