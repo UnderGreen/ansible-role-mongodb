@@ -2,6 +2,7 @@
 
 - name: Include OS-specific variables
   include_vars: "{{ item }}"
+  skip: yes
   with_first_found:
     - "{{ ansible_distribution_release }}.yml"
     - "{{ ansible_distribution }}.yml"
