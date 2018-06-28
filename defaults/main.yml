@@ -9,6 +9,7 @@ mongodb_apt_key_id:
   "3.6": "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
 
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
+mongodb_pymongo_pip_version: 3.6.1
 
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true

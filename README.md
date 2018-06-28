@@ -38,6 +38,7 @@ mongodb_package: mongodb-org
 mongodb_version: "3.6"
 
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
+mongodb_pymongo_pip_version: 3.6.1               # Choose PyMong version to install from pip. If not set use latest
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
 

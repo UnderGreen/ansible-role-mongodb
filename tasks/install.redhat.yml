@@ -42,5 +42,6 @@
 - name: Install PyMongo from PIP
   pip:
     name: pymongo
-    state: latest
+    state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
+    version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip
