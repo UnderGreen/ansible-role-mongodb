@@ -5,15 +5,15 @@
   register: mongodb_mms_agent_loaded
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
+- name: Install MMS agent (Debian)
+  apt:
+    deb: "{{mongodb_storage_dbpath}}/mms-agent.deb"
+  when: mongodb_mms_agent_loaded.changed #and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
 - name: Download MMS Agent (RHEL)
   get_url: url={{mongodb_mms_agent_pkg}} dest={{mongodb_storage_dbpath}}/mms-agent.rpm
   register: mongodb_mms_agent_loaded
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
-
-- name: Install MMS agent (Debian)
-  apt:
-    deb: "{{mongodb_storage_dbpath}}/mms-agent.deb"
-  when: mongodb_mms_agent_loaded.changed and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
 - name: Install MMS agent (RHEL)
   yum:
