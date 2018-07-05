@@ -49,10 +49,6 @@
   when: mongodb_is_systemd
   notify: reload systemd
 
-- name: reload systemd
-  shell: systemctl daemon-reload
-  when: mongodb_is_systemd and mongodb_manage_service
-
 - meta: flush_handlers
   when: mongodb_is_systemd
 
