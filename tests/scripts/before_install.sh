@@ -2,7 +2,7 @@
 # -*- mode: sh; -*-
 
 # File: before_install.sh
-# Time-stamp: <2018-02-15 15:54:06>
+# Time-stamp: <2018-07-12 18:05:37>
 # Copyright (C) 2018 Sergei Antipov
 # Description:
 
