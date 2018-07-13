@@ -14,6 +14,7 @@ MongoDB support matrix:
 | ------------ |:-------------:|:-----------:|:-----------:|:-----------:|
 | Ubuntu 14.04 | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:|
 | Ubuntu 16.04 | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:|
+| Ubuntu 18.04 | :no_entry: | :x:| :x:| :white_check_mark:|
 | Debian 8.x | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:|
 | Debian 9.x | :no_entry: | :white_check_mark:| :x:| :white_check_mark:|
 | RHEL 6.x | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
