@@ -34,7 +34,12 @@ env:
   - >
     DISTRIBUTION=debian
     DIST_VERSION=9-builded
+    MONGODB_VERSION=3.6
+  - >
+    DISTRIBUTION=debian
+    DIST_VERSION=9-builded
     MONGODB_VERSION=3.2
+    MONGODB_PACKAGE=mongodb
   - >
     DISTRIBUTION=debian
     DIST_VERSION=8-builded
@@ -71,9 +76,6 @@ env:
     DISTRIBUTION=centos
     DIST_VERSION=7-builded
     MONGODB_VERSION=3.2
-#  - >
-#    distribution=debian
-#    version=7
 
 services:
   - docker
