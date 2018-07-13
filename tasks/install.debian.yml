@@ -25,7 +25,7 @@
          or mongodb_repository[mongodb_major_version] is not defined
          or mongodb_version != '3.6') and ansible_distribution_release == 'stretch')
 
-- name: Fail when used wrong mongodb_version variable with Debian Stretch
+- name: Fail when used wrong mongodb_version variable with Ubuntu 18.04
   fail:
     msg: "mongodb_version variable should be '3.6' and mongodb_package should be 'mongodb' for Ubuntu 18.04"
   when: ((mongodb_package == 'mongodb-org' or mongodb_version != '3.6')
