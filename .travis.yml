@@ -39,7 +39,7 @@ env:
     DISTRIBUTION=debian
     DIST_VERSION=9-builded
     MONGODB_VERSION=3.2
-    MONOGDB_PACKAGE=mongodb
+    MONGODB_PACKAGE=mongodb
   - >
     DISTRIBUTION=debian
     DIST_VERSION=8-builded
