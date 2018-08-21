@@ -138,7 +138,7 @@ mongodb_root_admin_password: passw0rd
 
 #### Usage
 
-Add `greendayonfire.mongodb` to your roles and set vars in your playbook file.
+Add `undergreen.mongodb` to your roles and set vars in your playbook file.
 
 Example vars for authorization:
 ```yaml
