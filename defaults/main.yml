@@ -25,6 +25,9 @@ mongodb_net_http_enabled: false                  # Enable http interface
 mongodb_net_ipv6: false                          # Enable IPv6 support (disabled by default)
 mongodb_net_maxconns: 65536                      # Max number of simultaneous connections
 mongodb_net_port: 27017                          # Specify port number
+mongodb_net_ssl: disabled                        # Enable or disable ssl connections
+mongodb_net_ssl_mode:                            # Set the ssl mode (RequireSSL / PreferSSL / AllowSSL / disabled)
+mongodb_net_ssl_pemfile:                         # Location of the pemfile to use for ssl
 
 ## processManagement Options
 # Fork server process
