@@ -1,7 +1,9 @@
 # {{ ansible_managed }}
 
 net:
+  {% if mongodb_net_bindip is defined and mongodb_net_bindip != "" %}
   bindIp: {{ mongodb_net_bindip }}
+  {% endif %}
   {% if mongodb_major_version | version_compare("3.6", "<") -%}
   http:
     enabled: {{ mongodb_net_http_enabled | to_nice_json }}
