@@ -88,6 +88,28 @@
   no_log: true
   tags: [mongodb]
 
+- name: create oplog user with replicaset
+  mongodb_user_fixed:
+    database: admin
+    user: "{{ item.user }}"
+    password: "{{ item.password }}"
+    update_password: "{{ mongodb_user_update_password }}"
+    roles:
+      - db: local
+        role: read
+    login_user: "{{ mongodb_user_admin_name }}"
+    login_password: "{{ mongodb_user_admin_password }}"
+    login_port: "{{ mongodb_login_port|default(27017) }}"
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
+  with_items:
+    - "{{ mongodb_oplog_users | default([]) }}"
+  when: ( mongodb_replication_replset
+        and mongodb_replication_replset != ''
+        and mongodb_security_authorization == 'enabled'
+        and mongodb_master is defined and mongodb_master )
+  no_log: false
+  tags: [mongodb]
+
 - name: Include MMS Agent configuration
   include: mms-agent.yml
   when: mongodb_mms_api_key != ""
