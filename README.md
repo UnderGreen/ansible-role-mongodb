@@ -64,6 +64,8 @@ mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with 
 
 ## storage Options
 mongodb_storage_dbpath: /data/db                 # Directory for datafiles
+mongodb_storage_dirperdb: false                  # Use one directory per DB
+
 # The storage engine for the mongod database. Available values:
 # 'mmapv1', 'wiredTiger'
 mongodb_storage_engine: "{{ 'mmapv1' if mongodb_version[0:3] == '3.0' else 'wiredTiger' }}"
