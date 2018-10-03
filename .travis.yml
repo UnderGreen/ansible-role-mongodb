@@ -10,8 +10,17 @@ env:
   - >
     DISTRIBUTION=ubuntu
     DIST_VERSION=18_04-builded
+    MONGODB_VERSION=4.0
+    MONGODB_PACKAGE=mongodb
+  - >
+    DISTRIBUTION=ubuntu
+    DIST_VERSION=18_04-builded
     MONGODB_VERSION=3.6
     MONGODB_PACKAGE=mongodb
+  - >
+    DISTRIBUTION=ubuntu
+    DIST_VERSION=16_04-builded
+    MONGODB_VERSION=4.0
   - >
     DISTRIBUTION=ubuntu
     DIST_VERSION=16_04-builded
@@ -24,6 +33,10 @@ env:
     DISTRIBUTION=ubuntu
     DIST_VERSION=16_04-builded
     MONGODB_VERSION=3.2
+  - >
+    DISTRIBUTION=ubuntu-upstart
+    DIST_VERSION=14.04
+    MONGODB_VERSION=4.0
   - >
     DISTRIBUTION=ubuntu-upstart
     DIST_VERSION=14.04
@@ -39,6 +52,10 @@ env:
   - >
     DISTRIBUTION=debian
     DIST_VERSION=9-builded
+    MONGODB_VERSION=4.0
+  - >
+    DISTRIBUTION=debian
+    DIST_VERSION=9-builded
     MONGODB_VERSION=3.6
   - >
     DISTRIBUTION=debian
@@ -48,6 +65,10 @@ env:
   - >
     DISTRIBUTION=debian
     DIST_VERSION=8-builded
+    MONGODB_VERSION=4.0
+  - >
+    DISTRIBUTION=debian
+    DIST_VERSION=8-builded
     MONGODB_VERSION=3.6
   - >
     DISTRIBUTION=debian
@@ -60,6 +81,10 @@ env:
   - >
     DISTRIBUTION=centos
     DIST_VERSION=6-builded
+    MONGODB_VERSION=4.0
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=6-builded
     MONGODB_VERSION=3.6
   - >
     DISTRIBUTION=centos
@@ -69,6 +94,10 @@ env:
     DISTRIBUTION=centos
     DIST_VERSION=6-builded
     MONGODB_VERSION=3.2
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=7-builded
+    MONGODB_VERSION=4.0
   - >
     DISTRIBUTION=centos
     DIST_VERSION=7-builded
