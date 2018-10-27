@@ -92,3 +92,8 @@
   include: mms-agent.yml
   when: mongodb_mms_api_key != ""
   tags: [mongodb]
+
+- name: Include log rotate
+  include: logrotate.yml
+  when: mongodb_logrotate == true
+  tags: [mongodb]

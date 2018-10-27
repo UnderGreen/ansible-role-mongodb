@@ -3,3 +3,4 @@ mongodb_repository:
   "3.2": "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/3.2 main"
   "3.4": "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/3.4 main"
   "3.6": "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/3.6 main"
+  "4.0": "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/4.0 main"

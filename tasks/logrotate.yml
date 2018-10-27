@@ -1,0 +1,2 @@
+- name: Copy template logrotate
+  template: src=logrotate-mongod.conf.j2 dest=/etc/logrotate.d/mongod backup=yes owner=root group=root mode=0644
