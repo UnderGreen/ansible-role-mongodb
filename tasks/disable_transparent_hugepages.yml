@@ -1,0 +1,22 @@
+- name: Install disable transparent hugepages helper
+  copy:
+    src: disable-transparent-hugepages.sh
+    dest: /opt/disable-transparent-hugepages.sh
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Create disable transparent hugepages init file
+  copy:
+    src: disable-transparent-hugepages.init
+    dest: /etc/systemd/system/disable-transparent-hugepages.init
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable init file
+  systemd:
+    name: disable-transparent-hugepages
+    daemon-reload: yes
+    enabled: yes
+    state: started

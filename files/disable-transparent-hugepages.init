@@ -1,0 +1,10 @@
+[Unit]
+Description="Disable transparent hugepages"
+Before=mongodb.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/disable-transparent-hugepages.sh
+
+[Install]
+WantedBy=multi-user.target

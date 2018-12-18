@@ -43,6 +43,9 @@ mongodb_pymongo_pip_version: 3.6.1               # Choose PyMong version to inst
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
 
+# Disable transparent hugepages on systemd debian based installations
+mongodb_disable_transparent_hugepages: false
+
 mongodb_user: "{{ 'mongod' if ('RedHat' == ansible_os_family) else 'mongodb' }}"
 mongodb_uid:
 mongodb_gid:
