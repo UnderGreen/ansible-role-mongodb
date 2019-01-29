@@ -31,7 +31,7 @@
     - {
       name: "{{ mongodb_user_admin_name }}",
       password: "{{ mongodb_user_admin_password }}",
-      roles: "userAdminAnyDatabase"
+      roles: "{{ [{'db': 'admin', 'role':'userAdminAnyDatabase'}] + ( mongodb_user_admin_roles | default([]) )}}"
       }
   no_log: true
 

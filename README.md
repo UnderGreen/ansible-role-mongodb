@@ -133,6 +133,10 @@ mongodb_keyfile_content: |
 # names and passwords for administrative users
 mongodb_user_admin_name: siteUserAdmin
 mongodb_user_admin_password: passw0rd
+# Extra roles to add for administrative users
+mongodb_user_admin_roles: 
+    - db: admin
+      role: dbAdminAnyDatabase
 
 mongodb_root_admin_name: siteRootAdmin
 mongodb_root_admin_password: passw0rd
