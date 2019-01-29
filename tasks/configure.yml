@@ -41,6 +41,7 @@
     path: "{{ mongodb_storage_dbpath }}"
     state: directory
     owner: "{{ mongodb_user }}"
+    setype: 'mongod_var_lib_t'
     recurse: yes
 
 - name: Configure mongodb
