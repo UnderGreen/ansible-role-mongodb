@@ -1,0 +1,30 @@
+---
+- name: Get list of block devices to test
+  shell: ls /sys/block/ | egrep '^(([shv]|xv)d[a-z])|(nvme[0-9a-z]+)$'
+  register: block_devs
+  changed_when: no
+  check_mode: no
+
+- name: Get block device current disk scheduler
+  shell: cat /sys/block/{{ item }}/queue/scheduler | egrep -q '\[{{ disk_scheduler }}\]'
+  with_items: "{{ block_devs.stdout_lines }}"
+  register: scheduler_test
+  changed_when: scheduler_test.rc == 1
+  failed_when: scheduler_test.rc == 2
+
+- name: Set block device disk scheduler
+  shell: echo {{ disk_scheduler }} > /sys/block/{{ item }}/queue/scheduler
+  with_items: "{{ block_devs.stdout_lines }}"
+  when: scheduler_test.changed
+
+- name: Get block device current readahead setting
+  shell: cat /sys/block/{{ item }}/queue/read_ahead_kb | egrep -q '\[{{ disk_read_ahead_kb }}\]'
+  with_items: "{{ block_devs.stdout_lines }}"
+  register: readahead_test
+  changed_when: readahead_test.rc == 1
+  failed_when: readahead_test.rc == 2
+
+- name: Set block device readahead setting
+  shell: echo {{ disk_read_ahead_kb }} > /sys/block/{{ item }}/queue/read_ahead_kb
+  with_items: "{{ block_devs.stdout_lines }}"
+  when: readahead_test.changed

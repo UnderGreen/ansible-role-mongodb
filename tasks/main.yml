@@ -7,6 +7,14 @@
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
 
+- name: Include system settings tasks
+  include: system_settings.yml
+  tags: [mongodb]
+
+- name: Include disk settings tasks
+  include: storage_settings.yml
+  tags: [mongodb]
+
 - name: Include installation tasks
   include: "install.{{ ansible_os_family | lower }}.yml"
   tags: [mongodb]

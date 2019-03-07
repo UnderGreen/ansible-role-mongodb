@@ -1,0 +1,41 @@
+---
+- name: Set Zone reclaim mode for NUMA
+  sysctl:
+    name: vm.zone_reclaim_mode
+    value: "{{ sysctl_zone_reclaim_mode }}"
+    reload: yes
+    state: present
+
+- name: Set TCP idle timeout
+  sysctl:
+    name: net.ipv4.tcp_keepalive_time
+    value: "{{ sysctl_tcp_keepalive_time }}"
+    reload: yes
+    state: present
+
+- name: Set Swappiness
+  sysctl:
+    name: vm.swappiness
+    value: "{{ sysctl_vm_swappiness }}"
+    reload: yes
+    state: present
+
+- name: Set UNIX ulimit settings
+  pam_limits:
+    domain: "{{ mongodb_user }}"
+    limit_type: soft
+    limit_item: "{{ item.key }}"
+    value: "{{ item.value }}"
+  with_dict: system_limits
+
+- name: Set transparent huge pages service
+  copy:
+    src: disable-transparent-hugepages
+    dest: "/etc/init.d/disable-transparent-hugepages"
+    mode: 0755
+
+- name: Start transparent huge pages service
+  service:
+    name: disable-transparent-hugepages
+    state: started
+    enabled: yes

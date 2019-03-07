@@ -105,3 +105,20 @@ mongodb_root_backup_password: passw0rd
 
 # setParameter config
 mongodb_set_parameters:
+
+# system requirements
+sysctl_tcp_keepalive_time: 120
+sysctl_vm_swappiness: 1
+sysctl_zone_reclaim_mode: 0
+
+system_limits:
+  as: unlimited
+  cpu: unlimited
+  fsize: unlimited
+  memlock: unlimited
+  nofile: 64000
+  nproc: 64000
+  rss: unlimited
+
+disk_scheduler: deadline
+disk_read_ahead_kb: 0
