@@ -24,9 +24,9 @@
   pam_limits:
     domain: "{{ mongodb_user }}"
     limit_type: soft
-    limit_item: "{{ item.key }}"
+    limit_item: "{{ item.name }}"
     value: "{{ item.value }}"
-  with_dict: system_limits
+  with_items: system_limits
 
 - name: Set transparent huge pages service
   copy:

@@ -112,13 +112,20 @@ sysctl_vm_swappiness: 1
 sysctl_zone_reclaim_mode: 0
 
 system_limits:
-  as: unlimited
-  cpu: unlimited
-  fsize: unlimited
-  memlock: unlimited
-  nofile: 64000
-  nproc: 64000
-  rss: unlimited
+  - name: as
+    value: unlimited
+  - name: cpu
+    value: unlimited
+  - name: fsize
+    value: unlimited
+  - name: memlock
+    value: unlimited
+  - name: nofile
+    value: 64000
+  - name: nproc
+    value: 64000
+  - name: rss
+    value: unlimited
 
 disk_scheduler: deadline
 disk_read_ahead_kb: 0
