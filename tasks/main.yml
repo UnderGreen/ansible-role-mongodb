@@ -12,7 +12,7 @@
   tags: [mongodb]
 
 - name: Include disk settings tasks
-  include: storage_settings.yml
+  include: disk_settings.yml
   tags: [mongodb]
 
 - name: Include installation tasks
