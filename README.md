@@ -156,6 +156,14 @@ mongodb_users:
     database: app_development
 }
 ```
+Example vars for oplog user:
+```yaml
+mongodb_oplog_users:
+  - {
+    user: oplog,
+    password: passw0rd
+}
+```
 Required vars to change on production:
 ```yaml
 mongodb_user_admin_password
