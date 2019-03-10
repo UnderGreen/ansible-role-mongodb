@@ -11,6 +11,12 @@
     mongodb_is_systemd: "{{ sbin_init.stat.islnk is defined and sbin_init.stat.islnk }}"
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
 
+- name: Disable transparent huge pages on systemd systems
+  include_tasks: disable_transparent_hugepages.yml
+  when:
+    - mongodb_disable_transparent_hugepages
+    - mongodb_is_systemd
+
 - name: Add APT key
   apt_key:
     keyserver: "{{ mongodb_apt_keyserver }}"
