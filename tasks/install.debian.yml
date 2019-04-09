@@ -69,7 +69,8 @@
   shell: systemctl daemon-reload
   when: mongodb_is_systemd and mongodb_manage_service
 
-- meta: flush_handlers
+- block:
+   - meta: flush_handlers
   when: mongodb_is_systemd
 
 - name: Install PyMongo package
