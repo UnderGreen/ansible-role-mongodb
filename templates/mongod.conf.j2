@@ -12,7 +12,7 @@ net:
   {% if mongodb_net_ssl_pemfile is defined and mongodb_net_ssl_mode is defined and mongodb_net_ssl == 'enabled' -%}
   ssl:
     mode: {{ mongodb_net_ssl_mode }}
-    PEMKeyFile: {{ mongodb_net_ssl_pemfile }}.pem
+    PEMKeyFile: {{ mongodb_net_ssl_pemfile }}
   {% endif %}
 
 processManagement:
@@ -51,6 +51,12 @@ storage:
       maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
     smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
   {% endif %}
+
+{% if mongodb_wiredtiger_cache_size is defined %}
+  wiredTiger:
+    engineConfig:
+      cacheSizeGB: {{ mongodb_wiredtiger_cache_size }}
+{% endif %}
 
 systemLog:
   destination: {{ mongodb_systemlog_destination }}

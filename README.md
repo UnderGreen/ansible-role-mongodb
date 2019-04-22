@@ -80,6 +80,9 @@ mongodb_storage_smallfiles: false                # Very useful for non-data node
 mongodb_storage_journal_enabled: true            # Enable journaling
 mongodb_storage_prealloc: true                   # Disable data file preallocation
 
+# WiredTiger Options
+mongodb_wiredtiger_cache_size: 1                 # Cache size for wiredTiger in GB
+
 ## systemLog Options
 ## The destination to which MongoDB sends all log output. Specify either 'file' or 'syslog'.
 ## If you specify 'file', you must also specify mongodb_systemlog_path.
