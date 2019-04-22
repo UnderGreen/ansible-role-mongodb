@@ -50,10 +50,11 @@
   when: mongodb_package == 'mongodb-org'
 
 - name: Install MongoDB package
-  apt: name={{item}} state=present
-  with_items:
-    - "{{mongodb_package}}"
-    - numactl
+  apt: 
+    name:
+      - "{{mongodb_package}}"
+      - numactl
+    state: present
 
 - name: Add systemd configuration if present
   copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640
@@ -68,7 +69,8 @@
   shell: systemctl daemon-reload
   when: mongodb_is_systemd and mongodb_manage_service
 
-- meta: flush_handlers
+- block:
+   - meta: flush_handlers
   when: mongodb_is_systemd
 
 - name: Install PyMongo package
@@ -76,10 +78,10 @@
   when: not mongodb_pymongo_from_pip
 
 - name: Install PIP
-  apt: pkg={{ item }}
-  with_items:
-    - python-dev
-    - python-pip
+  apt:
+    pkg:
+      - python-dev
+      - python-pip
   when: mongodb_pymongo_from_pip
 
 - name: Install PyMongo from PIP
