@@ -25,9 +25,9 @@
   file: state=directory path=/etc/mongodb-mms owner={{mongodb_user}} group={{mongodb_user}} mode=0755
 
 - name: Configure the MMS agent pt. 2
-  template: src=automation-agent.config.j2 dest=/etc/mongodb-mms/automation-agent.config
-  notify: mongodb-mms-automation-agent restart
+  template: src=monitoring-agent.config.j2 dest=/etc/mongodb-mms/monitoring-agent.config
+  notify: mongodb-mms-monitoring-agent restart
 
 - name: Ensure that the MMS agent is started
-  service: name=mongodb-mms-automation-agent state=started enabled=yes
+  service: name=mongodb-mms-monitoring-agent state=started enabled=yes
   when: mongodb_manage_service
