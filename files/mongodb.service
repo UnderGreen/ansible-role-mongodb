@@ -4,7 +4,7 @@ Documentation=man:mongod(1)
 
 [Service]
 User=mongodb
-ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+ExecStart=/usr/bin/numactl --interleave=all /usr/bin/mongod --config /etc/mongod.conf
 LimitNOFILE=65535
 LimitNPROC=65535
 
