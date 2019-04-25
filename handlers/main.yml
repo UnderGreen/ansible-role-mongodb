@@ -8,8 +8,8 @@
   service: name={{ mongodb_daemon_name }} state=restarted
   when: mongodb_manage_service
 
-- name: mongodb-mms-automation-agent restart
-  service: name=mongodb-mms-automation-agent state=restarted
+- name: mongodb-mms-monitoring-agent restart
+  service: name=mongodb-mms-monitoring-agent state=restarted
   when: mongodb_manage_service
 
 - name: reload systemd

@@ -101,7 +101,7 @@ mongodb_replication_oplogsize: 1024               # specifies a maximum size in 
 mongodb_set_parameters: { "enableLocalhostAuthBypass": "true", "authenticationMechanisms": "SCRAM-SHA-1,MONGODB-CR" }
 
 # MMS Agent
-mongodb_mms_agent_pkg: https://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_1.4.2.783-1_amd64.deb
+mongodb_mms_agent_pkg: https://cloud.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_7.2.0.488-1_amd64.ubuntu1604.deb
 mongodb_mms_group_id: ""
 mongodb_mms_api_key: ""
 mongodb_mms_base_url: https://mms.mongodb.com
