@@ -171,7 +171,7 @@ Required vars to change on production:
 ```yaml
 mongodb_user_admin_password
 mongodb_root_admin_password
-mongodb_root_backup_name
+mongodb_root_backup_password
 
 # if you use replication and authorization
 mongodb_security_keyfile
