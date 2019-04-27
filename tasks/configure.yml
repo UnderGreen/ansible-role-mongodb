@@ -32,9 +32,9 @@
 
 - name: Create log if missing
   file: state=touch dest={{ mongodb_systemlog_path }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
-  when: ( logfile_stat is defined
-        and not logfile_stat.stat.exists
-        and mongodb_systemlog_destination == "file" )
+  when: ( mongodb_systemlog_destination == "file"
+        and logfile_stat is defined
+        and not logfile_stat.stat.exists )
 
 - name: Ensure dbpath directory
   file:

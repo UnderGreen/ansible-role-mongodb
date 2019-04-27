@@ -4,9 +4,25 @@ Documentation=man:mongod(1)
 
 [Service]
 User=mongodb
-ExecStart=/usr/bin/mongod --config /etc/mongod.conf
-LimitNOFILE=65535
-LimitNPROC=65535
+ExecStart=/usr/bin/numactl --interleave=all /usr/bin/mongod --config /etc/mongod.conf
+# file size
+LimitFSIZE=infinity
+# cpu time
+LimitCPU=infinity
+# virtual memory size
+LimitAS=infinity
+# open files
+LimitNOFILE=64000
+# processes/threads
+LimitNPROC=64000
+# locked memory
+LimitMEMLOCK=infinity
+# total threads (user+kernel)
+TasksMax=infinity
+TasksAccounting=false
+
+# Recommended limits for for mongod as specified in
+# http://docs.mongodb.org/manual/reference/ulimit/#recommended-settings
 
 [Install]
 WantedBy=multi-user.target
