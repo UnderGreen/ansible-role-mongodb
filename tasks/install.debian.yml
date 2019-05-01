@@ -55,6 +55,7 @@
       - "{{mongodb_package}}"
       - numactl
     state: present
+    update_cache: yes
 
 - name: Add systemd configuration if present
   copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640
