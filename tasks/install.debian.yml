@@ -9,7 +9,7 @@
 - name: Establish some role-related facts
   set_fact:
     mongodb_is_systemd: "{{ sbin_init.stat.islnk is defined and sbin_init.stat.islnk }}"
-    mongodb_major_version: "{{ mongodb_version[0:4] }}"
+    mongodb_major_version: "{{ mongodb_version[0:3] }}"
 
 - name: Add APT key
   apt_key:

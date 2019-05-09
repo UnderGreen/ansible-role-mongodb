@@ -2,7 +2,7 @@
 
 - name: Establish some role-related facts
   set_fact:
-    mongodb_major_version: "{{ mongodb_version[0:4] }}"
+    mongodb_major_version: "{{ mongodb_version[0:3] }}"
 
 - name: Install EPEL release repository
   package:
@@ -14,7 +14,7 @@
     src: mongodb.repo.j2
     dest: /etc/yum.repos.d/mongodb.repo
     mode: 0644
-  with_items: "{{ mongodb_version[0:4] }}"
+  with_items: "{{ mongodb_version[0:3] }}"
   when: mongodb_package == 'mongodb-org'
 
 - name: Install MongoDB package
