@@ -19,7 +19,7 @@
 
 - name: Fail when used wrong mongodb_version variable with Debian Stretch
   fail:
-    msg: "mongodb_version variable should be '3.2' or '3.6' or '4.0' for Debian Stretch"
+    msg: "mongodb_version variable should be '3.6' or '4.0' for Debian Stretch"
   when: (mongodb_package == 'mongodb-org' and
         (mongodb_version is not defined
          or mongodb_repository[mongodb_major_version] is not defined
@@ -34,7 +34,7 @@
 
 - name: Fail when used wrong mongodb_version variable
   fail:
-    msg: "mongodb_version variable should be '3.2', '3.4', '3.6' or '4.0'"
+    msg: "mongodb_version variable should be '3.4', '3.6' or '4.0'"
   when: (mongodb_package == 'mongodb-org' and
         (mongodb_version is not defined
          or mongodb_repository[mongodb_major_version] is not defined))

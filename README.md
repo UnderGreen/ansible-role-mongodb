@@ -12,13 +12,13 @@ MongoDB support matrix:
 
 | Distribution | < MongoDB 3.0 | MongoDB 3.2 | MongoDB 3.4 | MongoDB 3.6 | MongoDB 4.0 |
 | ------------ |:-------------:|:-----------:|:-----------:|:-----------:|:-----------:|
-| Ubuntu 14.04 | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
-| Ubuntu 16.04 | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
-| Ubuntu 18.04 | :no_entry: | :x:| :x:| :white_check_mark:| :white_check_mark:|
-| Debian 8.x | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
-| Debian 9.x | :no_entry: | :white_check_mark:| :x:| :white_check_mark:| :white_check_mark:| 
-| RHEL 6.x | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:| :white_check_mark:|
-| RHEL 7.x | :no_entry: | :white_check_mark: | :white_check_mark: | :white_check_mark:| :white_check_mark:|
+| Ubuntu 14.04 | :no_entry: | :no_entry:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
+| Ubuntu 16.04 | :no_entry: | :no_entry:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
+| Ubuntu 18.04 | :no_entry: | :no_entry:| :x:| :white_check_mark:| :white_check_mark:|
+| Debian 8.x | :no_entry: | :no_entry:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
+| Debian 9.x | :no_entry: | :no_entry:| :x:| :white_check_mark:| :white_check_mark:| 
+| RHEL 6.x | :no_entry: | :no_entry: | :white_check_mark: | :white_check_mark:| :white_check_mark:|
+| RHEL 7.x | :no_entry: | :no_entry: | :white_check_mark: | :white_check_mark:| :white_check_mark:|
 
 - :white_check_mark: - fully tested, should works fine
 - :interrobang: - maybe works, not tested
@@ -34,7 +34,7 @@ MongoDB support matrix:
 mongodb_package: mongodb-org
 
 # You can control installed version via this param.
-# Should be '3.2', '3.4', '3.6'. This role doesn't support MongoDB < 3.2.
+# Should be '3.4', '3.6' or '4.0'. This role doesn't support MongoDB < 3.4.
 # I will recommend you to use latest version of MongoDB.
 mongodb_version: "3.6"
 
