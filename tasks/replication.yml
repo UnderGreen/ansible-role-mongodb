@@ -2,6 +2,7 @@
 
 - name: Replication configuration
   mongodb_replication:
+    build_indexes: "{{ item.build_indexes|default(omit) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     login_port: "{{ mongodb_login_port|default(27017) }}"
     login_user: "{{ mongodb_root_admin_name }}"
@@ -12,12 +13,14 @@
     host_type: "{{ item.host_type|default('replica') }}"
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
+    votes: "{{ item.votes|default(omit) }}"
   when: mongodb_security_authorization == 'enabled'
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
 
 - name: Replication configuration without auth
   mongodb_replication:
+    build_indexes: "{{ item.build_indexes|default(omit) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     login_port: "{{ mongodb_login_port|default(27017) }}"
     replica_set: "{{ mongodb_replication_replset }}"
@@ -26,6 +29,7 @@
     host_type: "{{ item.host_type|default('replica') }}"
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
+    votes: "{{ item.votes|default(omit) }}"
   when: mongodb_security_authorization == 'disabled'
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
