@@ -17,7 +17,6 @@
     - "{{ mongodb_package }}"
     - numactl
     state: present
-  with_items:
 
 - name: Install PyMongo package
   yum:
