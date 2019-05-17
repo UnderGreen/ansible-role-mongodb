@@ -1,6 +1,5 @@
 # .travis.yml
 ---
-
 dist: trusty
 sudo: required
 language: python
@@ -86,6 +85,10 @@ env:
     DISTRIBUTION=centos
     DIST_VERSION=7-builded
     MONGODB_VERSION=3.4
+  - >
+    DISTRIBUTION=amazonlinux
+    DIST_VERSION=2-builded
+    MONGODB_VERSION=4.0
 
 services:
   - docker
