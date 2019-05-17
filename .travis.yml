@@ -88,11 +88,6 @@ env:
   - >
     DISTRIBUTION=amazonlinux
     DIST_VERSION=2-builded
-    MONGODB_VERSION=3.7
-    MONGODB_PACKAGE=mongodb-org-unstable
-  - >
-    DISTRIBUTION=amazonlinux
-    DIST_VERSION=2-builded
     MONGODB_VERSION=4.0
 
 services:
