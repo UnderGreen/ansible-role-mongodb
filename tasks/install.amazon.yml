@@ -14,8 +14,8 @@
 - name: Install MongoDB package
   yum:
     name:
-    - "{{ mongodb_package }}"
-    - numactl
+      - "{{ mongodb_package }}"
+      - numactl
     state: present
 
 - name: Install PyMongo package
@@ -27,9 +27,8 @@
 - name: Install PIP
   yum:
     name:
-    - python-devel
-    - python-pip
-  with_items:
+      - python-devel
+      - python-pip
   when: mongodb_pymongo_from_pip
 
 - name: Install PyMongo from PIP
