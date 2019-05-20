@@ -1,24 +1,25 @@
-Ansible role for MongoDB [![Build Status](https://travis-ci.org/UnderGreen/ansible-role-mongodb.svg?branch=master)](https://travis-ci.org/UnderGreen/ansible-role-mongodb)
-============
+# Ansible role for MongoDB [![Build Status](https://travis-ci.org/UnderGreen/ansible-role-mongodb.svg?branch=master)](https://travis-ci.org/UnderGreen/ansible-role-mongodb)
+
 Ansible role which manages [MongoDB](http://www.mongodb.org/).
 
-* Install and configure the MongoDB;
-* Configure mongodb users
-* Configure replication
-* Provide handlers for restart and reload;
-* Setup MMS authomation agent;
+- Install and configure the MongoDB;
+- Configure mongodb users
+- Configure replication
+- Provide handlers for restart and reload;
+- Setup MMS authomation agent;
 
 MongoDB support matrix:
 
-| Distribution | < MongoDB 3.0 | MongoDB 3.2 | MongoDB 3.4 | MongoDB 3.6 | MongoDB 4.0 |
-| ------------ |:-------------:|:-----------:|:-----------:|:-----------:|:-----------:|
-| Ubuntu 14.04 | :no_entry: | :no_entry:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
-| Ubuntu 16.04 | :no_entry: | :no_entry:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
-| Ubuntu 18.04 | :no_entry: | :no_entry:| :x:| :white_check_mark:| :white_check_mark:|
-| Debian 8.x | :no_entry: | :no_entry:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
-| Debian 9.x | :no_entry: | :no_entry:| :x:| :white_check_mark:| :white_check_mark:| 
-| RHEL 6.x | :no_entry: | :no_entry: | :white_check_mark: | :white_check_mark:| :white_check_mark:|
-| RHEL 7.x | :no_entry: | :no_entry: | :white_check_mark: | :white_check_mark:| :white_check_mark:|
+| Distribution   | < MongoDB 3.0 | MongoDB 3.2 |    MongoDB 3.4     |    MongoDB 3.6     |    MongoDB 4.0     |
+| -------------- | :-----------: | :---------: | :----------------: | :----------------: | :----------------: |
+| Ubuntu 14.04   |  :no_entry:   | :no_entry:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Ubuntu 16.04   |  :no_entry:   | :no_entry:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Ubuntu 18.04   |  :no_entry:   | :no_entry:  |        :x:         | :white_check_mark: | :white_check_mark: |
+| Debian 8.x     |  :no_entry:   | :no_entry:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Debian 9.x     |  :no_entry:   | :no_entry:  |        :x:         | :white_check_mark: | :white_check_mark: |
+| RHEL 6.x       |  :no_entry:   | :no_entry:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| RHEL 7.x       |  :no_entry:   | :no_entry:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Amazon Linux 2 |  :no_entry:   | :no_entry:  |     :no_entry:     |     :no_entry:     | :white_check_mark: |
 
 - :white_check_mark: - fully tested, should works fine
 - :interrobang: - maybe works, not tested
@@ -38,9 +39,9 @@ mongodb_package: mongodb-org
 # I will recommend you to use latest version of MongoDB.
 mongodb_version: "3.6"
 
-mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
-mongodb_pymongo_pip_version: 3.6.1               # Choose PyMong version to install from pip. If not set use latest
-mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
+mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manager
+mongodb_pymongo_pip_version: 3.6.1 # Choose PyMong version to install from pip. If not set use latest
+mongodb_user_update_password: "on_create" # MongoDB user password update default policy
 mongodb_manage_service: true
 
 # Disable transparent hugepages on systemd debian based installations
@@ -51,54 +52,58 @@ mongodb_uid:
 mongodb_gid:
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 ## net Options
-mongodb_net_bindip: 127.0.0.1                    # Comma separated list of ip addresses to listen on
-mongodb_net_http_enabled: false                  # Enable http interface
-mongodb_net_ipv6: false                          # Enable IPv6 support (disabled by default)
-mongodb_net_maxconns: 65536                      # Max number of simultaneous connections
-mongodb_net_port: 27017                          # Specify port number
+mongodb_net_bindip: 127.0.0.1 # Comma separated list of ip addresses to listen on
+mongodb_net_http_enabled: false # Enable http interface
+mongodb_net_ipv6: false # Enable IPv6 support (disabled by default)
+mongodb_net_maxconns: 65536 # Max number of simultaneous connections
+mongodb_net_port: 27017 # Specify port number
 
 ## processManagement Options
-mongodb_processmanagement_fork: false            # Fork server process
+mongodb_processmanagement_fork: false # Fork server process
 
 ## security Options
 # Disable or enable security. Possible values: 'disabled', 'enabled'
 mongodb_security_authorization: "disabled"
-mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
+mongodb_security_keyfile: /etc/mongodb-keyfile # Specify path to keyfile with password for inter-process authentication
 
 ## storage Options
-mongodb_storage_dbpath: /data/db                 # Directory for datafiles
-mongodb_storage_dirperdb: false                  # Use one directory per DB
+mongodb_storage_dbpath: /data/db # Directory for datafiles
+mongodb_storage_dirperdb: false # Use one directory per DB
 
 # The storage engine for the mongod database. Available values:
 # 'mmapv1', 'wiredTiger'
 mongodb_storage_engine: "{{ 'mmapv1' if mongodb_version[0:3] == '3.0' else 'wiredTiger' }}"
 # mmapv1 specific options
-mongodb_storage_quota_enforced: false            # Limits each database to a certain number of files
-mongodb_storage_quota_maxfiles: 8                # Number of quota files per DB
-mongodb_storage_smallfiles: false                # Very useful for non-data nodes
+mongodb_storage_quota_enforced: false # Limits each database to a certain number of files
+mongodb_storage_quota_maxfiles: 8 # Number of quota files per DB
+mongodb_storage_smallfiles: false # Very useful for non-data nodes
 
-mongodb_storage_journal_enabled: true            # Enable journaling
-mongodb_storage_prealloc: true                   # Disable data file preallocation
+mongodb_storage_journal_enabled: true # Enable journaling
+mongodb_storage_prealloc: true # Disable data file preallocation
 
 # WiredTiger Options
-mongodb_wiredtiger_cache_size: 1                 # Cache size for wiredTiger in GB
+mongodb_wiredtiger_cache_size: 1 # Cache size for wiredTiger in GB
 
 ## systemLog Options
 ## The destination to which MongoDB sends all log output. Specify either 'file' or 'syslog'.
 ## If you specify 'file', you must also specify mongodb_systemlog_path.
 mongodb_systemlog_destination: "file"
-mongodb_systemlog_logappend: true                                        # Append to logpath instead of over-writing
-mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log file to send write to instead of stdout
+mongodb_systemlog_logappend: true # Append to logpath instead of over-writing
+mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log # Log file to send write to instead of stdout
 
 ## replication Options
-mongodb_replication_replset:                      # Enable replication <setname>[/<optionalseedhostlist>]
-mongodb_replication_replindexprefetch: "all"      # specify index prefetching behavior (if secondary) [none|_id_only|all]
-mongodb_replication_oplogsize: 1024               # specifies a maximum size in megabytes for the replication operation log
+mongodb_replication_replset: # Enable replication <setname>[/<optionalseedhostlist>]
+mongodb_replication_replindexprefetch: "all" # specify index prefetching behavior (if secondary) [none|_id_only|all]
+mongodb_replication_oplogsize: 1024 # specifies a maximum size in megabytes for the replication operation log
 
 ## setParameter options
 # Configure setParameter option.
 # Example :
-mongodb_set_parameters: { "enableLocalhostAuthBypass": "true", "authenticationMechanisms": "SCRAM-SHA-1,MONGODB-CR" }
+mongodb_set_parameters:
+  {
+    "enableLocalhostAuthBypass": "true",
+    "authenticationMechanisms": "SCRAM-SHA-1,MONGODB-CR",
+  }
 
 # MMS Agent
 mongodb_mms_agent_pkg: https://cloud.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_7.2.0.488-1_amd64.ubuntu1604.deb
@@ -107,7 +112,7 @@ mongodb_mms_api_key: ""
 mongodb_mms_base_url: https://mms.mongodb.com
 
 # Log rotation
-mongodb_logrotate: true                             # Rotate mongodb logs.
+mongodb_logrotate: true # Rotate mongodb logs.
 mongodb_logrotate_options:
   - compress
   - copytruncate
@@ -149,6 +154,7 @@ mongodb_root_admin_password: passw0rd
 Add `undergreen.mongodb` to your roles and set vars in your playbook file.
 
 Example vars for authorization:
+
 ```yaml
 mongodb_security_authorization: "enabled"
 mongodb_users:
@@ -159,7 +165,9 @@ mongodb_users:
     database: app_development
 }
 ```
+
 Example vars for oplog user:
+
 ```yaml
 mongodb_oplog_users:
   - {
@@ -167,7 +175,9 @@ mongodb_oplog_users:
     password: passw0rd
 }
 ```
+
 Required vars to change on production:
+
 ```yaml
 mongodb_user_admin_password
 mongodb_root_admin_password
@@ -176,17 +186,25 @@ mongodb_root_backup_password
 # if you use replication and authorization
 mongodb_security_keyfile
 ```
+
 Example vars for replication:
+
 ```yaml
 # It's a 'master' node
 mongodb_login_host: 192.168.56.2
 
 # mongodb_replication_params should be configured on each replica set node
 mongodb_replication_params:
-  - { host_name: 192.168.56.2, host_port: "{{ mongodb_net_port }}", host_type: replica }
+  - {
+      host_name: 192.168.56.2,
+      host_port: "{{ mongodb_net_port }}",
+      host_type: replica,
+    }
   # host_type can be replica(default) and arbiter
 ```
+
 And inventory file for replica set:
+
 ```ini
 [mongo_master]
 192.158.56.2 mongodb_master=True # it is't a really master of MongoDB replica set,
