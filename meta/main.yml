@@ -26,4 +26,5 @@ galaxy_info:
         - 20190228
   galaxy_tags:
     - database
-    - database:nosql
+    - nosql
+    - mongodb
