@@ -89,6 +89,14 @@ env:
     DISTRIBUTION=amazonlinux
     DIST_VERSION=2-builded
     MONGODB_VERSION=4.0
+  - >
+    DISTRIBUTION=amazonlinux
+    DIST_VERSION=2-builded
+    MONGODB_VERSION=3.6
+  - >
+    DISTRIBUTION=amazonlinux
+    DIST_VERSION=2-builded
+    MONGODB_VERSION=3.4
 
 services:
   - docker
