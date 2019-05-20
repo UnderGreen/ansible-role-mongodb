@@ -23,7 +23,7 @@ galaxy_info:
         - 7
     - name: Amazon
       versions:
-        - 20190228
+        - Candidate
   galaxy_tags:
     - database
     - nosql
