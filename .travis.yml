@@ -16,7 +16,7 @@ env:
     DISTRIBUTION=ubuntu
     DIST_VERSION=18_04-builded
     MONGODB_VERSION=3.6
-    MONGODB_PACKAGE=mongodb-org
+    MONGODB_PACKAGE=mongodb
   - >
     DISTRIBUTION=ubuntu
     DIST_VERSION=16_04-builded
