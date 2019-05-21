@@ -13,15 +13,18 @@
 
 - name: Install MongoDB package
   yum:
-    name:
-      - "{{ mongodb_package }}"
-      - numactl
-    state: present
+    name: "{{ mongodb_package }}"
+    state: "{{ mongodb_package_version is defined | ternary('present', 'latest') }}"
+    version: "{{ mongodb_package_version | default(omit) }}"
+
+- name: Install numactl package
+  yum:
+    name: numactl
 
 - name: Install PyMongo package
   yum:
     name: python-pymongo
-    state: latest
+    state: present
   when: not mongodb_pymongo_from_pip
 
 - name: Install PIP

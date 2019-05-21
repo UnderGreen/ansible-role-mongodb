@@ -21,14 +21,13 @@
 - name: Include replication and auth configuration
   include: replication_init_auth.yml
   when: ( mongodb_replication_replset
-        and mongodb_replication_replset != ''
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   tags: [mongodb]
 
 - name: Include replication configuration
   include: replication.yml
-  when: mongodb_replication_replset and mongodb_replication_replset != ''
+  when: mongodb_replication_replset
   tags: [mongodb]
 
 - name: Check where admin user already exists
@@ -40,16 +39,14 @@
   check_mode: no
   ignore_errors: true
   when: ( mongodb_security_authorization == 'enabled'
-          and (not mongodb_replication_replset
-          or mongodb_replication_replset == '') )
+          and not mongodb_replication_replset )
   no_log: true
   tags: [mongodb]
 
 - name: Include authorization configuration
   include: auth_initialization.yml
   when: ( mongodb_security_authorization == 'enabled'
-          and (not mongodb_replication_replset
-          or mongodb_replication_replset == '')
+          and not mongodb_replication_replset
           and mongodb_user_admin_check.rc != 0 )
   tags: [mongodb]
 
@@ -67,7 +64,6 @@
   with_items:
     - "{{ mongodb_users | default([]) }}"
   when: ( mongodb_replication_replset
-        and mongodb_replication_replset != ''
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   no_log: true
@@ -86,8 +82,7 @@
   with_items:
     - "{{ mongodb_users | default([]) }}"
   when: ( mongodb_security_authorization == 'enabled'
-          and (not mongodb_replication_replset
-          or mongodb_replication_replset == '') )
+          and not mongodb_replication_replset )
   no_log: true
   tags: [mongodb]
 
@@ -107,7 +102,6 @@
   with_items:
     - "{{ mongodb_oplog_users | default([]) }}"
   when: ( mongodb_replication_replset
-        and mongodb_replication_replset != ''
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   no_log: false
@@ -115,5 +109,5 @@
 
 - name: Include MMS Agent configuration
   include: mms-agent.yml
-  when: mongodb_mms_api_key != ""
+  when: mongodb_mms_api_key
   tags: [mongodb]

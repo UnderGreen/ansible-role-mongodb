@@ -7,22 +7,31 @@
     owner: "{{ mongodb_user }}"
     group: "root"
     mode: 0600
-  when: mongodb_replication_replset and  mongodb_replication_replset != ''
+  when: mongodb_replication_replset
 
 - name: set mongodb gid
-  group: name=mongodb gid={{ mongodb_gid }} state=present
+  group:
+    name: "{{ mongodb_user }}"
+    gid: "{{ mongodb_gid }}"
+    state: present
   when: mongodb_gid
 
 - name: set mongodb uid
-  user: name=mongodb uid={{ mongodb_uid }} group=mongodb state=present
-  when: mongodb_uid
-
-- name: reset mongodb folder and subfolders with new uid
-  file: path={{ mongodb_storage_dbpath }} owner=mongodb group=mongodb follow=yes recurse=yes state=directory
+  user:
+    name: "{{ mongodb_user }}"
+    uid: "{{ mongodb_uid }}"
+    group: "{{ mongodb_user }}"
+    state: present
   when: mongodb_uid
 
 - name: Create log dir if missing
-  file: state=directory recurse=yes dest={{ mongodb_systemlog_path|dirname }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
+  file:
+    state: directory
+    recurse: true
+    dest: "{{ mongodb_systemlog_path|dirname }}"
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+    mode: 0755
   when: mongodb_systemlog_destination == "file"
 
 - name: Check than logfile exists
@@ -31,7 +40,12 @@
   when: mongodb_systemlog_destination == "file"
 
 - name: Create log if missing
-  file: state=touch dest={{ mongodb_systemlog_path }} owner={{ mongodb_user }} group={{mongodb_user}} mode=0755
+  file:
+    state: touch
+    dest: "{{ mongodb_systemlog_path }}"
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+    mode: 0755
   when: ( mongodb_systemlog_destination == "file"
         and logfile_stat is defined
         and not logfile_stat.stat.exists )
@@ -41,11 +55,19 @@
     path: "{{ mongodb_storage_dbpath }}"
     state: directory
     owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
     setype: 'mongod_var_lib_t'
-    recurse: yes
+    recurse: true
+    follow: true
 
 - name: Configure mongodb
-  template: src=mongod.conf.j2 dest=/etc/mongod.conf backup=yes owner=root group=root mode=0644
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    backup: true
+    owner: root
+    group: root
+    mode: 0644
   register: config_result
 
 - name: mongodb restart

@@ -9,16 +9,6 @@
 - name: wait MongoDB port is listening
   wait_for: host=127.0.0.1 port="{{ mongodb_net_port }}" delay=5 state=started
 
-- name: get pid of mongodb for non daemon mode
-  shell: "pidof mongod"
-  register: pidof_mongod
-  when: mongodb_manage_service == false
-  ignore_errors: yes
-
-- name: start mongodb daemon
-  shell: "LC_ALL=C /usr/bin/mongod --config /etc/mongod.conf --fork"
-  when: mongodb_manage_service == false and pidof_mongod.rc == 1
-
 - name: create administrative user siteUserAdmin
   mongodb_user:
     database: admin
