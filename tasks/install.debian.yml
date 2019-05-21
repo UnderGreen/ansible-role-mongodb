@@ -51,17 +51,12 @@
   with_items: "{{ mongodb_major_version }}"
   when: mongodb_package == 'mongodb-org'
 
-- name: Install MongoDB package
+- name: Install MongoDB and numactl packages
   apt:
-    name: "{{ mongodb_package }}"
-    state: "{{ mongodb_package_version is defined | ternary('present', 'latest') }}"
-    version: "{{ mongodb_package_version | default(omit) }}"
-    update_cache: true
-
-- name: Install numactl package
-  apt:
-    name: numactl
-    state: present
+    name:
+      - "{{ mongodb_package }}"
+      - numactl
+    state: "{{ mongodb_package_state }}"
     update_cache: true
 
 - name: Add systemd configuration if present
