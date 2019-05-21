@@ -11,15 +11,12 @@
   with_items: "{{ mongodb_version[0:3] }}"
   when: mongodb_package == 'mongodb-org'
 
-- name: Install MongoDB package
+- name: Install MongoDB and numactl packages
   yum:
-    name: "{{ mongodb_package }}"
-    state: "{{ mongodb_package_version is defined | ternary('present', 'latest') }}"
-    version: "{{ mongodb_package_version | default(omit) }}"
-
-- name: Install numactl package
-  yum:
-    name: numactl
+    name:
+      - "{{ mongodb_package }}"
+      - numactl
+    state: "{{ mongodb_package_state }}"
 
 - name: Install PyMongo package
   yum:
