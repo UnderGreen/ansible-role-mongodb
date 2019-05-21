@@ -55,7 +55,7 @@
     name:
       - "{{mongodb_package}}"
       - numactl
-    state: present
+    state: "{{ mongodb_package_state }}"
     update_cache: yes
 
 - name: Add systemd configuration if present
