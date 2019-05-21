@@ -8,7 +8,10 @@
     - "{{ ansible_os_family }}.yml"
 
 - name: Include installation tasks
-  include: "install.{{ ansible_os_family | lower }}.yml"
+  include: "{{ item }}"
+  with_first_found:
+    - "install.{{ ansible_distribution | lower }}.yml"
+    - "install.{{ ansible_os_family | lower }}.yml"
   tags: [mongodb]
 
 - name: Include configuration.yml
