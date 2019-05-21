@@ -59,7 +59,7 @@
     update_cache: yes
 
 - name: Add systemd configuration if present
-  copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0640
+  copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0644
   when: mongodb_is_systemd
 
 - name: Add symlink for systemd
