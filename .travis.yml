@@ -11,7 +11,7 @@ env:
     DISTRIBUTION=ubuntu
     DIST_VERSION=18_04-builded
     MONGODB_VERSION=4.0
-    MONGODB_PACKAGE=mongodb
+    MONGODB_PACKAGE=mongodb-org
   - >
     DISTRIBUTION=ubuntu
     DIST_VERSION=18_04-builded
@@ -49,7 +49,7 @@ env:
     DISTRIBUTION=debian
     DIST_VERSION=9-builded
     MONGODB_VERSION=3.6
-    MONGODB_PACKAGE=mongodb
+    MONGODB_PACKAGE=mongodb-org
   - >
     DISTRIBUTION=debian
     DIST_VERSION=8-builded
