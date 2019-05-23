@@ -53,7 +53,7 @@
   when: mongodb_package == 'mongodb-org'
 
 - name: Install MongoDB package
-  apt: 
+  apt:
     name:
       - "{{mongodb_package}}"
       - numactl
@@ -68,10 +68,6 @@
   file: src=/lib/systemd/system/mongodb.service dest=/etc/systemd/system/multi-user.target.wants/mongodb.service state=link
   when: mongodb_is_systemd
   notify: reload systemd
-
-- name: reload systemd
-  shell: systemctl daemon-reload
-  when: mongodb_is_systemd and mongodb_manage_service
 
 - block:
    - meta: flush_handlers
