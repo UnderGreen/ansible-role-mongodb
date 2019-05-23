@@ -20,14 +20,14 @@
 
 - name: Include replication and auth configuration
   include: replication_init_auth.yml
-  when: ( mongodb_replication_replset
+  when: ( mongodb_replication_replset is defined
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   tags: [mongodb]
 
 - name: Include replication configuration
   include: replication.yml
-  when: mongodb_replication_replset
+  when: mongodb_replication_replset is defined and mongodb_replication_replset
   tags: [mongodb]
 
 - name: Check where admin user already exists
@@ -51,7 +51,7 @@
   tags: [mongodb]
 
 - name: create normal users with replicaset
-  mongodb_user_fixed:
+  mongodb_user:
     database: "{{ item.database }}"
     name: "{{ item.name }}"
     password: "{{ item.password }}"
@@ -70,7 +70,7 @@
   tags: [mongodb]
 
 - name: create normal users without replicaset
-  mongodb_user_fixed:
+  mongodb_user:
     database: "{{ item.database }}"
     name: "{{ item.name }}"
     password: "{{ item.password }}"
@@ -87,7 +87,7 @@
   tags: [mongodb]
 
 - name: create oplog user with replicaset
-  mongodb_user_fixed:
+  mongodb_user:
     database: admin
     user: "{{ item.user }}"
     password: "{{ item.password }}"

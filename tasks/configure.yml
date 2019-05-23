@@ -7,7 +7,7 @@
     owner: "{{ mongodb_user }}"
     group: "root"
     mode: 0600
-  when: mongodb_replication_replset
+  when: mongodb_replication_replset|default("") != ""
 
 - name: set mongodb gid
   group:
@@ -68,18 +68,10 @@
     owner: root
     group: root
     mode: 0644
-  register: config_result
+  notify:
+    - mongodb restart
+    - service started
+    - wait when mongodb is started
 
-- name: mongodb restart
-  service: name={{ mongodb_daemon_name }} state=restarted
-  when: config_result is changed and mongodb_manage_service
-
-- name: Ensure service is started
-  service: name={{ mongodb_daemon_name }} state=started
-
-- name: Wait when mongodb is started
-  wait_for:
-    host: "{{ item }}"
-    port: "{{ mongodb_net_port }}"
-    timeout: 120
-  with_items: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list }}"
+- name: Flush all handlers at this point
+  meta: flush_handlers

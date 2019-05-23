@@ -6,7 +6,7 @@ galaxy_info:
   company: Self-employed
   description: Manage MongoDB with authentication and replica sets
   license: GPLv2
-  min_ansible_version: 2.4
+  min_ansible_version: 2.5
   platforms:
     - name: Ubuntu
       versions:

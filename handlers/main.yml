@@ -19,3 +19,22 @@
 
 - name: restart sysfsutils
   service: name=sysfsutils state=restarted
+
+- name: service started
+  service:
+    name: "{{ mongodb_daemon_name }}"
+    state: started
+
+- name: wait when mongodb is started
+  wait_for:
+    host: "{{ item }}"
+    port: "{{ mongodb_net_port }}"
+    timeout: 120
+  with_items: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list }}"
+
+- name: wait when mongodb is started on localhost
+  wait_for:
+    host: "127.0.0.1"
+    port: "{{ mongodb_net_port }}"
+    delay: 5
+    timeout: 120

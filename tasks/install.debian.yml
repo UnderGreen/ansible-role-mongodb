@@ -47,8 +47,12 @@
          or mongodb_repository[mongodb_major_version] is not defined))
 
 - name: Add APT repository
-  apt_repository: repo="{{ mongodb_repository[item] }}" update_cache=yes
+  apt_repository:
+    repo: "{{ mongodb_repository[version_item] }}"
+    update_cache: yes
   with_items: "{{ mongodb_major_version }}"
+  loop_control:
+    loop_var: version_item
   when: mongodb_package == 'mongodb-org'
 
 - name: Install MongoDB and numactl packages
@@ -66,10 +70,8 @@
 - name: Add symlink for systemd
   file: src=/lib/systemd/system/mongodb.service dest=/etc/systemd/system/multi-user.target.wants/mongodb.service state=link
   when: ansible_service_mgr == "systemd"
-
-- block:
-    - meta: flush_handlers
-  when: ansible_service_mgr == "systemd"
+  notify:
+    - reload systemd
 
 - name: Install PyMongo package
   apt:
