@@ -20,14 +20,14 @@
 
 - name: Include replication and auth configuration
   include: replication_init_auth.yml
-  when: ( mongodb_replication_replset is defined
+  when: ( mongodb_replication_replset | length > 0
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   tags: [mongodb]
 
 - name: Include replication configuration
   include: replication.yml
-  when: mongodb_replication_replset is defined and mongodb_replication_replset
+  when: mongodb_replication_replset | lenght > 0
   tags: [mongodb]
 
 - name: Check where admin user already exists
@@ -101,7 +101,7 @@
     login_host: "{{ mongodb_login_host|default('localhost') }}"
   with_items:
     - "{{ mongodb_oplog_users | default([]) }}"
-  when: ( mongodb_replication_replset
+  when: ( mongodb_replication_replset | lenght > 0
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   no_log: false
@@ -109,5 +109,5 @@
 
 - name: Include MMS Agent configuration
   include: mms-agent.yml
-  when: mongodb_mms_api_key
+  when: mongodb_mms_api_key | lenght > 0
   tags: [mongodb]

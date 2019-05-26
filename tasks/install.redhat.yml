@@ -32,10 +32,9 @@
 
 - name: Install PIP
   yum:
-    name: "{{ item }}"
-  with_items:
-    - python-devel
-    - python-pip
+    name:
+      - python-devel
+      - python-pip
   when: mongodb_pymongo_from_pip
 
 - name: Install PyMongo from PIP

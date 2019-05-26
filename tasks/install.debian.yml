@@ -1,11 +1,4 @@
 ---
-
-- name: Check if running on systemd
-  stat: path=/sbin/init
-  register: sbin_init
-  changed_when: false
-  check_mode: no
-
 - name: Establish some role-related facts
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
@@ -13,7 +6,7 @@
 - name: Disable transparent huge pages on systemd systems
   include_tasks: disable_transparent_hugepages.yml
   when:
-    - mongodb_disable_transparent_hugepages
+    - mongodb_disable_transparent_hugepages | bool
     - ansible_service_mgr == "systemd"
 
 - name: Add APT key
@@ -29,7 +22,7 @@
         (mongodb_version is not defined
          or mongodb_repository[mongodb_major_version] is not defined
          or (mongodb_version != '3.6' and mongodb_version != '4.0'))
-         and (ansible_distribution_release == 'stretch' and ansible_distribution_release == 'jessie'))
+         and ansible_distribution_release == 'stretch')
 
 - name: Fail when used wrong mongodb_version variable with Ubuntu 18.04
   fail:
@@ -83,11 +76,11 @@
     pkg:
       - python-dev
       - python-pip
-  when: mongodb_pymongo_from_pip
+  when: mongodb_pymongo_from_pip | bool
 
 - name: Install PyMongo from PIP
   pip:
     name: pymongo
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
-  when: mongodb_pymongo_from_pip
+  when: mongodb_pymongo_from_pip | bool

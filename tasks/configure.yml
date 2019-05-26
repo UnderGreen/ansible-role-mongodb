@@ -7,14 +7,14 @@
     owner: "{{ mongodb_user }}"
     group: "root"
     mode: 0600
-  when: mongodb_replication_replset|default("") != ""
+  when: mongodb_replication_replset | length > 0
 
 - name: set mongodb gid
   group:
     name: "{{ mongodb_user }}"
     gid: "{{ mongodb_gid }}"
     state: present
-  when: mongodb_gid
+  when: mongodb_gid | length > 0
 
 - name: set mongodb uid
   user:
@@ -22,7 +22,7 @@
     uid: "{{ mongodb_uid }}"
     group: "{{ mongodb_user }}"
     state: present
-  when: mongodb_uid
+  when: mongodb_uid | length > 0
 
 - name: Create log dir if missing
   file:
