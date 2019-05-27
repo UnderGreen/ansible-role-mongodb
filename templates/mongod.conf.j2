@@ -34,7 +34,8 @@ security:
   authorization: {{ mongodb_security_authorization }}
   {% if mongodb_replication_replset and mongodb_security_authorization == 'enabled' -%}
   keyFile: {{ mongodb_security_keyfile }}
-  {% endif %}
+  {% endif -%}
+  javascriptEnabled: {{ mongodb_security_javascript_enabled | to_nice_json }}
 
 storage:
   dbPath: {{ mongodb_storage_dbpath }}
@@ -50,13 +51,15 @@ storage:
       enforced: {{ mongodb_storage_quota_enforced | to_nice_json }}
       maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
     smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
-  {% endif %}
-
-{% if mongodb_wiredtiger_cache_size is defined %}
+  {% endif -%}
+  {% if mongodb_storage_engine == 'wiredTiger' -%}
   wiredTiger:
     engineConfig:
+      {% if mongodb_wiredtiger_cache_size is defined -%}
       cacheSizeGB: {{ mongodb_wiredtiger_cache_size }}
-{% endif %}
+      {% endif -%}
+      directoryForIndexes: {{ mongodb_wiredtiger_directory_for_indexes | to_nice_json }}
+  {% endif %}
 
 systemLog:
   destination: {{ mongodb_systemlog_destination }}
@@ -65,6 +68,10 @@ systemLog:
   logRotate: {{ mongodb_systemlog_logrotate }}
   path: {{ mongodb_systemlog_path }}
   {% endif %}
+
+operationProfiling:
+  slowOpThresholdMs: {{ mongodb_operation_profiling_slow_op_threshold_ms }}
+  mode: {{ mongodb_operation_profiling_mode }}
 
 {% if mongodb_set_parameters -%}
 setParameter:

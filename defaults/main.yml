@@ -41,6 +41,7 @@ mongodb_processmanagement_fork: "{{ 'RedHat' == ansible_os_family }}"
 # Disable or enable security. Possible values: 'disabled', 'enabled'
 mongodb_security_authorization: "disabled"
 mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
+mongodb_security_javascript_enabled: false
 
 ## storage Options
 mongodb_storage_dbpath: /data/db                 # Directory for datafiles
@@ -57,6 +58,8 @@ mongodb_storage_smallfiles: false                # Very useful for non-data node
 mongodb_storage_journal_enabled: true            # Enable journaling
 mongodb_storage_prealloc: true                   # Enable data file preallocation
 
+mongodb_wiredtiger_directory_for_indexes: false
+
 ## systemLog Options
 ## The destination to which MongoDB sends all log output. Specify either 'file' or 'syslog'.
 ## If you specify 'file', you must also specify mongodb_systemlog_path.
@@ -64,6 +67,10 @@ mongodb_systemlog_destination: "file"
 mongodb_systemlog_logappend: true                                        # Append to logpath instead of over-writing
 mongodb_systemlog_logrotate: "rename"                                    # Logrotation behavior
 mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log file to send write to instead of stdout
+
+## operationProfiling Options
+mongodb_operation_profiling_slow_op_threshold_ms: 100
+mongodb_operation_profiling_mode: "off"
 
 ## replication Options
 mongodb_replication_replset:                      # Enable replication <setname>[/<optionalseedhostlist>]
