@@ -18,8 +18,8 @@ mongodb_manage_service: true
 mongodb_disable_transparent_hugepages: false
 
 mongodb_user: "{{ 'mongod' if ('RedHat' == ansible_os_family) else 'mongodb' }}"
-mongodb_uid:
-mongodb_gid:
+mongodb_uid: ""
+mongodb_gid: ""
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
 ## net Options
@@ -29,8 +29,8 @@ mongodb_net_ipv6: false                          # Enable IPv6 support (disabled
 mongodb_net_maxconns: 65536                      # Max number of simultaneous connections
 mongodb_net_port: 27017                          # Specify port number
 mongodb_net_ssl: disabled                        # Enable or disable ssl connections
-mongodb_net_ssl_mode:                            # Set the ssl mode (RequireSSL / preferSSL / AllowSSL / disabled)
-mongodb_net_ssl_pemfile:                         # Location of the pemfile to use for ssl
+mongodb_net_ssl_mode: ""                         # Set the ssl mode (RequireSSL / preferSSL / AllowSSL / disabled)
+mongodb_net_ssl_pemfile: ""                      # Location of the pemfile to use for ssl
 
 ## processManagement Options
 # Fork server process
@@ -46,8 +46,7 @@ mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with 
 mongodb_storage_dbpath: /data/db                 # Directory for datafiles
 mongodb_storage_dirperdb: false                  # Use one directory per DB
 
-# The storage engine for the mongod database. Available values:
-# 'mmapv1', 'wiredTiger'
+# The storage engine for the mongod database
 mongodb_storage_engine: "wiredTiger"
 # mmapv1 specific options
 mongodb_storage_quota_enforced: false            # Limits each database to a certain number of files
@@ -66,7 +65,7 @@ mongodb_systemlog_logrotate: "rename"                                    # Logro
 mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log file to send write to instead of stdout
 
 ## replication Options
-mongodb_replication_replset:                      # Enable replication <setname>[/<optionalseedhostlist>]
+mongodb_replication_replset: ""                   # Enable replication
 mongodb_replication_replindexprefetch: "all"      # specify index prefetching behavior (if secondary) [none|_id_only|all]
 mongodb_replication_oplogsize: 1024               # specifies a maximum size in megabytes for the replication operation log
 

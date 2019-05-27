@@ -1,5 +1,5 @@
-[mongodb-org-{{ mongodb_version }}]
-name=MongoDB {{ mongodb_version }} Repository
+[mongodb-org-{{ mongodb_major_version }}]
+name=MongoDB {{ mongodb_major_version }} Repository
 baseurl={{ mongodb_repository[item] }}
 {% if mongodb_repository_gpgkey[item] is defined and mongodb_repository_gpgkey[item] != '' %}
 gpgcheck=1

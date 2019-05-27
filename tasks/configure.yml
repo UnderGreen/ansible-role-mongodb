@@ -1,5 +1,8 @@
 ---
 
+- debug:
+    msg: "{{ mongodb_replication_replset }}"
+
 - name: Create keyFile
   copy:
     dest: "{{ mongodb_security_keyfile }}"

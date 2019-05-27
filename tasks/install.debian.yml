@@ -18,18 +18,17 @@
 - name: Fail when used wrong mongodb_version variable with Debian Stretch
   fail:
     msg: "mongodb_version variable should be '3.6' or '4.0' for Debian Stretch"
-  when: (mongodb_package == 'mongodb-org' and
-        (mongodb_version is not defined
-         or mongodb_repository[mongodb_major_version] is not defined
-         or (mongodb_version != '3.6' and mongodb_version != '4.0'))
-         and ansible_distribution_release == 'stretch')
+  when:
+    - mongodb_package == 'mongodb-org'
+    - (mongodb_major_version != '3.6' and mongodb_major_version != '4.0')
+    - ansible_distribution_release == 'stretch'
 
 - name: Fail when used wrong mongodb_version variable with Ubuntu 18.04
   fail:
     msg: "mongodb_version variable should be '4.0' or else mongodb_package should be 'mongodb' for Ubuntu 18.04"
   when:
     - mongodb_package == 'mongodb-org'
-    - mongodb_version != '4.0'
+    - mongodb_major_version != '4.0'
     - ansible_distribution_release == "bionic"
 
 - name: Fail when used wrong mongodb_version variable
@@ -42,19 +41,22 @@
 - name: Add APT repository
   apt_repository:
     repo: "{{ mongodb_repository[version_item] }}"
-    update_cache: yes
+    update_cache: true
   with_items: "{{ mongodb_major_version }}"
   loop_control:
     loop_var: version_item
   when: mongodb_package == 'mongodb-org'
 
-- name: Install MongoDB and numactl packages
+- name: Install MongoDB package
   apt:
-    name:
-      - "{{ mongodb_package }}"
-      - numactl
+    name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}={{ mongodb_version }}{% endif %}"
     state: "{{ mongodb_package_state }}"
     update_cache: true
+
+- name: Install numactl package
+  apt:
+    name: numactl
+    state: present
 
 - name: Add systemd configuration if present
   copy: src=mongodb.service dest=/lib/systemd/system/mongodb.service owner=root group=root mode=0644
