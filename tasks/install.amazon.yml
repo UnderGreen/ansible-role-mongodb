@@ -9,6 +9,8 @@
     dest: /etc/yum.repos.d/mongodb.repo
     mode: 0644
   with_items: "{{ mongodb_major_version }}"
+  loop_control:
+    loop_var: version_item
   when: mongodb_package == 'mongodb-org'
 
 - name: Install MongoDB package
