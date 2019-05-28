@@ -18,8 +18,8 @@ mongodb_manage_service: true
 mongodb_disable_transparent_hugepages: false
 
 mongodb_user: "{{ 'mongod' if ('RedHat' == ansible_os_family) else 'mongodb' }}"
-mongodb_uid: ""
-mongodb_gid: ""
+mongodb_uid:
+mongodb_gid:
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
 ## net Options

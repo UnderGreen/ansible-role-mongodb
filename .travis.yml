@@ -48,7 +48,6 @@ env:
     DISTRIBUTION=debian
     DIST_VERSION=9-builded
     MONGODB_VERSION=3.6
-    MONGODB_PACKAGE=mongodb-org
   - >
     DISTRIBUTION=debian
     DIST_VERSION=8-builded
