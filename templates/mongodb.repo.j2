@@ -1,9 +1,9 @@
-[mongodb-org-{{ mongodb_version }}]
-name=MongoDB {{ mongodb_version }} Repository
-baseurl={{ mongodb_repository[item] }}
-{% if mongodb_repository_gpgkey[item] is defined and mongodb_repository_gpgkey[item] != '' %}
+[mongodb-org-{{ mongodb_major_version }}]
+name=MongoDB {{ mongodb_major_version }} Repository
+baseurl={{ mongodb_repository[version_item] }}
+{% if mongodb_repository_gpgkey[version_item] is defined and mongodb_repository_gpgkey[version_item] != '' %}
 gpgcheck=1
-gpgkey={{ mongodb_repository_gpgkey[item] }}
+gpgkey={{ mongodb_repository_gpgkey[version_item] }}
 {% else %}
 gpgcheck=0
 {% endif %}

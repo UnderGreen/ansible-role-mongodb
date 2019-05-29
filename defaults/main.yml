@@ -2,7 +2,7 @@
 
 mongodb_package: mongodb-org
 mongodb_package_state: present
-mongodb_version: "3.6"
+mongodb_version: "4.0"
 mongodb_apt_keyserver: keyserver.ubuntu.com
 mongodb_apt_key_id:
   "3.4": "0C49F3730359A14518585931BC711F9BA15703C6"
@@ -29,8 +29,8 @@ mongodb_net_ipv6: false                          # Enable IPv6 support (disabled
 mongodb_net_maxconns: 65536                      # Max number of simultaneous connections
 mongodb_net_port: 27017                          # Specify port number
 mongodb_net_ssl: disabled                        # Enable or disable ssl connections
-mongodb_net_ssl_mode:                            # Set the ssl mode (RequireSSL / preferSSL / AllowSSL / disabled)
-mongodb_net_ssl_pemfile:                         # Location of the pemfile to use for ssl
+mongodb_net_ssl_mode: ""                         # Set the ssl mode (RequireSSL / preferSSL / AllowSSL / disabled)
+mongodb_net_ssl_pemfile: ""                      # Location of the pemfile to use for ssl
 
 ## processManagement Options
 # Fork server process
@@ -47,8 +47,7 @@ mongodb_security_javascript_enabled: false
 mongodb_storage_dbpath: /data/db                 # Directory for datafiles
 mongodb_storage_dirperdb: false                  # Use one directory per DB
 
-# The storage engine for the mongod database. Available values:
-# 'mmapv1', 'wiredTiger'
+# The storage engine for the mongod database
 mongodb_storage_engine: "wiredTiger"
 # mmapv1 specific options
 mongodb_storage_quota_enforced: false            # Limits each database to a certain number of files
@@ -73,7 +72,7 @@ mongodb_operation_profiling_slow_op_threshold_ms: 100
 mongodb_operation_profiling_mode: "off"
 
 ## replication Options
-mongodb_replication_replset:                      # Enable replication <setname>[/<optionalseedhostlist>]
+mongodb_replication_replset: ""                   # Enable replication
 mongodb_replication_replindexprefetch: "all"      # specify index prefetching behavior (if secondary) [none|_id_only|all]
 mongodb_replication_oplogsize: 1024               # specifies a maximum size in megabytes for the replication operation log
 
