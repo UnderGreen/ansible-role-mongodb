@@ -71,6 +71,13 @@ operationProfiling:
   slowOpThresholdMs: {{ mongodb_operation_profiling_slow_op_threshold_ms }}
   mode: {{ mongodb_operation_profiling_mode }}
 
+{% if mongodb_major_version is version("4.0", ">=") -%}
+cloud:
+  monitoring:
+    free:
+      state: {{ mongodb_cloud_monitoring_free_state }}
+{% endif -%}
+
 {% if mongodb_set_parameters -%}
 setParameter:
   {% for key, value in mongodb_set_parameters.items() -%}
