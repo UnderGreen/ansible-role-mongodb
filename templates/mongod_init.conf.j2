@@ -31,6 +31,14 @@ storage:
       enforced: {{ mongodb_storage_quota_enforced | to_nice_json }}
       maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
     smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
+  {% endif -%}
+  {% if mongodb_storage_engine == 'wiredTiger' -%}
+  wiredTiger:
+    engineConfig:
+      {% if mongodb_wiredtiger_cache_size is defined -%}
+      cacheSizeGB: {{ mongodb_wiredtiger_cache_size }}
+      {% endif -%}
+      directoryForIndexes: {{ mongodb_wiredtiger_directory_for_indexes | to_nice_json }}
   {% endif %}
 
 systemLog:
