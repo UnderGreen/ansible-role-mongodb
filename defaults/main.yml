@@ -31,6 +31,7 @@ mongodb_net_port: 27017                          # Specify port number
 mongodb_net_ssl: disabled                        # Enable or disable ssl connections
 mongodb_net_ssl_mode: ""                         # Set the ssl mode (RequireSSL / preferSSL / AllowSSL / disabled)
 mongodb_net_ssl_pemfile: ""                      # Location of the pemfile to use for ssl
+mongodb_net_ssl_host: ""                         # Valid ssl hostname
 
 ## processManagement Options
 # Fork server process

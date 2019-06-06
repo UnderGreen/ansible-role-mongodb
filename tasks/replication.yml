@@ -14,6 +14,7 @@
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
     votes: "{{ item.votes|default(omit) }}"
+    ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
   when: mongodb_security_authorization == 'enabled'
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
@@ -30,6 +31,7 @@
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
     votes: "{{ item.votes|default(omit) }}"
+    ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
   when: mongodb_security_authorization == 'disabled'
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"

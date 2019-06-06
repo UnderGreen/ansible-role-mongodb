@@ -13,6 +13,7 @@
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
     votes: "{{ item.votes|default(omit) }}"
+    ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
   register: mongodb_replica_init
@@ -35,6 +36,7 @@
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
     votes: "{{ item.votes|default(omit) }}"
+    ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
   when: mongodb_replica_init is failed
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
