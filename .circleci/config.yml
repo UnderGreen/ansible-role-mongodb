@@ -25,7 +25,8 @@ jobs:
   test_ubuntu_18_04_mongodb_4_0:
     executor: my-executor
     steps:
-
+      - attach_workspace:
+          at: ./
       - run:
           name: "Setup custom environment variables"
           command: |
