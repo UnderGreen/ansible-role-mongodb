@@ -7,7 +7,7 @@ executors:
   my-executor:
     docker:
       - image: circleci/python:2.7.16
-    working_directory: /tmp
+    working_directory: ~/repo
 
 jobs:
   build:
