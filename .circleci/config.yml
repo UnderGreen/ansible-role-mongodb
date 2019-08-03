@@ -14,11 +14,11 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
-    environment:
-      DISTRIBUTION: ubuntu
-      DIST_VERSION: 18_04-builded
-      MONGODB_VERSION: 4.0
-      MONGODB_PACKAGE: mongodb-org
+        environment:
+          DISTRIBUTION: ubuntu
+          DIST_VERSION: 18_04-builded
+          MONGODB_VERSION: 4.0
+          MONGODB_PACKAGE: mongodb-org
     working_directory: ~/repo
 
     steps:
@@ -48,19 +48,15 @@ jobs:
       # other common Python testing frameworks include pytest and nose
       # https://pytest.org
       # https://nose.readthedocs.io
-      - run:
-          name: list
-          command: |
-            echo $PWD
-            sudo ls -l
+
 
       - run:
           name: before install
-          command: sudo bash $PWD/tests/scripts/before_install.sh
+          command: sudo bash tests/scripts/before_install.sh
 
       - run:
           name: run tests
-          command: sudo bash $PWD/tests/scripts/test.sh
+          command: sudo bash tests/scripts/test.sh
 
       # - store_artifacts:
       #    path: test-reports
