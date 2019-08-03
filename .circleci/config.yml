@@ -15,7 +15,7 @@ jobs:
     steps:
       - checkout
       - persist_to_workspace:
-          root: repo
+          root: ./
           paths:
             - ansible-role-mongodb
       - run: ls -l
