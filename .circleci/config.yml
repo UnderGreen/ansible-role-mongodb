@@ -15,9 +15,9 @@ jobs:
       - run: mkdir -p workspace && cd workspace
       - checkout
       - persist_to_workspace:
-        root: workspace
-        paths:
-          - ansible-role-mongodb
+          root: workspace
+          paths:
+            - ansible-role-mongodb
 
   test:
     executor: my-executor
