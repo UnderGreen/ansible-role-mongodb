@@ -45,12 +45,18 @@ jobs:
       # https://pytest.org
       # https://nose.readthedocs.io
       - run:
+          name: list
+          command: |
+            echo $PWD
+            ls -l
+            
+      - run:
           name: before install
-          command: sudo -u root tests/scripts/before_install.sh
+          command: sudo tests/scripts/before_install.sh
 
       - run:
           name: run tests
-          command: sudo -u root tests/scripts/test.sh
+          command: sudo tests/scripts/test.sh
 
       # - store_artifacts:
       #    path: test-reports
