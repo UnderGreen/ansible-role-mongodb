@@ -50,11 +50,19 @@ jobs:
       # other common Python testing frameworks include pytest and nose
       # https://pytest.org
       # https://nose.readthedocs.io
-
+      - run:
+          name: print variables
+          command: |
+            echo $DISTRIBUTION
 
       - run:
           name: before install
-          command: sudo bash tests/scripts/before_install.sh
+          command: |
+            export DISTRIBUTION="ubuntu"
+            export DIST_VERSION="18_04-builded"
+            export MONGODB_VERSION="4.0"
+            export MONGODB_PACKAGE="mongodb-org"
+            sudo bash tests/scripts/before_install.sh
 
       - run:
           name: run tests
