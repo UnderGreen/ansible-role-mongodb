@@ -17,6 +17,7 @@ jobs:
     working_directory: ~/repo
 
     steps:
+      - setup_remote_docker
       - checkout
       - run:
           name: "Setup custom environment variables"
