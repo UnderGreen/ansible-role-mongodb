@@ -14,7 +14,11 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
-
+    environment:
+      DISTRIBUTION: ubuntu
+      DIST_VERSION: 18_04-builded
+      MONGODB_VERSION: 4.0
+      MONGODB_PACKAGE: mongodb-org
     working_directory: ~/repo
 
     steps:
