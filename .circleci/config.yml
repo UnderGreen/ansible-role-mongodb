@@ -7,15 +7,16 @@ executors:
   my-executor:
     docker:
       - image: circleci/python:2.7.16
+    working_directory: ~/workspace
 
 jobs:
   build:
     executor: my-executor
     steps:
-      - run: mkdir -p workspace && cd workspace
+      - run: mkdir -p repo && cd repo
       - checkout
       - persist_to_workspace:
-          root: workspace
+          root: repo
           paths:
             - ansible-role-mongodb
 
@@ -24,7 +25,7 @@ jobs:
     steps:
       - setup_remote_docker
       - attach_workspace:
-          at: workspace
+          at: ./workspace
 
       - run:
           name: "Setup custom environment variables"
