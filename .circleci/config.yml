@@ -20,15 +20,12 @@ jobs:
           paths:
             - ./
       - run: ls -l
+      - setup_remote_docker
 
-  test:
+  test_ubuntu_18_04_mongodb_4_0:
     executor: my-executor
     steps:
-      - setup_remote_docker
-      - attach_workspace:
-          at: ./
 
-      - run: ls -l
       - run:
           name: "Setup custom environment variables"
           command: |
@@ -52,6 +49,6 @@ workflows:
   btd:
     jobs:
       - build
-      - test:
+      - test_ubuntu_18_04_mongodb_4_0:
           requires:
             - build
