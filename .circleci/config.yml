@@ -2,31 +2,16 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
-version: 2.1
-executors:
-  my-executor:
+version: 2
+jobs:
+  test:
     docker:
       - image: circleci/python:2.7.16
     working_directory: ~/repo
 
-jobs:
-  build:
-    executor: my-executor
     steps:
-      - checkout
-      - run: echo $PWD && ls -l
-      - persist_to_workspace:
-          root: ./
-          paths:
-            - ./
-      - run: ls -l
       - setup_remote_docker
-
-  test_ubuntu_18_04_mongodb_4_0:
-    executor: my-executor
-    steps:
-      - attach_workspace:
-          at: ./
+      - checkout
       - run:
           name: "Setup custom environment variables"
           command: |
@@ -46,10 +31,12 @@ jobs:
 
 workflows:
   version: 2
-
-  btd:
+  test-ubuntu-18.04_mongodb-4.0:
     jobs:
-      - build
-      - test_ubuntu_18_04_mongodb_4_0:
-          requires:
-            - build
+      - test:
+          context: ubuntu-18.04_mongodb-4.0
+
+  test-ubuntu-18.04_mongodb-3.6:
+    jobs:
+      - test:
+          context: ubuntu-18.04_mongodb-3.6
