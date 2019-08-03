@@ -14,15 +14,17 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
-        environment:
-          DISTRIBUTION: ubuntu
-          DIST_VERSION: 18_04-builded
-          MONGODB_VERSION: 4.0
-          MONGODB_PACKAGE: mongodb-org
     working_directory: ~/repo
 
     steps:
       - checkout
+      - run:
+          name: "Setup custom environment variables"
+          command: |
+            echo 'export DISTRIBUTION="ubuntu"' >> $BASH_ENV
+            echo 'export DIST_VERSION="18_04-builded"' >> $BASH_ENV
+            echo 'export MONGODB_VERSION="4.0"' >> $BASH_ENV
+            echo 'export MONGODB_PACKAGE="mongodb-org"' >> $BASH_ENV
 
       # Download and cache dependencies
       # - restore_cache:
