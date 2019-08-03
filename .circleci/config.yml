@@ -52,11 +52,11 @@ jobs:
 
       - run:
           name: before install
-          command: sudo $PWD/tests/scripts/before_install.sh
+          command: sudo bash $PWD/tests/scripts/before_install.sh
 
       - run:
           name: run tests
-          command: sudo $PWD/tests/scripts/test.sh
+          command: sudo bash $PWD/tests/scripts/test.sh
 
       # - store_artifacts:
       #    path: test-reports
