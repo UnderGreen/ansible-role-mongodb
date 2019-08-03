@@ -12,8 +12,7 @@ jobs:
   build:
     executor: my-executor
     steps:
-      - run: |
-        mkdir -p workspace && cd workspace
+      - run: mkdir -p workspace && cd workspace
       - checkout
       - persist_to_workspace:
         root: workspace
@@ -26,7 +25,7 @@ jobs:
       - setup_remote_docker
       - attach_workspace:
           at: workspace
-          
+
       - run:
           name: "Setup custom environment variables"
           command: |
