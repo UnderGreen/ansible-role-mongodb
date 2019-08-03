@@ -12,14 +12,6 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
-#      - run:
-#          name: "Setup custom environment variables"
-#          command: |
-#            echo 'export DISTRIBUTION="ubuntu"' >> $BASH_ENV
-#            echo 'export DIST_VERSION="18_04-builded"' >> $BASH_ENV
-#            echo 'export MONGODB_VERSION="4.0"' >> $BASH_ENV
-#            echo 'export MONGODB_PACKAGE="mongodb-org"' >> $BASH_ENV
-
       - run:
           name: before install
           command: |
