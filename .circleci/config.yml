@@ -58,15 +58,11 @@ jobs:
       - run:
           name: before install
           command: |
-            export DISTRIBUTION="ubuntu"
-            export DIST_VERSION="18_04-builded"
-            export MONGODB_VERSION="4.0"
-            export MONGODB_PACKAGE="mongodb-org"
-            sudo bash tests/scripts/before_install.sh
+            sudo -E bash tests/scripts/before_install.sh
 
       - run:
           name: run tests
-          command: sudo bash tests/scripts/test.sh
+          command: sudo -E bash tests/scripts/test.sh
 
       # - store_artifacts:
       #    path: test-reports
