@@ -48,15 +48,15 @@ jobs:
           name: list
           command: |
             echo $PWD
-            ls -l
-            
+            sudo ls -l
+
       - run:
           name: before install
-          command: sudo tests/scripts/before_install.sh
+          command: sudo $PWD/tests/scripts/before_install.sh
 
       - run:
           name: run tests
-          command: sudo tests/scripts/test.sh
+          command: sudo $PWD/tests/scripts/test.sh
 
       # - store_artifacts:
       #    path: test-reports
