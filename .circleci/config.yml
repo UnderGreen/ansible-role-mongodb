@@ -46,11 +46,11 @@ jobs:
       # https://nose.readthedocs.io
       - run:
           name: before install
-          command: bash tests/scripts/before_install.sh
+          command: sudo -u root tests/scripts/before_install.sh
 
       - run:
           name: run tests
-          command: bash tests/scripts/test.sh
+          command: sudo -u root tests/scripts/test.sh
 
       # - store_artifacts:
       #    path: test-reports
