@@ -14,11 +14,11 @@ jobs:
     executor: my-executor
     steps:
       - checkout
-      - run: ls -l
+      - run: echo $PWD && ls -l
       - persist_to_workspace:
           root: ./
           paths:
-            - ansible-role-mongodb
+            - ./
       - run: ls -l
 
   test:
@@ -26,7 +26,7 @@ jobs:
     steps:
       - setup_remote_docker
       - attach_workspace:
-          at: ./ansible-role-mongodb
+          at: ./
 
       - run: ls -l
       - run:
