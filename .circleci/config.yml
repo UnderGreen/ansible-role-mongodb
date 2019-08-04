@@ -26,32 +26,23 @@ workflows:
   # Ubuntu 18.04
   test-ubuntu-18.04_mongodb-4.0:
     jobs:
+      environment:
+        DISTRIBUTION: ubuntu
+        DIST_VERSION: 18_04-builded
+        MONGODB_VERSION: 4.0
+        MONGODB_PACKAGE=: mongodb-org
       - test:
-          environment:
-            DISTRIBUTION: ubuntu
-            DIST_VERSION: 18_04-builded
-            MONGODB_VERSION: 4.0
-            MONGODB_PACKAGE=: mongodb-org
           context: ubuntu-18.04_mongodb-4.0
 
   test-ubuntu-18.04_mongodb-3.6:
     jobs:
       - test:
-          environment:
-            DISTRIBUTION: ubuntu
-            DIST_VERSION: 18_04-builded
-            MONGODB_VERSION: 4.0
-            MONGODB_PACKAGE=: mongodb-org
           context: ubuntu-18.04_mongodb-3.6
 
   # Ubuntu 16.04
   test-ubuntu-16.04_mongodb-4.0:
     jobs:
       - test:
-          environment:
-            DISTRIBUTION: ubuntu
-            DIST_VERSION: 16_04-builded
-            MONGODB_VERSION: 4.0
           context: ubuntu-16.04_mongodb-4.0
 
   test-ubuntu-16.04_mongodb-3.6:
