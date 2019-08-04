@@ -26,11 +26,6 @@ workflows:
   # Ubuntu 18.04
   test-ubuntu-18.04_mongodb-4.0:
     jobs:
-      environment:
-        DISTRIBUTION: ubuntu
-        DIST_VERSION: 18_04-builded
-        MONGODB_VERSION: 4.0
-        MONGODB_PACKAGE=: mongodb-org
       - test:
           context: ubuntu-18.04_mongodb-4.0
 
