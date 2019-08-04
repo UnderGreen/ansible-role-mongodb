@@ -23,6 +23,7 @@ jobs:
 
 workflows:
   version: 2
+  # Ubuntu 18.04
   test-ubuntu-18.04_mongodb-4.0:
     jobs:
       - test:
@@ -32,3 +33,115 @@ workflows:
     jobs:
       - test:
           context: ubuntu-18.04_mongodb-3.6
+
+  test-ubuntu-16.04_mongodb-4.0:
+    jobs:
+      - test:
+          context: ubuntu-16.04_mongodb-4.0
+
+  # Ubuntu 16.04
+  test-ubuntu-16.04_mongodb-3.6:
+    jobs:
+      - test:
+          context: ubuntu-16.04_mongodb-3.6
+
+  test-ubuntu-16.04_mongodb-3.4:
+    jobs:
+      - test:
+          context: ubuntu-16.04_mongodb-3.4
+
+  test-ubuntu-16.04_mongodb-3.4:
+    jobs:
+      - test:
+          context: ubuntu-16.04_mongodb-3.4
+
+  # Ubuntu 14.04
+  test-ubuntu-14.04_mongodb-4.0:
+    jobs:
+      - test:
+          context: ubuntu-14.04_mongodb-4.0
+
+  test-ubuntu-14.04_mongodb-3.6:
+    jobs:
+      - test:
+          context: ubuntu-14.04_mongodb-3.6
+
+  test-ubuntu-14.04_mongodb-3.4:
+    jobs:
+      - test:
+          context: ubuntu-14.04_mongodb-3.4
+
+  # Debian 9
+  test-debian-9_mongodb-4.0:
+    jobs:
+      - test:
+          context: debian-9_mongodb-4.0
+
+  test-debian-9_mongodb-3.6:
+    jobs:
+      - test:
+          context: debian-9_mongodb-3.6
+
+  # Debian 8
+  test-debian-8_mongodb-4.0:
+    jobs:
+      - test:
+          context: debian-9_mongodb-4.0
+
+  test-debian-8_mongodb-3.6:
+    jobs:
+      - test:
+          context: debian-8_mongodb-3.6
+
+  test-debian-8_mongodb-3.4:
+    jobs:
+      - test:
+          context: debian-8_mongodb-3.4
+
+  # Centos 6
+  test-centos-6_mongodb-4.0:
+    jobs:
+      - test:
+          context: centos-6_mongodb-4.0
+
+  test-centos-6_mongodb-3.6:
+    jobs:
+      - test:
+          context: centos-6_mongodb-3.6
+
+  test-centos-6_mongodb-3.4:
+    jobs:
+      - test:
+          context: centos-6_mongodb-3.4
+
+  # Centos 7
+  test-centos-7_mongodb-4.0:
+    jobs:
+      - test:
+          context: centos-7_mongodb-4.0
+
+  test-centos-7_mongodb-3.6:
+    jobs:
+      - test:
+          context: centos-7_mongodb-3.6
+
+  test-centos-7_mongodb-3.4:
+    jobs:
+      - test:
+          context: centos-7_mongodb-3.4
+
+  # Amazon linux 2
+  test-amazonlinux-2_mongodb-4.0:
+    jobs:
+      - test:
+          context: amazonlinux-2_mongodb-4.0
+
+  test-amazonlinux-2_mongodb-3.6:
+    jobs:
+      - test:
+          context: amazonlinux-2_mongodb-3.6
+
+  test-amazonlinux-2_mongodb-3.4:
+    jobs:
+      - test:
+          context: amazonlinux-2_mongodb-3.4
