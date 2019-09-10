@@ -40,10 +40,6 @@ env:
   - >
     DISTRIBUTION=ubuntu-upstart
     DIST_VERSION=14.04
-    MONGODB_VERSION=4.2
-  - >
-    DISTRIBUTION=ubuntu-upstart
-    DIST_VERSION=14.04
     MONGODB_VERSION=4.0
   - >
     DISTRIBUTION=ubuntu-upstart
@@ -65,10 +61,6 @@ env:
     DISTRIBUTION=debian
     DIST_VERSION=9-builded
     MONGODB_VERSION=3.6
-  - >
-    DISTRIBUTION=debian
-    DIST_VERSION=8-builded
-    MONGODB_VERSION=4.2
   - >
     DISTRIBUTION=debian
     DIST_VERSION=8-builded
