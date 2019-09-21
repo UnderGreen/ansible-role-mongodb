@@ -13,7 +13,7 @@
 - name: Flush all handlers at this point
   meta: flush_handlers
 
-- name: create administrative user siteUserAdmin
+- name: create administrative user "{{ mongodb_user_admin_name }}"
   mongodb_user:
     database: admin
     name: "{{ item.name }}"
@@ -29,7 +29,7 @@
       }
   no_log: true
 
-- name: create administrative user siteRootAdmin
+- name: create administrative user "{{ mongodb_root_admin_name }}"
   mongodb_user:
     database: admin
     name: "{{ item.name }}"
@@ -45,7 +45,7 @@
       }
   no_log: true
 
-- name: create backup user "backupuser"
+- name: create backup user "{{ mongodb_root_backup_name }}"
   mongodb_user:
     database: admin
     name: "{{ item.name }}"
