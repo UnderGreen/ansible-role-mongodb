@@ -146,6 +146,9 @@ mongodb_user_admin_password: passw0rd
 
 mongodb_root_admin_name: siteRootAdmin
 mongodb_root_admin_password: passw0rd
+
+mongodb_root_backup_name: backupuser
+mongodb_root_backup_password: passw0rd
 ```
 
 #### Usage
