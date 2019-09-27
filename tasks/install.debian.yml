@@ -82,6 +82,12 @@
       - python-pip
   when: mongodb_pymongo_from_pip | bool
 
+- name: Install setuptools (required for ansible 2.7+)
+  apt:
+    pkg:
+      - python-setuptools
+  when: mongodb_pymongo_from_pip | bool
+
 - name: Install PyMongo from PIP
   pip:
     name: pymongo
