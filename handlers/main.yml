@@ -6,19 +6,27 @@
   when: ansible_service_mgr == "systemd" and mongodb_manage_service
 
 - name: mongodb reload
-  service: name={{ mongodb_daemon_name }} state=reloaded
+  service:
+    name: "{{ mongodb_daemon_name }}"
+    state: reloaded
   when: mongodb_manage_service|bool
 
 - name: mongodb restart
-  service: name={{ mongodb_daemon_name }} state=restarted
+  service:
+    name: "{{ mongodb_daemon_name }}"
+    state: restarted
   when: mongodb_manage_service|bool
 
 - name: mongodb-mms-monitoring-agent restart
-  service: name=mongodb-mms-monitoring-agent state=restarted
+  service:
+    name: mongodb-mms-monitoring-agent
+    state: restarted
   when: mongodb_manage_service|bool
 
 - name: restart sysfsutils
-  service: name=sysfsutils state=restarted
+  service:
+    name: sysfsutils
+    state: restarted
 
 - name: service started
   service:
