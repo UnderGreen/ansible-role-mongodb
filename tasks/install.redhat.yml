@@ -23,16 +23,19 @@
   yum:
     name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}={{ mongodb_version }}{% endif %}"
     state: "{{ mongodb_package_state }}"
+    lock_timeout: "{{ yum_lock_timeout }}"
 
 - name: Install numactl package
   yum:
     name: numactl
     state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
 
 - name: Install PyMongo package
   yum:
     name: python-pymongo
     state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
   when: not mongodb_pymongo_from_pip
 
 - name: Install PIP
@@ -40,6 +43,7 @@
     name:
       - python-devel
       - python-pip
+    lock_timeout: "{{ yum_lock_timeout }}"
   when: mongodb_pymongo_from_pip | bool
 
 - name: Install PyMongo from PIP
