@@ -43,6 +43,7 @@ mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manag
 mongodb_pymongo_pip_version: 3.6.1 # Choose PyMong version to install from pip. If not set use latest
 mongodb_user_update_password: "on_create" # MongoDB user password update default policy
 mongodb_manage_service: true
+mongodb_manage_systemd_unit: true
 
 # Disable transparent hugepages on systemd debian based installations
 mongodb_disable_transparent_hugepages: false
