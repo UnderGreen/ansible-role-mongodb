@@ -1,18 +1,13 @@
 ---
 - name: Create disable transparent hugepages systemd service file
-  copy:
+  template:
     src: "{{ item }}"
     dest: /etc/systemd/system/disable-transparent-hugepages.service
     owner: root
     group: root
     mode: 0644
   with_first_found:
-    - "disable-transparent-hugepages.{{ ansible_distribution | lower }}.service"
-    - "disable-transparent-hugepages.{{ ansible_os_family | lower }}.service"
+    - "disable-transparent-hugepages.{{ ansible_distribution | lower }}.service.j2"
+    - "disable-transparent-hugepages.{{ ansible_os_family | lower }}.service.j2"
+  notify: "run disable-transparent-hugepages"
 
-- name: Enable disable-transparent-hugepages.service
-  systemd:
-    name: disable-transparent-hugepages
-    daemon-reload: true
-    enabled: true
-    state: started

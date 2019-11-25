@@ -5,6 +5,14 @@
     daemon_reload: yes
   when: ansible_service_mgr == "systemd" and mongodb_manage_service | bool
 
+- name: run disable-transparent-hugepages
+  systemd:
+    name: disable-transparent-hugepages
+    enabled: true
+    state: started
+    daemon_reload: yes
+  when: ansible_service_mgr == "systemd" and mongodb_disable_transparent_hugepages | bool
+
 - name: mongodb reload
   service:
     name: "{{ mongodb_daemon_name }}"
