@@ -39,7 +39,6 @@
 - name: Create log dir if missing
   file:
     state: directory
-    recurse: true
     dest: "{{ mongodb_systemlog_path|dirname }}"
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_user }}"
@@ -57,7 +56,7 @@
     dest: "{{ mongodb_systemlog_path }}"
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_user }}"
-    mode: 0755
+    mode: 0644
   when: ( mongodb_systemlog_destination == "file"
         and logfile_stat is defined
         and not logfile_stat.stat.exists )
