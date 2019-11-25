@@ -59,8 +59,8 @@
     state: present
 
 - name: Add systemd configuration if present
-  copy:
-    src: mongodb.service
+  template:
+    src: mongodb.service.j2
     dest: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
     owner: root
     group: root
