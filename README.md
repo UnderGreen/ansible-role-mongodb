@@ -6,7 +6,7 @@ Ansible role which manages [MongoDB](http://www.mongodb.org/).
 - Configure mongodb users
 - Configure replication
 - Provide handlers for restart and reload;
-- Setup MMS authomation agent;
+- Setup MMS automation agent;
 
 MongoDB support matrix:
 
