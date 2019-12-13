@@ -3,7 +3,9 @@
 - name: reload systemd
   systemd:
     daemon_reload: yes
-  when: ansible_service_mgr == "systemd" and mongodb_manage_service | bool
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_service | bool
 
 - name: mongodb reload
   service:

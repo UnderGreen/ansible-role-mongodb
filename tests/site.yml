@@ -11,7 +11,18 @@
         image: "{{ image_name }}"
         command: "/sbin/init"
         state: started
-        privileged: true
+        privileged: "{{ docker_privileged }}"
+        mounts:
+          - type: bind
+            source: /sys/fs/cgroup
+            target: /sys/fs/cgroup
+          - type: bind
+            source: /sys/fs/fuse
+            target: /sys/fs/fuse
+          - type: tmpfs
+            target: /run
+          - type: tmpfs
+            target: /run/lock
       with_items:
         - mongo1
         - mongo2
