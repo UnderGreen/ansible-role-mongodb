@@ -6,7 +6,7 @@ Ansible role which manages [MongoDB](http://www.mongodb.org/).
 - Configure mongodb users
 - Configure replication
 - Provide handlers for restart and reload;
-- Setup MMS authomation agent;
+- Setup MMS automation agent;
 
 MongoDB support matrix:
 
@@ -14,12 +14,12 @@ MongoDB support matrix:
 | -------------- | :-----------: | :----------------: | :----------------: | :----------------: | :----------------: |
 | Ubuntu 14.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
 | Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Ubuntu 18.04   |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Ubuntu 18.04   |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: | :white_check_mark: |
 | Debian 8.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
 | Debian 9.x     |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | RHEL 6.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Amazon Linux 2 |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Amazon Linux 2 |  :no_entry:   | :white_check_mark: |        :x:         | :white_check_mark: | :white_check_mark: |
 
 - :white_check_mark: - fully tested, should works fine
 - :interrobang: - maybe works, not tested
@@ -35,9 +35,9 @@ MongoDB support matrix:
 mongodb_package: mongodb-org
 
 # You can control installed version via this param.
-# Should be '3.4', '3.6' or '4.0'. This role doesn't support MongoDB < 3.4.
+# Should be '3.4', '3.6', '4.0' or '4.2'. This role doesn't support MongoDB < 3.4.
 # I will recommend you to use latest version of MongoDB.
-mongodb_version: "3.6"
+mongodb_version: "4.2"
 
 mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manager
 mongodb_pymongo_pip_version: 3.6.1 # Choose PyMong version to install from pip. If not set use latest
