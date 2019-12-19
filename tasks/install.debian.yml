@@ -59,14 +59,26 @@
     state: present
 
 - name: Add systemd configuration if present
-  copy: src=mongodb.service dest=/lib/systemd/system/{{mongodb_daemon_name}}.service owner=root group=root mode=0644
-  when: ansible_service_mgr == "systemd"
+  copy:
+    src: mongodb.service
+    dest: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_systemd_unit | bool
   notify:
     - reload systemd
 
 - name: Add symlink for systemd
-  file: src=/lib/systemd/system/{{mongodb_daemon_name}}.service dest=/etc/systemd/system/multi-user.target.wants/{{mongodb_daemon_name}}.service state=link
-  when: ansible_service_mgr == "systemd"
+  file:
+    src: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
+    dest: "/etc/systemd/system/multi-user.target.wants/{{mongodb_daemon_name}}.service"
+    state: link
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_systemd_unit | bool
   notify:
     - reload systemd
 

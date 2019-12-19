@@ -3,25 +3,27 @@
 - name: reload systemd
   systemd:
     daemon_reload: yes
-  when: ansible_service_mgr == "systemd" and mongodb_manage_service
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_service | bool
 
 - name: mongodb reload
   service:
     name: "{{ mongodb_daemon_name }}"
     state: reloaded
-  when: mongodb_manage_service|bool
+  when: mongodb_manage_service | bool
 
 - name: mongodb restart
   service:
     name: "{{ mongodb_daemon_name }}"
     state: restarted
-  when: mongodb_manage_service|bool
+  when: mongodb_manage_service | bool
 
 - name: mongodb-mms-monitoring-agent restart
   service:
     name: mongodb-mms-monitoring-agent
     state: restarted
-  when: mongodb_manage_service|bool
+  when: mongodb_manage_service | bool
 
 - name: restart sysfsutils
   service:
