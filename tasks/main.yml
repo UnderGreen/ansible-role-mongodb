@@ -124,6 +124,12 @@
   no_log: false
   tags: [mongodb]
 
+- name: service started
+  service:
+    name: "{{ mongodb_daemon_name }}"
+    state: started
+    enabled: yes
+
 - name: Include MMS Agent configuration
   include: mms-agent.yml
   when: mongodb_mms_api_key | length > 0
