@@ -3,20 +3,7 @@ FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && \
-    apt install --yes python-pip curl jq && \
-    pip install apt-select && \
-    EXTERNAL_IP=`curl -s https://ipinfo.io/ip` && \
-    echo "EXTERNAL_IP is ${EXTERNAL_IP}" && \
-    DATA_IP=`curl -s https://json.geoiplookup.io/$EXTERNAL_IP` && \
-    echo $DATA_IP && \
-    COUNTRY_IP=`echo $DATA_IP | jq '.country_code' | tr -d '"'` && \
-    apt-select -C $COUNTRY_IP -t 1 -m one-week-behind && \
-    cat sources.list && \
-    cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    mv -f sources.list /etc/apt/
-
-RUN apt update && \
-    apt install --yes python-minimal systemd gnupg iproute2
+    apt install --yes python-minimal python-pip python-dev systemd gnupg iproute2
 
 RUN cd /lib/systemd/system/sysinit.target.wants/ && \
 		ls | grep -v systemd-tmpfiles-setup.service | xargs rm -f && \
