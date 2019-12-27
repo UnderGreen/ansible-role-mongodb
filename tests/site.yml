@@ -87,11 +87,3 @@
   gather_facts: yes
   roles:
     - role: greendayonfire.mongodb
-      when: "'mongo_master' in group_names"
-
-- hosts: "{{ target | default('mongo') }}"
-  become: no
-  gather_facts: yes
-  roles:
-    - role: greendayonfire.mongodb
-      when: "'mongo_replicas' in group_names"
