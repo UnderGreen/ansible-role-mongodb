@@ -10,4 +10,7 @@
     - "disable-transparent-hugepages.{{ ansible_distribution | lower }}.service.j2"
     - "disable-transparent-hugepages.{{ ansible_os_family | lower }}.service.j2"
   notify: "run disable-transparent-hugepages"
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_disable_transparent_hugepages | bool
 

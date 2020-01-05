@@ -1,9 +1,10 @@
+# {{ ansible_managed }}
 [Unit]
 Description=An object/document-oriented database
 Documentation=man:mongod(1)
 
 [Service]
-User=mongodb
+User={{ mongodb_user }}
 ExecStart=/usr/bin/numactl --interleave=all /usr/bin/mongod --config /etc/mongod.conf
 # file size
 LimitFSIZE=infinity
@@ -12,9 +13,9 @@ LimitCPU=infinity
 # virtual memory size
 LimitAS=infinity
 # open files
-LimitNOFILE=64000
+LimitNOFILE={{ mongodb_systemd_unit_limit_nofile }}
 # processes/threads
-LimitNPROC=64000
+LimitNPROC={{ mongodb_systemd_unit_limit_nproc }}
 # locked memory
 LimitMEMLOCK=infinity
 # total threads (user+kernel)

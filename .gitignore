@@ -3,3 +3,4 @@ tests/*.retry
 \#*\#
 .\#*
 /.python-version
+*.pyc

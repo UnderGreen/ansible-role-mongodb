@@ -16,6 +16,8 @@ mongodb_pymongo_pip_version: 3.7.1
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
 mongodb_manage_systemd_unit: true
+mongodb_systemd_unit_limit_nofile: 64000
+mongodb_systemd_unit_limit_nproc: 64000
 
 mongodb_disable_transparent_hugepages: false
 

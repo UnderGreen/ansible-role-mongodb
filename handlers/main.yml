@@ -3,9 +3,6 @@
 - name: reload systemd
   systemd:
     daemon_reload: yes
-  when:
-    - ansible_service_mgr == "systemd"
-    - mongodb_manage_service | bool
 
 - name: run disable-transparent-hugepages
   systemd:
@@ -13,13 +10,6 @@
     enabled: true
     state: started
     daemon_reload: yes
-  when: ansible_service_mgr == "systemd" and mongodb_disable_transparent_hugepages | bool
-
-- name: mongodb reload
-  service:
-    name: "{{ mongodb_daemon_name }}"
-    state: reloaded
-  when: mongodb_manage_service | bool
 
 - name: mongodb restart
   service:
@@ -38,11 +28,6 @@
     name: sysfsutils
     state: restarted
 
-- name: service started
-  service:
-    name: "{{ mongodb_daemon_name }}"
-    state: started
-
 - name: wait when mongodb is started
   wait_for:
     host: "{{ item }}"
@@ -56,3 +41,4 @@
     port: "{{ mongodb_net_port }}"
     delay: 5
     timeout: 120
+

@@ -81,7 +81,6 @@
     mode: 0644
   notify:
     - mongodb restart
-    - service started
     - wait when mongodb is started
 
 - name: Flush all handlers at this point
