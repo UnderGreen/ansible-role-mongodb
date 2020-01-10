@@ -30,6 +30,7 @@
     name: numactl
     state: present
     lock_timeout: "{{ yum_lock_timeout }}"
+  when: mongodb_use_numa | bool
 
 - name: Install PyMongo package
   yum:
