@@ -57,6 +57,7 @@
   apt:
     name: numactl
     state: present
+  when: mongodb_use_numa | bool
 
 - name: Add systemd configuration if present
   template:
