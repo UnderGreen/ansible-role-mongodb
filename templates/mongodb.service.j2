@@ -1,14 +1,14 @@
 # {{ ansible_managed }}
 [Unit]
-Description=An object/document-oriented database
+Description=MongoDB instance %i
 Documentation=man:mongod(1)
 
 [Service]
 User={{ mongodb_user }}
 {% if mongodb_use_numa | bool %}
-ExecStart=/usr/bin/numactl --interleave=all /usr/bin/mongod --config /etc/mongod.conf
+ExecStart=/usr/bin/numactl --interleave=all /usr/bin/mongod --config "/etc/{{ mongodb_daemon_name }}.%i.conf"
 {% else %}
-ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+ExecStart=/usr/bin/mongod --config "/etc/{{ mongodb_daemon_name }}.%i.conf"
 {% endif %}
 # file size
 LimitFSIZE=infinity

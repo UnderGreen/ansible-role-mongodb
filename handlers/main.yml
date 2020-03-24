@@ -13,7 +13,7 @@
 
 - name: mongodb restart
   service:
-    name: "{{ mongodb_daemon_name }}"
+    name: "{{ mongodb_daemon_name }}@{{ mongodb_instance_name }}"
     state: restarted
   when: mongodb_manage_service | bool
 

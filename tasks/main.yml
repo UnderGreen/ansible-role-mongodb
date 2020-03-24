@@ -126,7 +126,7 @@
 
 - name: service started
   service:
-    name: "{{ mongodb_daemon_name }}"
+    name: "{{ mongodb_daemon_name }}@{{ mongodb_instance_name }}"
     state: started
     enabled: yes
 
