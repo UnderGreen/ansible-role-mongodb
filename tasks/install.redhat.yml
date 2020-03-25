@@ -46,7 +46,8 @@
       - python-devel
       - python-pip
     lock_timeout: "{{ yum_lock_timeout }}"
-  when: mongodb_pymongo_from_pip | bool
+  when: (mongodb_pymongo_from_pip | bool) or
+        (not ansible_check_mode)
 
 - name: Install PyMongo from PIP
   pip:
