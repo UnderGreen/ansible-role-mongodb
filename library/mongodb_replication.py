@@ -156,7 +156,7 @@ host_type:
   type: string
   sample: "replica"
 '''
-import ConfigParser
+importconfigparser
 import ssl as ssl_lib
 import time
 from datetime import datetime as dtdatetime
@@ -287,7 +287,7 @@ def remove_host(module, client, host_name, timeout=180):
             time.sleep(5)
 
 def load_mongocnf():
-    config = ConfigParser.RawConfigParser()
+    config =configparser.RawConfigParser()
     mongocnf = os.path.expanduser('~/.mongodb.cnf')
 
     try:
@@ -296,7 +296,7 @@ def load_mongocnf():
           user=config.get('client', 'user'),
           password=config.get('client', 'pass')
         )
-    except (ConfigParser.NoOptionError, IOError):
+    except (configparser.NoOptionError, IOError):
         return False
 
     return creds
