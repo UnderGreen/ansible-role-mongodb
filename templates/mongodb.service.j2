@@ -2,6 +2,7 @@
 [Unit]
 Description=An object/document-oriented database
 Documentation=man:mongod(1)
+After=network-online.target
 
 [Service]
 User={{ mongodb_user }}
