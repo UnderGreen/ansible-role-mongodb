@@ -11,7 +11,7 @@ mongodb_apt_key_id:
   "4.2": "E162F504A20CDF15827F718D4B7C549A058F8B6B"
 
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
-mongodb_pymongo_pip_version: 3.7.1
+mongodb_pymongo_pip_version: 3.10.1
 
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
