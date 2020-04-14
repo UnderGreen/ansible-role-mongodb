@@ -85,20 +85,17 @@
 
 - name: Install PyMongo package
   apt:
-    name: python-pymongo
+    name: "{{ mongodb_pymongo_package }}"
   when: not mongodb_pymongo_from_pip
 
 - name: Install PIP
   apt:
-    pkg:
-      - python-dev
-      - python-pip
+    pkg: "{{ mongodb_pymongo_deps }}"
   when: mongodb_pymongo_from_pip | bool
 
 - name: Install setuptools (required for ansible 2.7+)
   apt:
-    pkg:
-      - python-setuptools
+    pkg: "{{ mongodb_python_setuptools }}"
   when: mongodb_pymongo_from_pip | bool
 
 - name: Install PyMongo from PIP
@@ -106,4 +103,5 @@
     name: pymongo
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
+    executable: "{{ mongodb_pip_executable }}"
   when: mongodb_pymongo_from_pip | bool

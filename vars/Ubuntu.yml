@@ -4,3 +4,11 @@ mongodb_repository:
   "3.6": "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/3.6 multiverse"
   "4.0": "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/4.0 multiverse"
   "4.2": "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/4.2 multiverse"
+
+mongodb_pymongo_package: "{{ 'python3-pymongo' if ansible_python_interpreter is search('python3') | bool else 'python-pymongo' }}"
+mongodb_pymongo_deps:
+  - "{{ 'python3-dev' if ansible_python_interpreter is search('python3') | bool else 'python-dev' }}"
+  - "{{ 'python3-pip' if ansible_python_interpreter is search('python3') | bool else 'python-pip' }}"
+mongodb_python_setuptools: "{{ 'python3-setuptools' if ansible_python_interpreter is search('python3') | bool else 'python-setuptools' }}"
+mongodb_pip_executable: "{{ 'pip3' if ansible_python_interpreter is search('python3') | bool else 'pip' }}"
+

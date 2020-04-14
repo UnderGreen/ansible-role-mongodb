@@ -34,16 +34,14 @@
 
 - name: Install PyMongo package
   yum:
-    name: python-pymongo
+    name: "{{ mongodb_pymongo_package }}"
     state: present
     lock_timeout: "{{ yum_lock_timeout }}"
   when: not mongodb_pymongo_from_pip
 
 - name: Install PIP
   yum:
-    name:
-      - python-devel
-      - python-pip
+    name: "{{ mongodb_pymongo_deps }}"
     lock_timeout: "{{ yum_lock_timeout }}"
   when: mongodb_pymongo_from_pip | bool
 
@@ -52,4 +50,5 @@
     name: pymongo
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
+    executable: "{{ mongodb_pip_executable }}"
   when: mongodb_pymongo_from_pip | bool

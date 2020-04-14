@@ -13,3 +13,10 @@ mongodb_repository_gpgkey:
 mongodb_pidfile_path: "{{ '/var/run/mongodb/mongod.pid' if ('mongodb-org' in mongodb_package) else '' }}"
 
 yum_lock_timeout: 180
+
+mongodb_pymongo_package: "{{ 'python3-pymongo' if ansible_python_interpreter is search('python3') | bool else 'python-pymongo' }}"
+mongodb_pymongo_deps:
+  - "{{ 'python3-devel' if ansible_python_interpreter is search('python3') | bool else 'python-devel' }}"
+  - "{{ 'python3-pip' if ansible_python_interpreter is search('python3') | bool else 'python-pip' }}"
+mongodb_pip_executable: "{{ 'pip3' if ansible_python_interpreter is search('python3') | bool else 'pip' }}"
+
