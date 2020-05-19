@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 # (c) 2015-2018, Sergei Antipov, 2GIS LLC
 #
