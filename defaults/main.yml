@@ -124,3 +124,6 @@ mongodb_root_backup_password: passw0rd
 
 # setParameter config
 mongodb_set_parameters:
+
+# custom config options
+mongodb_config:

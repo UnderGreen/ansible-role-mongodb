@@ -108,6 +108,12 @@ mongodb_set_parameters:
     "authenticationMechanisms": "SCRAM-SHA-1,MONGODB-CR",
   }
 
+## Extend config with arbitrary values
+# Example :
+mongodb_config:
+  replication:
+    - "enableMajorityReadConcern: false"
+
 # MMS Agent
 mongodb_mms_agent_pkg: https://cloud.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_7.2.0.488-1_amd64.ubuntu1604.deb
 mongodb_mms_group_id: ""

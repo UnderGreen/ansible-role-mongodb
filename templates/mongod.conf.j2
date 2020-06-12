@@ -13,12 +13,22 @@ net:
   ssl:
     mode: {{ mongodb_net_ssl_mode }}
     PEMKeyFile: {{ mongodb_net_ssl_pemfile }}
+  {%- endif %}
+  {%- if mongodb_config['net'] is defined and mongodb_config['net'] is iterable %}
+  {%- for item in mongodb_config['net'] -%}
+  {{ item }}
+  {% endfor %}
   {% endif %}
 
 processManagement:
   fork: {{ mongodb_processmanagement_fork | to_nice_json}}
   {% if mongodb_pidfile_path is defined and mongodb_pidfile_path != '' -%}
   pidFilePath: {{ mongodb_pidfile_path }}
+  {%- endif %}
+  {%- if mongodb_config['processManagement'] is defined and mongodb_config['processManagement'] is iterable %}
+  {%- for item in mongodb_config['processManagement'] -%}
+  {{ item }}
+  {% endfor %}
   {% endif %}
 
 {% if mongodb_replication_replset -%}
@@ -27,6 +37,11 @@ replication:
   replSetName: {{ mongodb_replication_replset }}
   {% if mongodb_storage_engine == 'mmapv1' -%}
   secondaryIndexPrefetch: {{ mongodb_replication_replindexprefetch }}
+  {%- endif %}
+  {%- if mongodb_config['replication'] is defined and mongodb_config['replication'] is iterable %}
+  {%- for item in mongodb_config['replication'] -%}
+  {{ item }}
+  {% endfor %}
   {% endif %}
 {% endif %}
 
@@ -36,6 +51,11 @@ security:
   keyFile: {{ mongodb_security_keyfile }}
   {% endif -%}
   javascriptEnabled: {{ mongodb_security_javascript_enabled | to_nice_json }}
+  {%- if mongodb_config['security'] is defined and mongodb_config['security'] is iterable %}
+  {%- for item in mongodb_config['security'] -%}
+  {{ item }}
+  {% endfor %}
+  {% endif %}
 
 storage:
   dbPath: {{ mongodb_storage_dbpath }}
@@ -57,6 +77,11 @@ storage:
       cacheSizeGB: {{ mongodb_wiredtiger_cache_size }}
       {% endif -%}
       directoryForIndexes: {{ mongodb_wiredtiger_directory_for_indexes | to_nice_json }}
+  {%- endif %}
+  {%- if mongodb_config['storage'] is defined and mongodb_config['storage'] is iterable %}
+  {%- for item in mongodb_config['storage'] -%}
+  {{ item }}
+  {% endfor %}
   {% endif %}
 
 systemLog:
@@ -65,22 +90,37 @@ systemLog:
   logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
   logRotate: {{ mongodb_systemlog_logrotate }}
   path: {{ mongodb_systemlog_path }}
+  {%- endif %}
+  {%- if mongodb_config['systemLog'] is defined and mongodb_config['systemLog'] is iterable %}
+  {%- for item in mongodb_config['systemLog'] -%}
+  {{ item }}
+  {% endfor %}
   {% endif %}
 
 operationProfiling:
   slowOpThresholdMs: {{ mongodb_operation_profiling_slow_op_threshold_ms }}
   mode: {{ mongodb_operation_profiling_mode }}
+  {%- if mongodb_config['operationProfiling'] is defined and mongodb_config['operationProfiling'] is iterable %}
+  {%- for item in mongodb_config['operationProfiling'] -%}
+  {{ item }}
+  {% endfor %}
+  {% endif %}
 
 {% if mongodb_major_version is version("4.0", ">=") -%}
 cloud:
   monitoring:
     free:
       state: {{ mongodb_cloud_monitoring_free_state }}
-{% endif -%}
+  {%- if mongodb_config['cloud'] is defined and mongodb_config['cloud'] is iterable %}
+  {%- for item in mongodb_config['cloud'] -%}
+  {{ item }}
+  {% endfor %}
+  {% endif %}
+{% endif %}
 
 {% if mongodb_set_parameters -%}
 setParameter:
   {% for key, value in mongodb_set_parameters.items() -%}
   {{ key }}: {{ value }}
-  {% endfor -%}
+  {% endfor %}
 {% endif %}
