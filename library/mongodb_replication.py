@@ -156,7 +156,13 @@ host_type:
   type: string
   sample: "replica"
 '''
-import ConfigParser
+
+import sys
+if sys.version_info >= (3, 0):
+    import configparser as ConfigParser
+else:
+    import ConfigParser
+
 import ssl as ssl_lib
 import time
 from datetime import datetime as dtdatetime
@@ -173,6 +179,7 @@ except ImportError:
     pymongo_found = False
 else:
     pymongo_found = True
+
 
 # =========================================
 # MongoDB module specific support methods.
@@ -198,6 +205,7 @@ def check_members(state, module, client, host_name, host_port, host_type):
     if not cfg:
         module.fail_json(msg='no config object retrievable from local.system.replset')
 
+    foundOnRemove = False
     for member in cfg['members']:
         if state == 'present':
             if host_type == 'replica':
@@ -206,13 +214,17 @@ def check_members(state, module, client, host_name, host_port, host_type):
             else:
                 if "{0}:{1}".format(host_name, host_port) in member['host'] and member['arbiterOnly']:
                     module.exit_json(changed=False, host_name=host_name, host_port=host_port, host_type=host_type)
-        else:
+
+        if state == 'absent':
             if host_type == 'replica':
-                if "{0}:{1}".format(host_name, host_port) not in member['host']:
-                    module.exit_json(changed=False, host_name=host_name, host_port=host_port, host_type=host_type)
+                if "{0}:{1}".format(host_name, host_port) in member['host']:
+                    foundOnRemove = True
             else:
-                if "{0}:{1}".format(host_name, host_port) not in member['host'] and member['arbiterOnly']:
-                    module.exit_json(changed=False, host_name=host_name, host_port=host_port, host_type=host_type)
+                if "{0}:{1}".format(host_name, host_port) in member['host'] and member['arbiterOnly']:
+                    foundOnRemove = True
+    if not foundOnRemove and state == 'absent':
+        module.exit_json(changed=False, host_name=host_name, host_port=host_port, host_type=host_type)
+
 
 def add_host(module, client, host_name, host_port, host_type, timeout=180, **kwargs):
     start_time = dtdatetime.now()
@@ -251,13 +263,14 @@ def add_host(module, client, host_name, host_port, host_type, timeout=180, **kwa
 
             cfg['members'].append(new_host)
             admin_db.command('replSetReconfig', cfg)
+            module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
             return
         except (OperationFailure, AutoReconnect) as e:
             if (dtdatetime.now() - start_time).seconds > timeout:
                 module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
             time.sleep(5)
 
-def remove_host(module, client, host_name, timeout=180):
+def remove_host(module, client, host_name, host_port, timeout=180):
     start_time = dtdatetime.now()
     while True:
         try:
@@ -275,12 +288,21 @@ def remove_host(module, client, host_name, timeout=180):
 
             if len(cfg['members']) == 1:
                 module.fail_json(msg="You can't delete last member of replica set")
+
+            removed_host = False
             for member in cfg['members']:
-                if host_name in member['host']:
+                if host_name + ":" + host_port in member['host']:
                     cfg['members'].remove(member)
-                else:
-                    fail_msg = "couldn't find member with hostname: {0} in replica set members list".format(host_name)
-                    module.fail_json(msg=fail_msg)
+
+            if remove_host:
+                cfg['version'] += 1
+                admin_db.command('replSetReconfig', cfg)
+                module.exit_json(changed=True, host_name=host_name, host_port=host_port)
+
+            if not removed_host:
+                fail_msg = "couldn't find member with hostname: {0} in replica set members list".format(host_name)
+                module.fail_json(msg=fail_msg)
+
         except (OperationFailure, AutoReconnect) as e:
             if (dtdatetime.now() - start_time).seconds > timeout:
                 module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
@@ -376,9 +398,10 @@ def main():
     ssl = module.params['ssl']
     state = module.params['state']
     priority = float(module.params['priority'])
-
+    hidden = module.params['hidden']
+    votes  = module.params['votes']
     replica_set_created = False
-
+           
     try:
         if replica_set is None:
             module.fail_json(msg='replica_set parameter is required')
@@ -392,7 +415,6 @@ def main():
                 "serverselectiontimeoutms": 5000,
                 "replicaset": replica_set,
             }
-
         if ssl:
             connection_params["ssl"] = ssl
             connection_params["ssl_cert_reqs"] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
@@ -400,6 +422,38 @@ def main():
         client = MongoClient(**connection_params)
         authenticate(client, login_user, login_password)
         client['admin'].command('replSetGetStatus')
+
+        # Successful RS connection
+        repl_set_status = None
+        current_host_found = False
+        try:
+            repl_set_status = client['admin'].command('replSetGetStatus')
+            current_host_found = host_name + ":" + host_port in [x["name"] for x in repl_set_status["members"]]
+        except Exception as e: 
+            if not "no replset config has been received" in str(e):
+                raise e
+
+        if current_host_found and state == 'present':
+            requires_changes = False
+            current_config = client['admin'].command('replSetGetConfig')
+            for this_host in current_config['config']['members']:
+                if this_host['host'] == host_name + ":" + host_port:
+                    if priority != this_host['priority']:
+                        requires_changes = True
+                        this_host['priority'] = priority
+                    if hidden != this_host['hidden']:
+                        requires_changes = True
+                        this_host['hidden'] = hidden
+                    if votes != this_host['votes']:
+                        requires_changes = True
+                        this_host['votes'] = votes
+            if requires_changes:
+                current_config['config']['version'] += 1
+                client['admin'].command('replSetReconfig', current_config['config'])
+                module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
+            if not requires_changes:
+                module.exit_json(changed=False, host_name=host_name, host_port=host_port, host_type=host_type)
+
 
     except ServerSelectionTimeoutError:
         try:
@@ -427,7 +481,8 @@ def main():
                 wait_for_ok_and_master(module, connection_params)
                 replica_set_created = True
                 module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
-        except OperationFailure as e:
+
+        except OperationFailure as e:                
             module.fail_json(msg='Unable to initiate replica set: %s' % str(e))
     except ConnectionFailure as e:
         module.fail_json(msg='unable to connect to database: %s' % str(e))
@@ -455,11 +510,12 @@ def main():
 
     elif state == 'absent':
         try:
-            remove_host(module, client, host_name)
+            remove_host(module, client, host_name, host_port) 
         except OperationFailure as e:
             module.fail_json(msg='Unable to remove member of replica set: %s' % str(e))
 
-    module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
+    module.fail_json(msg='Operation error')
+
 
 # import module snippets
 from ansible.module_utils.basic import *
