@@ -205,7 +205,7 @@ def check_members(state, module, client, host_name, host_port, host_type):
     if not cfg:
         module.fail_json(msg='no config object retrievable from local.system.replset')
 
-    foundOnRemove = False
+    found_on_remove = False
     for member in cfg['members']:
         if state == 'present':
             if host_type == 'replica':
@@ -218,11 +218,11 @@ def check_members(state, module, client, host_name, host_port, host_type):
         if state == 'absent':
             if host_type == 'replica':
                 if "{0}:{1}".format(host_name, host_port) in member['host']:
-                    foundOnRemove = True
+                    found_on_remove = True
             else:
                 if "{0}:{1}".format(host_name, host_port) in member['host'] and member['arbiterOnly']:
-                    foundOnRemove = True
-    if not foundOnRemove and state == 'absent':
+                    found_on_remove = True
+    if not found_on_remove and state == 'absent':
         module.exit_json(changed=False, host_name=host_name, host_port=host_port, host_type=host_type)
 
 
