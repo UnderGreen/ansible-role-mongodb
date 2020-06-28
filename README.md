@@ -1,4 +1,4 @@
-# Ansible role for MongoDB [![Build Status](https://travis-ci.org/UnderGreen/ansible-role-mongodb.svg?branch=master)](https://travis-ci.org/UnderGreen/ansible-role-mongodb)
+# Ansible role for MongoDB ![Test ansible role on Amazon Linux](https://github.com/sportsru/ansible-role-mongodb/workflows/Test%20ansible%20role%20on%20Amazon%20Linux/badge.svg) ![Test ansible role on CentOS](https://github.com/sportsru/ansible-role-mongodb/workflows/Test%20ansible%20role%20on%20CentOS/badge.svg) ![Test ansible role on Debian](https://github.com/sportsru/ansible-role-mongodb/workflows/Test%20ansible%20role%20on%20Debian/badge.svg) ![Test ansible role on Ubuntu](https://github.com/sportsru/ansible-role-mongodb/workflows/Test%20ansible%20role%20on%20Ubuntu/badge.svg) 
 
 Ansible role which manages [MongoDB](http://www.mongodb.org/).
 
@@ -19,7 +19,7 @@ MongoDB support matrix:
 | Debian 9.x     |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | RHEL 6.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Amazon Linux 2 |  :no_entry:   | :white_check_mark: |        :x:         | :white_check_mark: | :white_check_mark: |
+| Amazon Linux 2 |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 - :white_check_mark: - fully tested, should works fine
 - :interrobang: - maybe works, not tested

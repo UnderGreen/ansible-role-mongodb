@@ -1,0 +1,44 @@
+name: Test ansible role on CentOS
+
+on:
+  push:
+    branches:
+      - master
+      - github_actions
+  pull_request:
+    branches:
+      - master
+      - github_actions
+
+jobs:
+  python2:
+    runs-on: ubuntu-latest
+    container: python:2.7.18-alpine
+    strategy:
+      matrix:
+        distribution: 
+          - centos
+        dist_version: 
+          - 7-builded
+          - 6-builded
+        mongodb_version:
+          - '4.2'
+          - '4.0'
+          - '3.6'
+          - '3.4'
+    env:
+      DISTRIBUTION: ${{ matrix.distribution }}
+      DIST_VERSION: ${{ matrix.dist_version }}
+      MONGODB_VERSION: ${{ matrix.mongodb_version }}
+      DOCKER_PRIVILEGED: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Prepare tests
+        run: |
+          apk add --no-cache bash
+          bash tests/scripts/before_install.sh
+      - name: Run tests
+        run: bash tests/scripts/test.sh
+
+

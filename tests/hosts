@@ -11,3 +11,4 @@ mongo3		ansible_connection=docker ansible_user=root ansible_python_interpreter=p
 [mongo:children]
 mongo_master
 mongo_replicas
+

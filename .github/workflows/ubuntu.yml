@@ -1,0 +1,55 @@
+name: Test ansible role on Ubuntu
+
+on:
+  push:
+    branches:
+      - master
+      - github_actions
+  pull_request:
+    branches:
+      - master
+      - github_actions
+
+jobs:
+  python2:
+    runs-on: ubuntu-latest
+    container: python:2.7.18-alpine
+    strategy:
+      matrix:
+        distribution: 
+          - ubuntu
+        dist_version: 
+          - 18_04-builded
+          - 16_04-builded
+        mongodb_version:
+          - '4.2'
+          - '4.0'
+        include:
+          - distribution: ubuntu
+            dist_version: 16_04-builded
+            mongodb_version: '3.6'
+          - distribution: ubuntu-upstart
+            dist_version: 14_04-builded
+            mongodb_version: '4.0'
+          - distribution: ubuntu-upstart
+            dist_version: 14_04-builded
+            mongodb_version: '3.6'
+          - distribution: ubuntu-upstart
+            dist_version: 14_04-builded
+            mongodb_version: '3.4'
+    env:
+      DISTRIBUTION: ${{ matrix.distribution }}
+      DIST_VERSION: ${{ matrix.dist_version }}
+      MONGODB_VERSION: ${{ matrix.mongodb_version }}
+      DOCKER_PRIVILEGED: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Prepare tests
+        run: |
+          apk add --no-cache bash
+          bash tests/scripts/before_install.sh
+      - name: Run tests
+        run: bash tests/scripts/test.sh
+
+

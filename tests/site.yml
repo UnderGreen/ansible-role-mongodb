@@ -2,27 +2,39 @@
 ---
 
 - hosts: localhost
-  become: no
+  become: yes
   gather_facts: no
   tasks:
-    - name: Copy environmnet file
-      copy:
-        src: etc/environment
-        dest: /tmp/environment
+    - name: Create directory /tmp/squid
+      file:
+        state: directory
+        path: /tmp/squid
     - name: Copy Squid config
       copy:
         src: etc/squid/squid.conf
-        dest: /tmp/squid.conf
+        dest: /tmp/squid/squid.conf
+    - name: Copy Dockerfile
+      copy:
+        src: etc/squid/Dockerfile
+        dest: /tmp/squid/Dockerfile
     - name: Create a network
       docker_network:
         name: MongoDBTestingNet
+    - name: Build image squid
+      docker_image:
+        state: present
+        name: squid
+        source: build
+        build:
+          path: /tmp/squid
+          pull: yes
+        tag: latest
+        push: no
     - name: Run Proxy in Docker
       docker_container:
         name: proxy
-        image: sameersbn/squid
+        image: squid
         state: started
-        volumes:
-          - /tmp/squid.conf:/etc/squid/squid.conf:ro
         networks:
           - name: MongoDBTestingNet
             aliases:
@@ -46,8 +58,6 @@
             target: /run
           - type: tmpfs
             target: /run/lock
-        volumes:
-          - /tmp/environment:/etc/environment:ro
         networks:
           - name: MongoDBTestingNet
             aliases:
@@ -59,7 +69,7 @@
         - mongo3
 
 - hosts: mongo
-  become: no
+  become: yes
   gather_facts: yes
   tasks:
     - name: Set proxy for apt
@@ -74,16 +84,21 @@
         option: proxy
         value: http://proxy:3128
       when: ansible_os_family == "RedHat"
+    - name: Copy environmnet file
+      copy:
+        src: etc/environment
+        dest: /tmp/environment
 
 - hosts: mongo
-  become: no
+  become: yes
   gather_facts: no
   tasks:
     - name: gather tasks from all hosts
       setup:
 
 - hosts: "{{ target | default('mongo') }}"
-  become: no
+  become: yes
   gather_facts: yes
   roles:
     - role: greendayonfire.mongodb
+
