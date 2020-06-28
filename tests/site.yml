@@ -5,41 +5,9 @@
   become: yes
   gather_facts: no
   tasks:
-    - name: Create directory /tmp/squid
-      file:
-        state: directory
-        path: /tmp/squid
-    - name: Copy Squid config
-      copy:
-        src: etc/squid/squid.conf
-        dest: /tmp/squid/squid.conf
-    - name: Copy Dockerfile
-      copy:
-        src: etc/squid/Dockerfile
-        dest: /tmp/squid/Dockerfile
     - name: Create a network
       docker_network:
         name: MongoDBTestingNet
-    - name: Build image squid
-      docker_image:
-        state: present
-        name: squid
-        source: build
-        build:
-          path: /tmp/squid
-          pull: yes
-        tag: latest
-        push: no
-    - name: Run Proxy in Docker
-      docker_container:
-        name: proxy
-        image: squid
-        state: started
-        networks:
-          - name: MongoDBTestingNet
-            aliases:
-              - proxy
-        networks_cli_compatible: yes
     - name: Run MongoDB cluster in Docker
       docker_container:
         name: "{{ item }}"
@@ -67,27 +35,6 @@
         - mongo1
         - mongo2
         - mongo3
-
-- hosts: mongo
-  become: yes
-  gather_facts: yes
-  tasks:
-    - name: Set proxy for apt
-      copy:
-        src: etc/apt/apt.conf.d/proxy.conf
-        dest: /etc/apt/apt.conf.d/proxy.conf
-      when: ansible_os_family == "Debian"
-    - name: Set proxy for yum
-      ini_file:
-        path: /etc/yum.conf
-        section: main
-        option: proxy
-        value: http://proxy:3128
-      when: ansible_os_family == "RedHat"
-    - name: Copy environmnet file
-      copy:
-        src: etc/environment
-        dest: /tmp/environment
 
 - hosts: mongo
   become: yes
