@@ -156,7 +156,11 @@ host_type:
   type: string
   sample: "replica"
 '''
-import ConfigParser
+import sys
+if sys.version_info[0] == 2:
+    import ConfigParser
+else:
+    import configparser as ConfigParser
 import ssl as ssl_lib
 import time
 from datetime import datetime as dtdatetime
