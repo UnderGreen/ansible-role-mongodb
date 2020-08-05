@@ -8,7 +8,7 @@
     mongodb_pymongo_package: "python3-pymongo"
   when:
     - ansible_facts['distribution'] == "Ubuntu"
-    - ansible_facts['distribution_major_version'] >= "16"
+    - ansible_facts['distribution_major_version'] >= "20"
     - mongodb_pymongo_package == "python-pymongo"
 
 - name: Set Pip package name (Ubuntu)
@@ -16,7 +16,7 @@
     mongodb_pip_package_name: "python3-pip"
   when:
     - ansible_facts['distribution'] == "Ubuntu"
-    - ansible_facts['distribution_major_version'] >= "16"
+    - ansible_facts['distribution_major_version'] >= "20"
     - mongodb_pip_package_name == "python-pip"
 
 - name: Disable transparent huge pages on systemd systems
