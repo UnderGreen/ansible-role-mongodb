@@ -3,6 +3,22 @@
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
 
+- name: Set PyMongo package name (Ubuntu)
+  set_fact:
+    mongodb_pymongo_package: "python3-pymongo"
+  when:
+    - ansible_facts['distribution'] == "Ubuntu"
+    - ansible_facts['distribution_major_version'] >= "16"
+    - mongodb_pymongo_package == "python-pymongo"
+
+- name: Set Pip package name (Ubuntu)
+  set_fact:
+    mongodb_pip_package_name: "python3-pip"
+  when:
+    - ansible_facts['distribution'] == "Ubuntu"
+    - ansible_facts['distribution_major_version'] >= "16"
+    - mongodb_pip_package_name == "python-pip"
+
 - name: Disable transparent huge pages on systemd systems
   include_tasks: disable_transparent_hugepages.yml
   when:
@@ -85,14 +101,14 @@
 
 - name: Install PyMongo package
   apt:
-    name: python-pymongo
+    name: "{{ mongodb_pymongo_package }}"
   when: not mongodb_pymongo_from_pip
 
 - name: Install PIP
   apt:
     pkg:
       - python-dev
-      - python-pip
+      - "{{ mongodb_pip_package_name }}"
   when: mongodb_pymongo_from_pip | bool
 
 - name: Install setuptools (required for ansible 2.7+)

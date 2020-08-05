@@ -34,7 +34,7 @@
 
 - name: Install PyMongo package
   yum:
-    name: python-pymongo
+    name: "{{ mongodb_pymongo_package }}"
     state: present
     lock_timeout: "{{ yum_lock_timeout }}"
   when: not mongodb_pymongo_from_pip
@@ -43,7 +43,7 @@
   yum:
     name:
       - python-devel
-      - python-pip
+      - "{{ mongodb_pip_package_name }}"
     lock_timeout: "{{ yum_lock_timeout }}"
   when: mongodb_pymongo_from_pip | bool
 
