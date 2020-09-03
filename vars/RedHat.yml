@@ -1,13 +1,16 @@
 ---
-
 mongodb_repository:
-  "3.2": "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.2/$basearch/"
   "3.4": "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.4/$basearch/"
   "3.6": "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/$basearch/"
+  "4.0": "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/4.0/$basearch/"
+  "4.2": "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/4.2/$basearch/"
 
 mongodb_repository_gpgkey:
-  "3.2": "https://www.mongodb.org/static/pgp/server-3.2.asc"
   "3.4": "https://www.mongodb.org/static/pgp/server-3.4.asc"
   "3.6": "https://www.mongodb.org/static/pgp/server-3.6.asc"
+  "4.0": "https://www.mongodb.org/static/pgp/server-4.0.asc"
+  "4.2": "https://www.mongodb.org/static/pgp/server-4.2.asc"
 
 mongodb_pidfile_path: "{{ '/var/run/mongodb/mongod.pid' if ('mongodb-org' in mongodb_package) else '' }}"
+
+yum_lock_timeout: 180

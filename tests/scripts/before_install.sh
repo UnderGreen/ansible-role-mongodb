@@ -12,7 +12,14 @@ set -o errexit
 set -o pipefail
 
 # Latest Ansible install
-pip install docker ansible
+pip install docker ansible mitogen
+
+cat << EOF > ansible.cfg
+[defaults]
+pipelining = True
+strategy = mitogen_linear
+strategy_plugins = /home/travis/virtualenv/python2.7.15/lib/python2.7/site-packages/ansible_mitogen/plugins/strategy
+EOF
 
 # Pull docker image or build it
 if [ -f tests/Dockerfile.${DISTRIBUTION}_${DIST_VERSION} ]

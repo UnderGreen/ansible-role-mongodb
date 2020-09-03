@@ -1,5 +1,4 @@
 ---
-
 dependencies: []
 
 galaxy_info:
@@ -7,21 +6,25 @@ galaxy_info:
   company: Self-employed
   description: Manage MongoDB with authentication and replica sets
   license: GPLv2
-  min_ansible_version: 2.4
+  min_ansible_version: 2.5
   platforms:
-  - name: Ubuntu
-    versions:
-    - trusty
-    - xenial
-    - bionic
-  - name: Debian
-    versions:
-    - jessie
-    - stretch
-  - name: EL
-    versions:
-      - 6
-      - 7
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+        - bionic
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+    - name: EL
+      versions:
+        - 6
+        - 7
+    - name: Amazon
+      versions:
+        - Candidate
   galaxy_tags:
-  - database
-  - database:nosql
+    - database
+    - nosql
+    - mongodb

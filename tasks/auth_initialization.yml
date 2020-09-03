@@ -1,25 +1,19 @@
 ---
 - name: Use different mongod.conf for auth initialization
-  template: src=mongod_init.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
+  template:
+    src: mongod_init.conf.j2
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - mongodb restart
+    - wait when mongodb is started on localhost
 
-- name: Restart mongodb service
-  service: name={{ mongodb_daemon_name }} state=restarted
-  when: mongodb_manage_service
+- name: Flush all handlers at this point
+  meta: flush_handlers
 
-- name: wait MongoDB port is listening
-  wait_for: host=127.0.0.1 port="{{ mongodb_net_port }}" delay=5 state=started
-
-- name: get pid of mongodb for non daemon mode
-  shell: "pidof mongod"
-  register: pidof_mongod
-  when: mongodb_manage_service == false
-  ignore_errors: yes
-
-- name: start mongodb daemon
-  shell: "LC_ALL=C /usr/bin/mongod --config /etc/mongod.conf --fork"
-  when: mongodb_manage_service == false and pidof_mongod.rc == 1
-
-- name: create administrative user siteUserAdmin
+- name: create administrative user "{{ mongodb_user_admin_name }}"
   mongodb_user:
     database: admin
     name: "{{ item.name }}"
@@ -35,7 +29,7 @@
       }
   no_log: true
 
-- name: create administrative user siteRootAdmin
+- name: create administrative user "{{ mongodb_root_admin_name }}"
   mongodb_user:
     database: admin
     name: "{{ item.name }}"
@@ -51,7 +45,7 @@
       }
   no_log: true
 
-- name: create backup user "backupuser"
+- name: create backup user "{{ mongodb_root_backup_name }}"
   mongodb_user:
     database: admin
     name: "{{ item.name }}"
@@ -68,12 +62,15 @@
   no_log: true
 
 - name: Move back mongod.conf
-  template: src=mongod.conf.j2 dest=/etc/mongod.conf owner=root group=root mode=0644
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - mongodb restart
+    - wait when mongodb is started
 
-- name: Restart mongodb service
-  service: name={{ mongodb_daemon_name }} state=restarted
-  when: mongodb_manage_service
-
-- name: Wait MongoDB port is listening
-  wait_for: host="{{ item }}" port="{{ mongodb_net_port }}" delay=5 state=started
-  with_items: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list }}"
+- name: Flush all handlers at this point
+  meta: flush_handlers

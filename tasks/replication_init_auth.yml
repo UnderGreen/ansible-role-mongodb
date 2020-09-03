@@ -1,6 +1,7 @@
 ---
 - name: Replication configuration | 1st Pt.
   mongodb_replication:
+    build_indexes: "{{ item.build_indexes|default(omit) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     login_port: "{{ mongodb_net_port|default(27017) }}"
     login_user: "{{ mongodb_root_admin_name }}"
@@ -11,16 +12,19 @@
     host_type: "{{ item.host_type|default('replica') }}"
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
+    votes: "{{ item.votes|default(omit) }}"
+    ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
   register: mongodb_replica_init
   ignore_errors: true
 
 - include: auth_initialization.yml
-  when: mongodb_replica_init|failed
+  when: mongodb_replica_init is failed
 
 - name: Replication configuration | 2nd Pt
   mongodb_replication:
+    build_indexes: "{{ item.build_indexes|default(omit) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     login_port: "{{ mongodb_net_port|default(27017) }}"
     login_user: "{{ mongodb_root_admin_name }}"
@@ -31,6 +35,8 @@
     host_type: "{{ item.host_type|default('replica') }}"
     hidden: "{{ item.hidden|default(false) }}"
     priority: "{{ item.priority|default(1.0) }}"
-  when: mongodb_replica_init|failed
+    votes: "{{ item.votes|default(omit) }}"
+    ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
+  when: mongodb_replica_init is failed
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"

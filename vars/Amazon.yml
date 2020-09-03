@@ -1,0 +1,15 @@
+---
+mongodb_repository:
+  "4.2": "https://repo.mongodb.org/yum/amazon/2/mongodb-org/4.2/x86_64/"
+  "4.0": "https://repo.mongodb.org/yum/amazon/2/mongodb-org/4.0/x86_64/"
+  "3.6": "https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.6/x86_64/"
+  "3.4": "https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.4/x86_64/"
+
+mongodb_repository_gpgkey:
+  "4.2": "https://www.mongodb.org/static/pgp/server-4.2.asc"
+  "4.0": "https://www.mongodb.org/static/pgp/server-4.0.asc"
+  "3.6": "https://www.mongodb.org/static/pgp/server-3.6.asc"
+
+mongodb_pidfile_path: "{{ '/var/run/mongodb/mongod.pid' if ('mongodb-org' in mongodb_package) else '' }}"
+
+yum_lock_timeout: 180

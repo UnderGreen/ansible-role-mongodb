@@ -1,13 +1,7 @@
 ---
-
 - name: Establish some role-related facts
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
-
-- name: Install EPEL release repository
-  package:
-    name: epel-release
-    state: present
 
 - name: Add YUM repository
   template:
@@ -45,11 +39,11 @@
       - python-devel
       - python-pip
     lock_timeout: "{{ yum_lock_timeout }}"
-  when: mongodb_pymongo_from_pip | bool
+  when: mongodb_pymongo_from_pip
 
 - name: Install PyMongo from PIP
   pip:
     name: pymongo
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
-  when: mongodb_pymongo_from_pip | bool
+  when: mongodb_pymongo_from_pip
