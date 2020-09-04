@@ -22,10 +22,12 @@
 
 - name: Include system settings tasks
   include: system_settings.yml
+  tags: [mongodb]
   when: ansible_facts['virtualization_type'] != "docker"
 
 - name: Include disk settings tasks
   include: disk_settings.yml
+  tags: [mongodb]
   when: ansible_facts['virtualization_type'] != "docker"
 
 - name: Include installation tasks
