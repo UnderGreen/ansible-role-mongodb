@@ -151,4 +151,3 @@ disk_read_ahead_kb: 0
 
 # custom config options
 mongodb_config:
->>>>>>> upstream/master

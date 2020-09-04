@@ -5,7 +5,6 @@
     value: "{{ sysctl_zone_reclaim_mode }}"
     reload: yes
     state: present
-  when: ansible_facts['virtualization_type'] != "docker"
 
 - name: Set TCP idle timeout
   sysctl:
@@ -13,7 +12,6 @@
     value: "{{ sysctl_tcp_keepalive_time }}"
     reload: yes
     state: present
-  when: ansible_facts['virtualization_type'] != "docker"
 
 - name: Set Swappiness
   sysctl:
@@ -21,7 +19,6 @@
     value: "{{ sysctl_vm_swappiness }}"
     reload: yes
     state: present
-  when: ansible_facts['virtualization_type'] != "docker"
 
 - name: Set UNIX ulimit settings
   pam_limits:
