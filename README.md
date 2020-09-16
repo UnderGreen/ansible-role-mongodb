@@ -35,9 +35,9 @@ MongoDB support matrix:
 mongodb_package: mongodb-org
 
 # You can control installed version via this param.
-# Should be '3.4', '3.6', '4.0' or '4.2'. This role doesn't support MongoDB < 3.4.
+# Should be '3.4', '3.6', '4.0', '4.2', '4.4'. This role doesn't support MongoDB < 3.4.
 # I will recommend you to use latest version of MongoDB.
-mongodb_version: "4.2"
+mongodb_version: "4.4"
 
 mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manager
 mongodb_pymongo_pip_version: 3.6.1 # Choose PyMong version to install from pip. If not set use latest
