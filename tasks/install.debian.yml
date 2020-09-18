@@ -104,6 +104,7 @@
 - name: Install PyMongo from PIP
   pip:
     name: pymongo
+    executable: "{{ 'pip3' if ('python3-pip' == python_pip_package) else 'pip' }}"  # different pip for python3
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip | bool
