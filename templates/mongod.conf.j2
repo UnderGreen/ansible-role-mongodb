@@ -2,7 +2,7 @@
 
 net:
   bindIp: {{ mongodb_net_bindip }}
-  {% if mongodb_major_version | version_compare("3.6", "<") -%}
+  {% if mongodb_major_version is version("3.6", "<") -%}
   http:
     enabled: {{ mongodb_net_http_enabled | to_nice_json }}
   {% endif -%}
@@ -39,7 +39,7 @@ security:
 storage:
   dbPath: {{ mongodb_storage_dbpath }}
   directoryPerDB: {{ mongodb_storage_dirperdb | to_nice_json }}
-  {% if mongodb_major_version | version_compare("3.0", ">=") -%}
+  {% if mongodb_major_version is version("3.0", ">=") -%}
   engine: {{ mongodb_storage_engine }}
   {% endif -%}
   journal:
