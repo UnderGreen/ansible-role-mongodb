@@ -19,7 +19,7 @@
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
 
-- name: Replication configuration without auth on master
+- name: Replication configuration without auth on leader
   mongodb_replication:
     build_indexes: "{{ item.build_indexes|default(omit) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
@@ -33,7 +33,7 @@
     votes: "{{ item.votes|default(omit) }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
   when: ( mongodb_security_authorization == 'disabled'
-        and mongodb_master is defined and mongodb_master )
+        and mongodb_leader is defined and mongodb_leader )
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
 
@@ -51,7 +51,7 @@
     votes: "{{ item.votes|default(omit) }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
   when: ( mongodb_security_authorization == 'disabled'
-        and ( mongodb_master is not defined or not mongodb_master) )
+        and ( mongodb_leader is not defined or not mongodb_leader) )
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
 

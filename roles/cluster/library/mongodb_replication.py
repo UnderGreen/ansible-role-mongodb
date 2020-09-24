@@ -301,7 +301,7 @@ def load_mongocnf():
 
     return creds
 
-def wait_for_ok_and_master(module, connection_params, timeout = 180):
+def wait_for_ok_and_leader(module, connection_params, timeout = 180):
     start_time = dtdatetime.now()
     while True:
         try:
@@ -424,7 +424,7 @@ def main():
                 config = { '_id': "{0}".format(replica_set), 'members': [new_host] }
                 client['admin'].command('replSetInitiate', config)
                 client.close()
-                wait_for_ok_and_master(module, connection_params)
+                wait_for_ok_and_leader(module, connection_params)
                 replica_set_created = True
                 module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
         except OperationFailure as e:

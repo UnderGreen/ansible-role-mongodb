@@ -35,7 +35,7 @@
   include: replication_init_auth.yml
   when: ( mongodb_replication_replset | length > 0
         and mongodb_security_authorization == 'enabled'
-        and mongodb_master is defined and mongodb_master )
+        and mongodb_leader is defined and mongodb_leader )
   tags: [mongodb]
 
 - name: Include replication configuration
@@ -79,7 +79,7 @@
     - "{{ mongodb_users | default([]) }}"
   when: ( mongodb_replication_replset
         and mongodb_security_authorization == 'enabled'
-        and mongodb_master is defined and mongodb_master )
+        and mongodb_leader is defined and mongodb_leader )
   no_log: true
   tags: [mongodb]
 
@@ -120,7 +120,7 @@
     - "{{ mongodb_oplog_users | default([]) }}"
   when: ( mongodb_replication_replset | length > 0
         and mongodb_security_authorization == 'enabled'
-        and mongodb_master is defined and mongodb_master )
+        and mongodb_leader is defined and mongodb_leader )
   no_log: false
   tags: [mongodb]
 
