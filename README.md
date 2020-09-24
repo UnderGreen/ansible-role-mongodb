@@ -1,4 +1,4 @@
-# Ansible role for MongoDB [![Build Status](https://travis-ci.org/UnderGreen/ansible-role-mongodb.svg?branch=master)](https://travis-ci.org/UnderGreen/ansible-role-mongodb)
+# Ansible role for MongoDB [![Build Status](https://travis-ci.org/UnderGreen/ansible-role-mongodb.svg?branch=leader)](https://travis-ci.org/UnderGreen/ansible-role-mongodb)
 
 Ansible role which manages [MongoDB](http://www.mongodb.org/).
 
@@ -203,7 +203,7 @@ mongodb_security_keyfile
 Example vars for replication:
 
 ```yaml
-# It's a 'master' node
+# It's a 'leader' node
 mongodb_login_host: 192.168.56.2
 
 # mongodb_replication_params should be configured on each replica set node
@@ -219,17 +219,17 @@ mongodb_replication_params:
 And inventory file for replica set:
 
 ```ini
-[mongo_master]
-192.158.56.2 mongodb_master=True # it is't a really master of MongoDB replica set,
+[mongo_leader]
+192.158.56.2 mongodb_leader=True # it is't a really leader of MongoDB replica set,
                                  # use this variable for replica set init only
-								 # or when master is moved from initial master node
+								 # or when leader is moved from initial leader node
 
 [mongo_replicas]
 192.168.56.3
 192.168.56.4
 
 [mongo:children]
-mongo_master
+mongo_leader
 mongo_replicas
 ```
 
