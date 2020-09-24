@@ -2,15 +2,17 @@
 
 mongodb_package: mongodb-org
 mongodb_package_state: present
-mongodb_version: "4.2"
+mongodb_version: "4.4"
 mongodb_apt_keyserver: keyserver.ubuntu.com
 mongodb_apt_key_id:
   "3.4": "0C49F3730359A14518585931BC711F9BA15703C6"
   "3.6": "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
   "4.0": "9DA31620334BD75D9DCB49F368818C72E52529D4"
   "4.2": "E162F504A20CDF15827F718D4B7C549A058F8B6B"
+  "4.4": "20691eec35216c63caf66ce1656408e390cfb1f5"
 
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
+python_pip_package: "{{ 'python3-pip' if ('focal' == ansible_distribution_release) else 'python-pip' }}"  # python3 for Ubuntu focal
 mongodb_pymongo_pip_version: 3.7.1
 
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy

@@ -91,19 +91,20 @@
 - name: Install PIP
   apt:
     pkg:
-      - python-dev
-      - python-pip
+      - "{{ 'python3-dev' if ('python3-pip' == python_pip_package) else 'python-dev' }}"  # different python-dev for python3
+      - "{{ python_pip_package }}"
   when: mongodb_pymongo_from_pip | bool
 
 - name: Install setuptools (required for ansible 2.7+)
   apt:
     pkg:
-      - python-setuptools
+      - "{{ 'python3-setuptools' if ('python3-pip' == python_pip_package) else 'python-setuptools' }}"  # different setuptools for python3
   when: mongodb_pymongo_from_pip | bool
 
 - name: Install PyMongo from PIP
   pip:
     name: pymongo
+    executable: "{{ 'pip3' if ('python3-pip' == python_pip_package) else 'pip' }}"  # different pip for python3
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip | bool
