@@ -112,6 +112,11 @@ env:
   - >
     DISTRIBUTION=centos
     DIST_VERSION=7-builded
+    MONGODB_VERSION=4.4
+    DOCKER_PRIVILEGED=false
+  - >
+    DISTRIBUTION=centos
+    DIST_VERSION=7-builded
     MONGODB_VERSION=4.2
     DOCKER_PRIVILEGED=false
   - >
