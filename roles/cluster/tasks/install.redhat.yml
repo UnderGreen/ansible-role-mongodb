@@ -34,20 +34,20 @@
 
 - name: Install PyMongo package
   yum:
-    name: python-pymongo
+    name: python3-pymongo
     state: present
     lock_timeout: "{{ yum_lock_timeout }}"
   when: not mongodb_pymongo_from_pip
 
-- name: Install PIP
+- name: Install pip
   yum:
     name:
-      - python-devel
-      - python-pip
+      - python3-devel
+      - python3-pip
     lock_timeout: "{{ yum_lock_timeout }}"
   when: mongodb_pymongo_from_pip | bool
 
-- name: Install PyMongo from PIP
+- name: Install PyMongo with pip
   pip:
     name: pymongo
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
