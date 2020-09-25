@@ -4,17 +4,18 @@
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
 
-- name: Add repository
-  yum_repository:
-    name: epel
-    description: EPEL YUM repo
-    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
-  become: yes
+#- name: Add repository
+#  yum_repository:
+#    name: epel
+#    description: EPEL YUM repo
+#    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+#  become: yes
       
-- name: Install EPEL release repository
-  package:
-    name: epel-release
-    state: present
+#- name: Install EPEL release repository
+#  package:
+#    name: epel-release
+#    state: present
+#  become: yes
 
 - name: Add YUM repository
   template:
