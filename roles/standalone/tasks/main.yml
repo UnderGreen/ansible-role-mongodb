@@ -2,10 +2,17 @@
 
 - name: Create a mongodb-org-4.4.repo file so that you can install MongoDB directly using yum
   copy: src=mongodb-org-4.4.repo dest=/etc/yum.repos.d/mongodb-org-4.4.repo
+  become: yes
 
-- name: Install th`e mongodb package
+- name: Install the mongodb package
   yum: 
     name:
       - mongodb-org
-      - checkpolicy
     state: present
+  become: yes
+
+- name: Start service httpd, if not started
+  service:
+    name: mongod
+    state: started
+  become: yes
