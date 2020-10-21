@@ -18,6 +18,8 @@
   when: mongodb_security_authorization == 'enabled'
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
+  retries: 10
+  delay: 10
 
 - name: Replication configuration without auth on master
   mongodb_replication:
