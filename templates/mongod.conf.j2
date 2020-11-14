@@ -35,6 +35,7 @@ processManagement:
 replication:
   oplogSizeMB: {{ mongodb_replication_oplogsize | int }}
   replSetName: {{ mongodb_replication_replset }}
+  enableMajorityReadConcern: {{ mongodb_enable_majority_read_concern | to_nice_json }}
   {% if mongodb_storage_engine == 'mmapv1' -%}
   secondaryIndexPrefetch: {{ mongodb_replication_replindexprefetch }}
   {%- endif %}

@@ -2,7 +2,7 @@
 - name: Use different mongod.conf for auth initialization
   template:
     src: mongod_init.conf.j2
-    dest: /etc/mongod.conf
+    dest: "{{ mongodb_conf_file }}"
     owner: root
     group: root
     mode: 0644
@@ -64,7 +64,7 @@
 - name: Move back mongod.conf
   template:
     src: mongod.conf.j2
-    dest: /etc/mongod.conf
+    dest: "{{ mongodb_conf_file }}"
     owner: root
     group: root
     mode: 0644

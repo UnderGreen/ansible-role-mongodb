@@ -74,7 +74,7 @@
 - name: Configure mongodb
   template:
     src: mongod.conf.j2
-    dest: /etc/mongod.conf
+    dest: "{{ mongodb_conf_file }}"
     backup: true
     owner: root
     group: root
