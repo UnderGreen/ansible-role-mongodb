@@ -21,7 +21,7 @@
   retries: 60
   delay: 10
   register: result
-  until: result.rc == 0
+  until: result is succeeded
 
 - name: Replication configuration without auth on master
   mongodb_replication:
