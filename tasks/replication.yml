@@ -20,6 +20,8 @@
     - "{{ mongodb_replication_params|default([]) }}"
   retries: 60
   delay: 10
+  register: result
+  until: result.rc == 0
 
 - name: Replication configuration without auth on master
   mongodb_replication:
@@ -40,6 +42,8 @@
     - "{{ mongodb_replication_params|default([]) }}"
   retries: 60
   delay: 10
+  register: result
+  until: result.rc == 0
 
 - name: Replication configuration without auth on replicas and arbiters
   mongodb_replication:
@@ -60,3 +64,5 @@
     - "{{ mongodb_replication_params|default([]) }}"
   retries: 60
   delay: 10
+  register: result
+  until: result.rc == 0
