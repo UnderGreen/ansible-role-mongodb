@@ -43,7 +43,7 @@
   retries: 60
   delay: 10
   register: result
-  until: result.rc == 0
+  until: result is succeeded
 
 - name: Replication configuration without auth on replicas and arbiters
   mongodb_replication:
@@ -65,4 +65,4 @@
   retries: 60
   delay: 10
   register: result
-  until: result.rc == 0
+  until: result is succeeded
