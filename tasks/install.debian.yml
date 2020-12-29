@@ -61,7 +61,7 @@
 - name: Add systemd configuration if present
   template:
     src: mongodb.service.j2
-    dest: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
+    dest: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
     owner: root
     group: root
     mode: '0644'
@@ -73,8 +73,8 @@
 
 - name: Add symlink for systemd
   file:
-    src: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
-    dest: "/etc/systemd/system/multi-user.target.wants/{{mongodb_daemon_name}}.service"
+    src: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+    dest: "/etc/systemd/system/multi-user.target.wants/{{ mongodb_daemon_name }}.service"
     state: link
   when:
     - ansible_service_mgr == "systemd"
