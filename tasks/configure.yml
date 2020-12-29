@@ -27,13 +27,20 @@
     state: present
   when: mongodb_uid is defined
 
+- name: Generate mongodb key
+  command: openssl rand -base64 756
+  register: mongodb_key
+  run_once: True
+  when: mongodb_replication_replset | length > 0 and not mongodb_keyfile_content
+
 - name: Create keyFile
   copy:
     dest: "{{ mongodb_security_keyfile }}"
-    content: "{{ mongodb_keyfile_content }}"
+    content: "{{ mongodb_key.stdout_lines|join('\n') if (not mongodb_keyfile_content) else mongodb_keyfile_content }}"
     owner: "{{ mongodb_user }}"
     group: "root"
     mode: 0600
+    force: "{{ mongodb_keyfile_force_renew }}"
   when: mongodb_replication_replset | length > 0
 
 - name: Create log dir if missing
