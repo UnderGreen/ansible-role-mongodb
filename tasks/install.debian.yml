@@ -9,6 +9,15 @@
     - mongodb_disable_transparent_hugepages | bool
     - ansible_service_mgr == "systemd"
 
+- name: Install Required Dependency Packages
+  apt:
+    pkg:
+      - software-properties-common
+      - dirmngr
+      - apt-transport-https
+      - lsb-release
+      - ca-certificates
+
 - name: Add APT key
   apt_key:
     url: "{{ mongodb_repository_gpgkey[mongodb_version] }}"
