@@ -10,17 +10,18 @@ Ansible role which manages [MongoDB](http://www.mongodb.org/).
 
 MongoDB support matrix:
 
-| Distribution   | < MongoDB 3.2 |    MongoDB 3.4     |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |
-| -------------- | :-----------: | :----------------: | :----------------: | :----------------: | :----------------: |
-| Ubuntu 14.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
-| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Ubuntu 18.04   |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: | :white_check_mark: |
-| Debian 8.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
-| Debian 9.x     |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| RHEL 6.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Amazon Linux 2 |  :no_entry:   | :white_check_mark: |        :x:         | :white_check_mark: | :white_check_mark: |
-
+| Distribution   | < MongoDB 3.2 |    MongoDB 3.4     |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |   MongoDB 4.4      |
+| -------------- | :-----------: | :----------------: | :----------------: | :----------------: | :----------------: | :----------------: |
+| Ubuntu 14.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         | :interrobang:      |
+| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :interrobang:      |
+| Ubuntu 18.04   |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Ubuntu 20.04   |  :no_entry:   |        :x:         |        :x:         | :interrobang:      | :interrobang:      | :white_check_mark: |
+| Debian 8.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         | :white_check_mark: |
+| Debian 9.x     |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| RHEL 6.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :interrobang:      |
+| RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| RHEL 8.x       |  :no_entry:   | :interrobang:      | :interrobang:      | :interrobang:      | :white_check_mark: | :white_check_mark: |
+| Amazon Linux 2 |  :no_entry:   | :white_check_mark: |        :x:         | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 - :white_check_mark: - fully tested, should works fine
 - :interrobang: - maybe works, not tested
 - :x: - don't have official support
@@ -35,12 +36,12 @@ MongoDB support matrix:
 mongodb_package: mongodb-org
 
 # You can control installed version via this param.
-# Should be '3.4', '3.6', '4.0' or '4.2'. This role doesn't support MongoDB < 3.4.
+# Should be '3.4', '3.6', '4.0', '4.2' or '4.4'. This role doesn't support MongoDB < 3.4.
 # I will recommend you to use latest version of MongoDB.
-mongodb_version: "4.2"
+mongodb_version: "4.4"
 
 mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manager
-mongodb_pymongo_pip_version: 3.6.1 # Choose PyMong version to install from pip. If not set use latest
+mongodb_pymongo_pip_version: 3.10.1 # Choose PyMong version to install from pip. If not set use latest
 mongodb_user_update_password: "on_create" # MongoDB user password update default policy
 mongodb_manage_service: true
 mongodb_manage_systemd_unit: true
@@ -130,25 +131,13 @@ mongodb_logrotate_options:
   - rotate 7
   - size 10M
 
-# password for inter-process authentication
-# please regenerate this file on production environment with command 'openssl rand -base64 741'
-mongodb_keyfile_content: |
-  8pYcxvCqoe89kcp33KuTtKVf5MoHGEFjTnudrq5BosvWRoIxLowmdjrmUpVfAivh
-  CHjqM6w0zVBytAxH1lW+7teMYe6eDn2S/O/1YlRRiW57bWU3zjliW3VdguJar5i9
-  Z+1a8lI+0S9pWynbv9+Ao0aXFjSJYVxAm/w7DJbVRGcPhsPmExiSBDw8szfQ8PAU
-  2hwRl7nqPZZMMR+uQThg/zV9rOzHJmkqZtsO4UJSilG9euLCYrzW2hdoPuCrEDhu
-  Vsi5+nwAgYR9dP2oWkmGN1dwRe0ixSIM2UzFgpaXZaMOG6VztmFrlVXh8oFDRGM0
-  cGrFHcnGF7oUGfWnI2Cekngk64dHA2qD7WxXPbQ/svn9EfTY5aPw5lXzKA87Ds8p
-  KHVFUYvmA6wVsxb/riGLwc+XZlb6M9gqHn1XSpsnYRjF6UzfRcRR2WyCxLZELaqu
-  iKxLKB5FYqMBH7Sqg3qBCtE53vZ7T1nefq5RFzmykviYP63Uhu/A2EQatrMnaFPl
-  TTG5CaPjob45CBSyMrheYRWKqxdWN93BTgiTW7p0U6RB0/OCUbsVX6IG3I9N8Uqt
-  l8Kc+7aOmtUqFkwo8w30prIOjStMrokxNsuK9KTUiPu2cj7gwYQ574vV3hQvQPAr
-  hhb9ohKr0zoPQt31iTj0FDkJzPepeuzqeq8F51HB56RZKpXdRTfY8G6OaOT68cV5
-  vP1O6T/okFKrl41FQ3CyYN5eRHyRTK99zTytrjoP2EbtIZ18z+bg/angRHYNzbgk
-  lc3jpiGzs1ZWHD0nxOmHCMhU4usEcFbV6FlOxzlwrsEhHkeiununlCsNHatiDgzp
-  ZWLnP/mXKV992/Jhu0Z577DHlh+3JIYx0PceB9yzACJ8MNARHF7QpBkhtuGMGZpF
-  T+c73exupZFxItXs1Bnhe3djgE3MKKyYvxNUIbcTJoe7nhVMrwO/7lBSpVLvC4p3
-  wR700U0LDaGGQpslGtiE56SemgoP
+# Password for inter-process authentication
+# If not defined, it will be generated at runtime with the command 'openssl rand -base64 756'
+# Be careful if you perform the function to configure different servers in different executions, different keys will be generated 
+# therefore, the service will not be able to authenticate, in which case you need to specify the key to have exactly the same
+# If mongodb_keyfile_force_renew is true and the keyfile alredy exist in the host, the keyfile will be replaced with mongodb_keyfile_content when defined or with a new runtime generate key
+mongodb_keyfile_force_renew: false
+mongodb_keyfile_content: 
 
 # names and passwords for administrative users
 mongodb_user_admin_name: siteUserAdmin
