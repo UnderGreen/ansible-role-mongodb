@@ -2,12 +2,14 @@
 - name: Establish some role-related facts
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
+  tags: [ mongodb, mongodb-install ]
 
 - name: Disable transparent huge pages on systemd systems
   include_tasks: disable_transparent_hugepages.yml
   when:
     - mongodb_disable_transparent_hugepages | bool
     - ansible_service_mgr == "systemd"
+  tags: [mongodb-install]
 
 - name: Install Required Dependency Packages
   apt:
@@ -17,11 +19,13 @@
       - apt-transport-https
       - lsb-release
       - ca-certificates
+  tags: [mongodb-install]
 
 - name: Add APT key
   apt_key:
     url: "{{ mongodb_repository_gpgkey[mongodb_version] }}"
   when: mongodb_package == 'mongodb-org'
+  tags: [mongodb-install]
 
 - name: Fail when used wrong mongodb_version variable with Debian Stretch
   fail:
@@ -30,6 +34,7 @@
     - mongodb_package == 'mongodb-org'
     - (mongodb_major_version != '3.6' and mongodb_major_version != '4.0' and mongodb_major_version != '4.2' and mongodb_major_version != '4.4')
     - ansible_distribution_release == 'stretch'
+  tags: [mongodb-install]
 
 - name: Fail when used wrong mongodb_version variable with Ubuntu 18.04
   fail:
@@ -38,6 +43,7 @@
     - mongodb_package == 'mongodb-org'
     - (mongodb_major_version != '4.0' and mongodb_major_version != '4.2' and mongodb_major_version != '4.4')
     - ansible_distribution_release == "bionic"
+  tags: [mongodb-install]
 
 - name: Fail when used wrong mongodb_version variable
   fail:
@@ -45,6 +51,7 @@
   when: (mongodb_package == 'mongodb-org' and
         (mongodb_version is not defined
          or mongodb_repository[mongodb_major_version] is not defined))
+  tags: [mongodb-install]
 
 - name: Add APT repository
   apt_repository:
@@ -54,18 +61,21 @@
   loop_control:
     loop_var: version_item
   when: mongodb_package == 'mongodb-org'
+  tags: [mongodb-install]
 
 - name: Install MongoDB package
   apt:
     name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}={{ mongodb_version }}{% endif %}"
     state: "{{ mongodb_package_state }}"
     update_cache: true
+  tags: [mongodb-install]
 
 - name: Install numactl package
   apt:
     name: numactl
     state: present
   when: mongodb_use_numa | bool
+  tags: [mongodb-install]
 
 - name: Add systemd configuration if present
   template:
@@ -79,6 +89,7 @@
     - mongodb_manage_systemd_unit | bool
   notify:
     - reload systemd
+  tags: [mongodb-install]
 
 - name: Add symlink for systemd
   file:
@@ -90,11 +101,13 @@
     - mongodb_manage_systemd_unit | bool
   notify:
     - reload systemd
+  tags: [mongodb-install]
 
 - name: Install PyMongo package
   apt:
     name: python-pymongo
   when: not mongodb_pymongo_from_pip
+  tags: [mongodb-install]
 
 - name: Install Python2 PIP
   apt:
@@ -102,18 +115,22 @@
       - python-dev
       - python-pip
   when: mongodb_pymongo_from_pip | bool and ansible_distribution_release != 'focal'
+  tags: [mongodb-install]
+
 - name: Install Python3 PIP
   apt:
     pkg:
       - python3-dev
       - python3-pip
   when: mongodb_pymongo_from_pip | bool and ansible_distribution_release == 'focal'
+  tags: [mongodb-install]
 
 - name: Install setuptools (required for ansible 2.7+)
   apt:
     pkg:
       - "{{ 'python3-setuptools' if (ansible_distribution_release == 'focal') else 'python-setuptools' }}"  # different setuptools for python3
   when: mongodb_pymongo_from_pip | bool
+  tags: [mongodb-install]
 
 - name: Install PyMongo from PIP
   pip:
@@ -122,3 +139,4 @@
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip | bool
+  tags: [mongodb-install]
