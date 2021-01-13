@@ -13,7 +13,11 @@ mongodb_manage_systemd_unit: true
 mongodb_systemd_unit_limit_nofile: 64000
 mongodb_systemd_unit_limit_nproc: 64000
 
+# Tunning OS
 mongodb_disable_transparent_hugepages: false
+vm_swappiness: 
+vm_dirty_ratio: 
+vm_dirty_background_ratio: 
 
 mongodb_use_numa: true
 
