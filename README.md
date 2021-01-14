@@ -47,7 +47,13 @@ mongodb_manage_service: true
 mongodb_manage_systemd_unit: true
 
 # Disable transparent hugepages on systemd debian based installations
+# https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
 mongodb_disable_transparent_hugepages: false
+
+# OS tuning
+vm_swappiness:
+vm_dirty_ratio:
+vm_dirty_background_ratio:
 
 # You can enable or disable NUMA support
 mongodb_use_numa: true
