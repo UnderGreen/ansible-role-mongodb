@@ -16,7 +16,7 @@
     name: vm.swappiness
     value: "{{ vm_swappiness }}"
     state: present
-  when: vm_swappiness is defined
+  when: vm_swappiness | length > 0
   tags: [mongodb-install]
 
 - name: Set vm.dirty_ratio to {{ vm_dirty_ratio }}
@@ -24,7 +24,7 @@
     name: vm.dirty_ratio
     value: "{{ vm_dirty_ratio }}"
     state: present
-  when: vm_dirty_ratio is defined
+  when: vm_dirty_ratio | length > 0
   tags: [mongodb-install]
 
 - name: Set dirty_background_ratio to {{ vm_dirty_background_ratio }}
@@ -32,7 +32,7 @@
     name: vm.dirty_background_ratio
     value: "{{ vm_dirty_background_ratio }}"
     state: present
-  when: vm_dirty_background_ratio is defined
+  when: vm_dirty_background_ratio | length > 0
   tags: [mongodb-install]
 
 - name: Add YUM repository
