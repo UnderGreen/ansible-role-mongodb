@@ -11,6 +11,30 @@
     - ansible_service_mgr == "systemd"
   tags: [mongodb-install]
 
+- name: Set vm.swappiness to {{ vm_swappiness }}
+  sysctl:
+    name: vm.swappiness
+    value: "{{ vm_swappiness }}"
+    state: present
+  when: vm_swappiness is defined
+  tags: [mongodb-install]
+
+- name: Set vm.dirty_ratio to {{ vm_dirty_ratio }}
+  sysctl:
+    name: vm.dirty_ratio
+    value: "{{ vm_dirty_ratio }}"
+    state: present
+  when: vm_dirty_ratio is defined
+  tags: [mongodb-install]
+
+- name: Set dirty_background_ratio to {{ vm_dirty_background_ratio }}
+  sysctl:
+    name: vm.dirty_background_ratio
+    value: "{{ vm_dirty_background_ratio }}"
+    state: present
+  when: vm_dirty_background_ratio is defined
+  tags: [mongodb-install]
+
 - name: Install Required Dependency Packages
   apt:
     pkg:
