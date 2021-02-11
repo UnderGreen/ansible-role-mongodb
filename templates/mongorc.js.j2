@@ -17,7 +17,7 @@ if (authRequired()) {
 {% endif %}
     var prev_db = db
     db = db.getSiblingDB('admin')
-    db.auth( '{{ mongodb_user_admin_name }}', '{{ mongodb_user_admin_password }}')
+    db.auth( '{{ mongodb_root_admin_name }}', '{{ mongodb_root_admin_password }}')
     db = db.getSiblingDB(prev_db)
   }
   catch (err) {
