@@ -71,6 +71,14 @@
     recurse: true
     follow: true
 
+- name: Configure auto connection
+  template:
+    src: mongorc.js.j2
+    dest: /root/.mongorc.js
+    owner: root
+    group: root
+    mode: 0600
+
 - name: Configure mongodb
   template:
     src: mongod.conf.j2

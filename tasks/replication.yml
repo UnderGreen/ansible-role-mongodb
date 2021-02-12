@@ -18,6 +18,10 @@
   when: mongodb_security_authorization == 'enabled'
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
+  retries: 60
+  delay: 10
+  register: result
+  until: result is succeeded
 
 - name: Replication configuration without auth on master
   mongodb_replication:
@@ -36,6 +40,10 @@
         and mongodb_master is defined and mongodb_master )
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
+  retries: 60
+  delay: 10
+  register: result
+  until: result is succeeded
 
 - name: Replication configuration without auth on replicas and arbiters
   mongodb_replication:
@@ -54,4 +62,7 @@
         and ( mongodb_master is not defined or not mongodb_master) )
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
-
+  retries: 60
+  delay: 10
+  register: result
+  until: result is succeeded
