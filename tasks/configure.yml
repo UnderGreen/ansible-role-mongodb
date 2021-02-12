@@ -78,9 +78,6 @@
     owner: root
     group: root
     mode: 0600
-  notify:
-    - mongodb restart
-    - wait when mongodb is started
 
 - name: Configure mongodb
   template:
