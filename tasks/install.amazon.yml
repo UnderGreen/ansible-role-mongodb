@@ -85,3 +85,9 @@
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip
   tags: [mongodb-install]
+
+- name: Install mtools from PIP
+  pip:
+    name: mtools
+    state: "latest"
+  tags: [mongodb-install]
