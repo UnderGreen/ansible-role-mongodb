@@ -43,13 +43,15 @@
     force: "{{ mongodb_keyfile_force_renew }}"
   when: mongodb_replication_replset | length > 0
 
-- name: Create log dir if missing
+- name: Ensure log directory
   file:
+    path: "{{ mongodb_systemlog_path|dirname }}"
     state: directory
-    dest: "{{ mongodb_systemlog_path|dirname }}"
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_user }}"
     mode: 0755
+    setype: 'mongod_log_t'
+    follow: true
   when: mongodb_systemlog_destination == "file"
 
 - name: Check than logfile exists
@@ -77,6 +79,14 @@
     setype: 'mongod_var_lib_t'
     recurse: true
     follow: true
+
+- name: Allow mongod to listen on tcp port {{ mongodb_net_port }}
+  seport:
+    ports: "{{ mongodb_net_port }}"
+    proto: tcp
+    setype: mongod_port_t
+    state: present
+  when: mongodb_net_port not in [ "27017", "27018", "27019" ]
 
 - name: Configure mongodb
   template:
