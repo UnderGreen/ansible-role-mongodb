@@ -78,8 +78,8 @@ mongodb_security_authorization: "disabled"
 mongodb_security_keyfile: /etc/mongodb-keyfile # Specify path to keyfile with password for inter-process authentication
 
 ## storage Options
-mongodb_storage_dbpath: /data/db # Directory for datafiles
-mongodb_storage_dirperdb: false # Use one directory per DB
+mongodb_storage_dbpath: /data/mongodb # Directory for datafiles
+mongodb_storage_dirperdb: true        # Use one directory per DB
 
 # The storage engine for the mongod database
 mongodb_storage_engine: "wiredTiger"
@@ -90,6 +90,8 @@ mongodb_storage_smallfiles: false # Very useful for non-data nodes
 
 mongodb_storage_journal_enabled: true # Enable journaling
 mongodb_storage_prealloc: true # Disable data file preallocation
+
+mongodb_wiredtiger_directory_for_indexes: true # Create directory for indexes
 
 # WiredTiger Options
 mongodb_wiredtiger_cache_size: 1 # Cache size for wiredTiger in GB
@@ -207,9 +209,8 @@ mongodb_oplog_users:
 Required vars to change on production:
 
 ```yaml
-mongodb_user_admin_password
-mongodb_root_admin_password
-mongodb_root_backup_password
+mongodb_root_password
+mongodb_backup_password
 
 # if you use replication and authorization
 mongodb_security_keyfile
