@@ -15,7 +15,7 @@
     - name: Flush all handlers at this point
       meta: flush_handlers
 
-    - name: create administrative user "{{ mongodb_user_admin_name }}"
+    - name: create administrative user "{{ mongodb_root_name }}"
       mongodb_user:
         database: admin
         name: "{{ item.name }}"
@@ -25,29 +25,13 @@
         login_port: "{{ mongodb_net_port }}"
       with_items:
         - {
-          name: "{{ mongodb_user_admin_name }}",
-          password: "{{ mongodb_user_admin_password }}",
-          roles: "userAdminAnyDatabase"
-          }
-      no_log: true
-
-    - name: create administrative user "{{ mongodb_root_admin_name }}"
-      mongodb_user:
-        database: admin
-        name: "{{ item.name }}"
-        password: "{{ item.password }}"
-        update_password: "{{ mongodb_user_update_password }}"
-        roles: "{{ item.roles }}"
-        login_port: "{{ mongodb_net_port }}"
-      with_items:
-        - {
-          name: "{{ mongodb_root_admin_name }}",
-          password: "{{ mongodb_root_admin_password }}",
+          name: "{{ mongodb_root_name }}",
+          password: "{{ mongodb_root_password }}",
           roles: "root"
           }
       no_log: true
 
-    - name: create backup user "{{ mongodb_root_backup_name }}"
+    - name: create additional administrative user "{{ mongodb_admin_name }}"
       mongodb_user:
         database: admin
         name: "{{ item.name }}"
@@ -57,8 +41,29 @@
         login_port: "{{ mongodb_net_port }}"
       with_items:
         - {
-          name: "{{ mongodb_root_backup_name }}",
-          password: "{{ mongodb_root_backup_password }}",
+          name: "{{ mongodb_admin_name }}",
+          password: "{{ mongodb_admin_password }}",
+          roles: "userAdminAnyDatabase"
+          }
+      no_log: true
+      when:
+        - mongodb_admin_name is defined
+        - mongodb_admin_password is defined
+        - mongodb_admin_name | length > 0
+        - mongodb_admin_password | length > 0
+
+    - name: create backup user "{{ mongodb_backup_name }}"
+      mongodb_user:
+        database: admin
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        update_password: "{{ mongodb_user_update_password }}"
+        roles: "{{ item.roles }}"
+        login_port: "{{ mongodb_net_port }}"
+      with_items:
+        - {
+          name: "{{ mongodb_backup_name }}",
+          password: "{{ mongodb_backup_password }}",
           roles: "backup,clusterMonitor"
           }
       no_log: true
