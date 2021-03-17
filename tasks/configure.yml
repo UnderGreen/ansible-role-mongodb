@@ -100,5 +100,14 @@
     - mongodb restart
     - wait when mongodb is started
 
+- name: configure logrotate file
+  copy:
+    dest: /etc/logrotate.d/{{ mongodb_daemon_name }}
+    content: "{{ mongodb_logrotate_options }}"
+    owner: root
+    group: root
+    mode: 0644
+  when: mongodb_logrotate|bool
+
 - name: Flush all handlers at this point
   meta: flush_handlers

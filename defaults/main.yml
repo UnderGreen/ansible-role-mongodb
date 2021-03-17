@@ -73,6 +73,24 @@ mongodb_systemlog_logrotate: "rename"                                    # Logro
 mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log file to send write to instead of stdout
 mongodb_systemlog_verbosity: 0                                           # Default log message verbosity level for components
 
+## Create config file in /etc/logrotate.d/
+mongodb_logrotate: false
+mongodb_logrotate_options: |
+  {{ mongodb_systemlog_path }} {
+    daily
+    dateext
+    dateformat -%Y%m%d
+    rotate 7
+    missingok
+    compress
+    delaycompress
+    notifempty
+    create 640 {{ mongodb_user }} {{ mongodb_user }}
+    sharedscripts
+    postrotate
+      /bin/kill -SIGUSR1 `cat /run/mongodb/mongod.pid 2>/dev/null` >/dev/null 2>&1
+    endscript
+  }
 
 ## operationProfiling Options
 mongodb_operation_profiling_slow_op_threshold_ms: 100

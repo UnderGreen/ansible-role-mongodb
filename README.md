@@ -112,6 +112,24 @@ mongodb_systemlog_component:
   write:
     verbosity: 5
 
+# Log rotation
+mongodb_logrotate: false # Rotate mongodb logs.
+mongodb_logrotate_options: |
+  {{ mongodb_systemlog_path }} {
+    daily
+    dateext
+    dateformat -%Y%m%d
+    rotate 7
+    missingok
+    compress
+    delaycompress
+    notifempty
+    create 640 {{ mongodb_user }} {{ mongodb_user }}
+    sharedscripts
+    postrotate
+      /bin/kill -SIGUSR1 `cat /run/mongodb/mongod.pid 2>/dev/null` >/dev/null 2>&1
+    endscript
+  }
 
 ## replication Options
 mongodb_replication_replset: # Enable replication <setname>[/<optionalseedhostlist>]
@@ -138,16 +156,6 @@ mongodb_mms_agent_pkg: https://cloud.mongodb.com/download/agent/monitoring/mongo
 mongodb_mms_group_id: ""
 mongodb_mms_api_key: ""
 mongodb_mms_base_url: https://mms.mongodb.com
-
-# Log rotation
-mongodb_logrotate: true # Rotate mongodb logs.
-mongodb_logrotate_options:
-  - compress
-  - copytruncate
-  - daily
-  - dateext
-  - rotate 7
-  - size 10M
 
 # Password for inter-process authentication
 # If not defined, it will be generated at runtime with the command 'openssl rand -base64 756'
