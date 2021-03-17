@@ -98,8 +98,20 @@ mongodb_wiredtiger_cache_size: 1 # Cache size for wiredTiger in GB
 ## The destination to which MongoDB sends all log output. Specify either 'file' or 'syslog'.
 ## If you specify 'file', you must also specify mongodb_systemlog_path.
 mongodb_systemlog_destination: "file"
-mongodb_systemlog_logappend: true # Append to logpath instead of over-writing
-mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log # Log file to send write to instead of stdout
+mongodb_systemlog_logappend: true                                       # Append to logpath instead of over-writing
+mongodb_systemlog_logrotate: "reopen"                                   # Logrotation behavior
+mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log  # Log file to send write to instead of stdout
+mongodb_systemlog_verbosity: 0                                           # Default log message verbosity level for components
+
+## Example to set different verbosity for components
+mongodb_systemlog_component:
+  accessControl:
+    verbosity: 5
+  command:
+    verbosity: 5
+  write:
+    verbosity: 5
+
 
 ## replication Options
 mongodb_replication_replset: # Enable replication <setname>[/<optionalseedhostlist>]

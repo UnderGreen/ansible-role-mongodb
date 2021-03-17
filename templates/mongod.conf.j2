@@ -57,6 +57,7 @@ security:
   {% endfor %}
   {% endif %}
 
+
 storage:
   dbPath: {{ mongodb_storage_dbpath }}
   directoryPerDB: {{ mongodb_storage_dirperdb | to_nice_json }}
@@ -84,18 +85,24 @@ storage:
   {% endfor %}
   {% endif %}
 
+
 systemLog:
   destination: {{ mongodb_systemlog_destination }}
   {% if mongodb_systemlog_destination == 'file' -%}
   logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
   logRotate: {{ mongodb_systemlog_logrotate }}
   path: {{ mongodb_systemlog_path }}
+  {% endif -%}
+  {% if mongodb_systemlog_verbosity > 0 -%}
+  verbosity: {{ mongodb_systemlog_verbosity }}
+  {% endif -%}
+  {% if mongodb_systemlog_component is defined and mongodb_systemlog_component | length > 0 -%}
+  component:
+  {% for item in mongodb_systemlog_component %}
+  {{ item }}:
+      verbosity: {{ mongodb_systemlog_component[item]['verbosity'] }}
+  {% endfor -%}
   {%- endif %}
-  {%- if mongodb_config['systemLog'] is defined and mongodb_config['systemLog'] is iterable %}
-  {%- for item in mongodb_config['systemLog'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
 
 operationProfiling:
   slowOpThresholdMs: {{ mongodb_operation_profiling_slow_op_threshold_ms }}
@@ -105,6 +112,7 @@ operationProfiling:
   {{ item }}
   {% endfor %}
   {% endif %}
+
 
 {% if mongodb_major_version is version("4.0", ">=") -%}
 cloud:
