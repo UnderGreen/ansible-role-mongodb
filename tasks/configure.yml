@@ -88,6 +88,14 @@
     state: present
   when: mongodb_net_port not in [ "27017", "27018", "27019" ]
 
+- name: Configure mongorc.js
+  template:
+    src: mongorc.js.j2
+    dest: /etc/mongorc.js
+    owner: mongod
+    group: mongod
+    mode: 0644
+
 - name: Configure mongodb
   template:
     src: mongod.conf.j2
