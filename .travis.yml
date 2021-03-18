@@ -7,9 +7,9 @@ python:
   - "3.6"
 env:
   global:
-    MONGODB_VERSION=3.6
-    MONGODB_VERSION=4.0
-    MONGODB_VERSION=4.2
+    MONGODB_PACKAGE=mongodb-org
+  jobs:
+    MOLECULE_DISTRO=centos7
   # - >
   #   DISTRIBUTION=ubuntu
   #   DIST_VERSION=18_04-builded
@@ -161,10 +161,15 @@ install:
   - python3 -m pip install --upgrade pip
   - pip install -r requirements.txt
 
-script:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - molecule test
-  - AUTH_STATE=enabled molecule test
+jobs:
+  include:
+    - stage: "MongoDB 3.6"
+      env:
+        - MONGODB_VERSION=3.6
+      script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - molecule test
+        - AUTH_STATE=enabled molecule test
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
