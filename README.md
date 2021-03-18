@@ -168,15 +168,16 @@ mongodb_keyfile_force_renew: false
 mongodb_keyfile_content: 
 
 # names and passwords for administrative users
-mongodb_root_name: siteRootAdmin
-mongodb_root_password: passw0rd
+mongodb_root_user_name: siteRootAdmin
+mongodb_root_user_password: passw0rd
 
-mongodb_backup_name: backupuser
-mongodb_backup_password: passw0rd
+mongodb_backup_user_name: backupuser
+mongodb_backup_user_password: passw0rd
 
 # Additional administrator user, if not setted, will not be created
-mongodb_admin_name: 
-mongodb_admin_password: 
+mongodb_admin_user_name: 
+mongodb_admin_user_password: 
+
 ```
 
 #### Usage
@@ -209,8 +210,8 @@ mongodb_oplog_users:
 Required vars to change on production:
 
 ```yaml
-mongodb_root_password
-mongodb_backup_password
+mongodb_root_user_password
+mongodb_backup_user_password
 
 # if you use replication and authorization
 mongodb_security_keyfile

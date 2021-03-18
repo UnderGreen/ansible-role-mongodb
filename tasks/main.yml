@@ -2,10 +2,10 @@
 - name: Ensure users and passwords are defined
   assert:
     that: 
-      - mongodb_root_name | length != 0
-      - mongodb_root_password | length != 0
-      - mongodb_backup_name | length != 0
-      - mongodb_backup_password | length != 0
+      - mongodb_root_user_name | length != 0
+      - mongodb_root_user_password | length != 0
+      - mongodb_backup_user_name | length != 0
+      - mongodb_backup_user_password | length != 0
     fail_msg: "Please check the user and password variables to Mongodb!"
   tags: [mongodb-check]
 

@@ -116,15 +116,15 @@ mongodb_keyfile_content:
 mongodb_keyfile_force_renew: false
 
 # names and passwords for administrative users
-mongodb_root_name: siteRootAdmin
-mongodb_root_password: passw0rd
+mongodb_root_user_name: siteRootAdmin
+mongodb_root_user_password: passw0rd
 
-mongodb_backup_name: backupuser
-mongodb_backup_password: passw0rd
+mongodb_backup_user_name: backupuser
+mongodb_backup_user_password: passw0rd
 
 # Additional administrator user, if not setted, will not be created
-mongodb_admin_name: 
-mongodb_admin_password: 
+mongodb_admin_user_name: 
+mongodb_admin_user_password: 
 
 # setParameter config
 mongodb_set_parameters:
