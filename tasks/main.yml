@@ -4,7 +4,7 @@
   fail:
     msg: 'Set mongodb_net_ssl_mode is preferSSL or set valid hostname for mongodb_net_ssl_host!'
   when: ( mongodb_net_ssl_mode == 'requireSSL'
-          and mongodb_net_ssl_host == '' )
+          and mongodb_net_ssl_host|length == 0 )
 
 - name: Check value of variable mongodb_login_host
   fail:

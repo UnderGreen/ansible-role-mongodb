@@ -20,8 +20,11 @@
 
 - name: Configure the MMS agent pt. 2
   template:
-   src: monitoring-agent.config.j2
-   dest: /etc/mongodb-mms/monitoring-agent.config
+    src: monitoring-agent.config.j2
+    dest: /etc/mongodb-mms/monitoring-agent.config
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+    mode: 0644
   notify: mongodb-mms-monitoring-agent restart
 
 - name: Ensure that the MMS agent is started
@@ -29,4 +32,3 @@
     name: mongodb-mms-monitoring-agent
     state: started
     enabled: yes
-

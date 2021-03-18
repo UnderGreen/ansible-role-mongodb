@@ -54,4 +54,3 @@
         and ( mongodb_master is not defined or not mongodb_master) )
   with_items:
     - "{{ mongodb_replication_params|default([]) }}"
-

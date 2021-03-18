@@ -3,10 +3,12 @@ dependencies: []
 
 galaxy_info:
   author: Sergei Antipov
+  role_name: mongodb
+  namespace: undergreen
   company: Self-employed
   description: Manage MongoDB with authentication and replica sets
   license: GPLv2
-  min_ansible_version: 2.5
+  min_ansible_version: 2.8
   platforms:
     - name: Ubuntu
       versions:
