@@ -6,6 +6,10 @@ language: python
 python:
   - "3.6"
 env:
+  global:
+    MONGODB_VERSION=3.6
+    MONGODB_VERSION=4.0
+    MONGODB_VERSION=4.2
   # - >
   #   DISTRIBUTION=ubuntu
   #   DIST_VERSION=18_04-builded

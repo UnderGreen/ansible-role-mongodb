@@ -33,7 +33,7 @@
 
 - name: Fail when used wrong mongodb_version variable
   fail:
-    msg: "mongodb_version variable should be '3.4', '3.6' or '4.0' or '4.2'"
+    msg: "mongodb_version variable should be '3.6' or '4.0' or '4.2'"
   when: (mongodb_package == 'mongodb-org' and
         (mongodb_version is not defined
          or mongodb_repository[mongodb_major_version] is not defined))
