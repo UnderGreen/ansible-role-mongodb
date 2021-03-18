@@ -10,6 +10,7 @@ env:
     MONGODB_PACKAGE=mongodb-org
   jobs:
     MOLECULE_DISTRO=centos7
+    MOLECULE_DISTRO=ubuntu1804
   # - >
   #   DISTRIBUTION=ubuntu
   #   DIST_VERSION=18_04-builded
