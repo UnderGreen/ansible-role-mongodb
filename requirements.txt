@@ -1,4 +1,4 @@
-ansible >= 2.8, < 2.9
+ansible >= 2.9, < 2.10
 molecule >= 3.2, < 3.3
 molecule-docker >= 0.2, < 0.3
 ansible-lint >=5.0, < 5.1
