@@ -158,6 +158,7 @@ install:
   - pip install -r requirements.txt
 
 script:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - molecule test
   - AUTH_STATE=enabled molecule test
 
