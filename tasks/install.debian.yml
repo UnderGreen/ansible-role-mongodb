@@ -53,6 +53,20 @@
     state: "{{ mongodb_package_state }}"
     update_cache: true
 
+- name: Check if NUMA is available on host
+  shell: "set -o pipefail && find /proc -name numa_maps | wc -l"
+  args:
+    executable: /bin/bash
+  register: numa_number_lines
+  changed_when: false
+  check_mode: no
+  when: mongodb_use_numa | bool
+  
+- name: Don't use NUMA if it is unavailable on host
+  set_fact:
+    mongodb_use_numa: false
+  when: (mongodb_use_numa | bool and numa_number_lines.stdout | int == 0)
+
 - name: Install numactl package
   apt:
     name: numactl
@@ -95,15 +109,23 @@
       - python-pip
   when: mongodb_pymongo_from_pip | bool
 
+  # TODO: check if it is still needed for Debian/Ubuntu
 - name: Install setuptools (required for ansible 2.7+)
   apt:
     pkg:
       - python-setuptools
   when: mongodb_pymongo_from_pip | bool
 
+- name: Upgrade pip to the latest version
+  pip:
+    name: pip
+    state: latest
+  when: mongodb_pymongo_from_pip | bool
+  
 - name: Install PyMongo from PIP
   pip:
-    name: pymongo
+    name:
+      - pymongo
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip | bool
