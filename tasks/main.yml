@@ -151,3 +151,8 @@
   include: mms-agent.yml
   when: mongodb_mms_api_key | length > 0
   tags: [mongodb]
+
+- name: Include backup.yml
+  include: backup.yml
+  when: mongodb_backup|bool
+  tags: [ mongodb, backup ]

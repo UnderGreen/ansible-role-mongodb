@@ -131,3 +131,23 @@ mongodb_set_parameters:
 
 # custom config options
 mongodb_config:
+
+# Daily MongoDB Backup script schedule (do not use "/" in the end of directories)
+mongodb_backup: true
+mongodb_backup_state: present
+mongodb_backup_script_path: "/etc/mongodb-backup.sh"
+mongodb_backup_log_path: "{{ mongodb_systemlog_path|dirname }}/backup_mongod.log"
+mongodb_backup_local_dir: "{{ mongodb_storage_dbpath }}/backup"
+mongodb_backup_store_dir: "{{ mongodb_storage_dbpath }}/backup/storage"
+mongodb_backup_store_days: 0   # f the value is 0, the script will not copy the backups to the storage directory, and will keep only one local copy.
+mongodb_backup_compression: true
+mongodb_backup_cron_time:
+  hour: 3
+  minute: 0
+mongodb_backup_logrotate: |
+  {{ mongodb_backup_log_path }} {
+    size 100k
+    dateformat -%Y%m%d
+    rotate 10
+    create 644
+  }

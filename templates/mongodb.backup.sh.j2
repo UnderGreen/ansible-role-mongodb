@@ -1,0 +1,94 @@
+#!/bin/bash
+PATH=$PATH:/sbin:/bin:/usr/sbin:/usr/bin
+
+# {{ ansible_managed }}
+# Script to manage MongoDB backups
+
+# MongoDB Script Backup Variables
+BACKUP_LOG_PATH="{{ mongodb_backup_log_path }}"
+BACKUP_LOCAL_DIR="{{ mongodb_backup_local_dir }}"
+BACKUP_STORAGE_DIR="{{ mongodb_backup_store_dir }}"
+BACKUP_STORAGE_DAYS={{ mongodb_backup_store_days }}
+MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
+MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
+MONGO_BACKUP_COMPRESSION={{ mongodb_backup_compression }}
+BACKUP_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y%m%d")
+
+
+function print {
+    mkdir -p "$(dirname "${BACKUP_LOG_PATH}")"
+    echo `date "+%F %T "` $1 $2 >> "${BACKUP_LOG_PATH}"
+}
+
+print "INFO" "Backup is starting..."
+
+print "INFO" "Deleting old local backups"
+find $BACKUP_STORAGE_DIR -type d -name "mongodump_*" -print -exec rm -rf {} +
+print "INFO" "Backups deleted"
+
+print "INFO" "Verifying if primary or slave"
+mongo -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --eval "db.runCommand( { isMaster: 1 } );" > /tmp/validate
+
+if grep -q '"ismaster" : true' /tmp/validate; then
+    
+    print "INFO" "Primary node detected"
+    
+    print "INFO" "Starting MongoDump"
+    if [ $MONGO_BACKUP_COMPRESSION = true ]
+    then
+        mongodump --gzip --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$(date +\%Y\%m\%d)
+    else
+        mongodump --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$(date +\%Y\%m\%d)
+    fi
+    if [ $? == 0 ]
+    then
+          print "INFO" "Mongodump ended successfully"
+    else
+          print "ERRO" "Failed! An error has been found while executing MongoDump!!"
+          exit 1
+    fi
+
+    # If BACKUP_STORAGE_DAYS is 0 do not copy backup to Storage
+    if [ $BACKUP_STORAGE_DAYS -ne 0 ]
+    then
+
+        print "INFO" "Deleting backup images from Storage"
+        
+        # Checks number of backups
+        BACKUP_NB=$(find $BACKUP_STORAGE_DIR -type d -name "mongodump_*" | wc -l)
+
+        # Delete backups only if the number of existing backups is greater than the desired number of days
+        if [[ $BACKUP_NB -gt ${BACKUP_STORAGE_DAYS} ]]
+        then
+          find "$BACKUP_STORAGE_DIR" -type d -name "mongodump_*" -printf "%P\n" |
+          while IFS= read -r FOLDER; do
+              FOLDER_BACKUP_DATE=$(echo "${FOLDER}" | awk -F_ '{print $NF}')
+              if [ "${BACKUP_DELETE_DATE}" -gt "${FOLDER_BACKUP_DATE}" ]; then
+                  print "INFO" "Deleting folder ${FOLDER}"
+                  rm -rf "${FOLDER}";
+              fi
+          done
+        else
+          echo "INFO" "No backup to remove!"
+        fi
+        
+        print "INFO" "Copying new backup to Storage"
+        mkdir -p $BACKUP_STORAGE_DIR
+        cp -R $BACKUP_LOCAL_DIR/mongodump_$(date +\%Y\%m\%d) $BACKUP_STORAGE_DIR
+        
+    else      
+        print "INFO" "Backup copy storage was ignored"
+    fi
+
+    print "INFO" "Backup finished!"
+
+elif grep -q "Connection refused" /tmp/validate; then
+    print "ERROR" "Connection refused, ending backup script..."
+    exit 1
+elif grep -q "Authentication failed" /tmp/validate; then
+    print "ERROR" "Authentication failed, ending backup script..."
+    exit 1
+else
+    print "WARNING" "This is not the primary node, ending backup script..."
+    exit 1
+fi
