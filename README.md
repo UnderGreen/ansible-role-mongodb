@@ -133,6 +133,10 @@ mongodb_logrotate_options: |
     endscript
   }
 
+## operationProfiling Options
+mongodb_operation_profiling_slow_op_threshold_ms: 10000
+mongodb_operation_profiling_mode: "slowOp"
+
 ## replication Options
 mongodb_replication_replset: # Enable replication <setname>[/<optionalseedhostlist>]
 mongodb_replication_replindexprefetch: "all" # specify index prefetching behavior (if secondary) [none|_id_only|all]
