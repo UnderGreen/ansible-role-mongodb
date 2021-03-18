@@ -116,10 +116,11 @@
       - python-setuptools
   when: mongodb_pymongo_from_pip | bool
 
-- name: Upgrade pip to the latest version
+- name: Upgrade pip to the newer version
   pip:
     name: pip
-    state: latest
+    state: present
+    version: "20.3.4"
   when: mongodb_pymongo_from_pip | bool
   
 - name: Install PyMongo from PIP
