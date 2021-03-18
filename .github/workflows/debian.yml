@@ -23,6 +23,8 @@ jobs:
         exclude:
           - molecule_distro: debian10
             mongodb_version: '3.6'
+          - molecule_distro: debian10
+            mongodb_version: '4.0'
     env:
       MONGODB_VERSION: ${{ matrix.mongodb_version }}
       MOLECULE_DISTRO: ${{ matrix.molecule_distro }}
