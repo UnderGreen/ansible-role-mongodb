@@ -23,6 +23,7 @@ provisioner:
   log: true
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
+    prepare:  ${MOLECULE_PLAYBOOK:-prepare.yml}
   env:
     MONGODB_VERSION: ${MONGODB_VERSION:-4.2}
     MONGODB_PACKAGE: ${MONGODB_PACKAGE:-mongodb-org}

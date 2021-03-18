@@ -15,6 +15,7 @@ jobs:
       matrix:
         molecule_distro: 
           - debian9
+          - debian10
         mongodb_version:
           - '4.2'
           - '4.0'
