@@ -1,4 +1,21 @@
 ---
+- name: Ensuring interoperability with discontinued variables
+  set_fact:
+    mongodb_root_user_name: "{{ mongodb_root_admin_name }}"
+    mongodb_root_user_password: "{{ mongodb_root_admin_password }}"
+    mongodb_backup_user_name: "{{ mongodb_root_backup_name }}"
+    mongodb_backup_user_password: "{{ mongodb_root_backup_password }}"
+  when:
+    - mongodb_root_admin_name is defined
+    - mongodb_root_admin_password is defined
+    - mongodb_root_backup_name is defined
+    - mongodb_root_backup_password is defined
+    - mongodb_root_user_name == "siteUserAdmin"
+    - mongodb_root_user_password == "passw0rd"
+    - mongodb_backup_user_name == "backupuser"
+    - mongodb_backup_user_password == "passw0rd"
+  tags: [ mongodb-check, mongodb ]
+
 - name: Ensure users and passwords are defined
   assert:
     that: 
