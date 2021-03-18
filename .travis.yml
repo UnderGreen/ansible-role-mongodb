@@ -167,24 +167,21 @@ jobs:
     - stage: "MongoDB 3.6"
       env:
         - MONGODB_VERSION=3.6
-      script:
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - molecule test
-        - AUTH_STATE=enabled molecule test
+      <<: *shared_job 
     - stage: "MongoDB 4.0"
       env:
         - MONGODB_VERSION=4.0
-      script:
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - molecule test
-        - AUTH_STATE=enabled molecule test
+      <<: *shared_job 
     - stage: "MongoDB 4.2"
       env:
         - MONGODB_VERSION=4.2
-      script:
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - molecule test
-        - AUTH_STATE=enabled molecule test
+      <<: *shared_job 
+
+_shared_job: &shared_job
+  script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - molecule test
+    - AUTH_STATE=enabled molecule test
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
