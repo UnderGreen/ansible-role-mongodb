@@ -4,7 +4,7 @@
   tasks:
     - name: "Include ansible-role-mongodb"
       include_role:
-        name: "moleculewt"
+        name: "ansible-role-mongodb"
   vars:
     mongodb_package: "{{ lookup('env','MONGODB_PACKAGE') }}"
     mongodb_version: "{{ lookup('env','MONGODB_VERSION') }}"
