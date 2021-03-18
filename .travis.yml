@@ -7,10 +7,10 @@ python:
   - "3.6"
 env:
   global:
-    MONGODB_PACKAGE=mongodb-org
+    - MONGODB_PACKAGE=mongodb-org
   jobs:
-    MOLECULE_DISTRO=centos7
-    MOLECULE_DISTRO=ubuntu1804
+    - MOLECULE_DISTRO=centos7
+    - MOLECULE_DISTRO=ubuntu1804
   # - >
   #   DISTRIBUTION=ubuntu
   #   DIST_VERSION=18_04-builded
