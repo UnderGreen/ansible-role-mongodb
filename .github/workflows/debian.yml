@@ -1,4 +1,4 @@
-name: Test ansible role on Debian
+name: Debian
 
 on:
   push:

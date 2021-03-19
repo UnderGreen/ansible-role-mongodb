@@ -1,4 +1,5 @@
-# Ansible role for MongoDB [![Build Status](https://travis-ci.org/UnderGreen/ansible-role-mongodb.svg?branch=master)](https://travis-ci.org/UnderGreen/ansible-role-mongodb)
+# Ansible role for MongoDB 
+![Centos](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/centos.yml/badge.svg) ![Debian](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/debian.yml/badge.svg)
 
 Ansible role which manages [MongoDB](http://www.mongodb.org/).
 
@@ -17,6 +18,7 @@ MongoDB support matrix:
 | Ubuntu 18.04   |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: |
 | Debian 8.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: |        :x:         |
 | Debian 9.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Debian 10.x    |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: |
 | RHEL 6.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Amazon Linux 2 |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: |
