@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# (c) 2015-2018, Sergei Antipov, 2GIS LLC
+# (c) 2015-2021, Sergei Antipov
 #
 # This file is part of Ansible
 #

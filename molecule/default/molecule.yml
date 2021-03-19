@@ -31,6 +31,7 @@ provisioner:
   inventory:
     host_vars:
       mongo1:
+        ansible_python_interpreter: auto_silent
         mongodb_master: true
         mongodb_replication_params:
           - host_name: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"
