@@ -1,4 +1,5 @@
-# Ansible role for MongoDB ![Centos](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/centos.yml/badge.svg) ![Debian](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/debian.yml/badge.svg)
+# Ansible role for MongoDB 
+![Centos](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/centos.yml/badge.svg) ![Debian](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/debian.yml/badge.svg)
 
 Ansible role which manages [MongoDB](http://www.mongodb.org/).
 
