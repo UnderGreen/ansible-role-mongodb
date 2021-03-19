@@ -1,4 +1,4 @@
-name: Test ansible role on CentOS
+name: CentOS
 
 on:
   push:
