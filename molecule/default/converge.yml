@@ -1,0 +1,23 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include ansible-role-mongodb"
+      include_role:
+        name: "ansible-role-mongodb"
+  vars:
+    mongodb_package: "{{ lookup('env','MONGODB_PACKAGE') }}"
+    mongodb_version: "{{ lookup('env','MONGODB_VERSION') }}"
+    mongodb_security_authorization: "{{ lookup('env', 'AUTH_STATE') }}"
+    mongodb_replication_replset: "{{ lookup('env', 'REPLICASET') }}"
+    mongodb_storage_dbpath: /var/lib/mongodb
+    mongodb_net_bindip: 0.0.0.0
+    mongodb_login_host: "{{ hostvars[groups['mongo_master'][0]].ansible_default_ipv4.address }}"
+
+    mongodb_users:
+      - {
+      name: testUser,
+      password: passw0rd,
+      roles: readWrite,
+      database: admin
+      }

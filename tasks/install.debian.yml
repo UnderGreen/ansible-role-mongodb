@@ -33,7 +33,7 @@
 
 - name: Fail when used wrong mongodb_version variable
   fail:
-    msg: "mongodb_version variable should be '3.4', '3.6' or '4.0' or '4.2'"
+    msg: "mongodb_version variable should be '3.6' or '4.0' or '4.2'"
   when: (mongodb_package == 'mongodb-org' and
         (mongodb_version is not defined
          or mongodb_repository[mongodb_major_version] is not defined))
@@ -53,6 +53,20 @@
     state: "{{ mongodb_package_state }}"
     update_cache: true
 
+- name: Check if NUMA is available on host
+  shell: "set -o pipefail && find /proc -name numa_maps | wc -l"
+  args:
+    executable: /bin/bash
+  register: numa_number_lines
+  changed_when: false
+  check_mode: no
+  when: mongodb_use_numa | bool
+  
+- name: Don't use NUMA if it is unavailable on host
+  set_fact:
+    mongodb_use_numa: false
+  when: (mongodb_use_numa | bool and numa_number_lines.stdout | int == 0)
+
 - name: Install numactl package
   apt:
     name: numactl
@@ -62,7 +76,7 @@
 - name: Add systemd configuration if present
   template:
     src: mongodb.service.j2
-    dest: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
+    dest: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
     owner: root
     group: root
     mode: '0644'
@@ -74,8 +88,8 @@
 
 - name: Add symlink for systemd
   file:
-    src: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
-    dest: "/etc/systemd/system/multi-user.target.wants/{{mongodb_daemon_name}}.service"
+    src: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+    dest: "/etc/systemd/system/multi-user.target.wants/{{ mongodb_daemon_name }}.service"
     state: link
   when:
     - ansible_service_mgr == "systemd"
@@ -83,9 +97,16 @@
   notify:
     - reload systemd
 
+- name: Forcefully set mongodb_pymongo_from_pip to true on Debian 10
+  set_fact:
+    mongodb_pymongo_from_pip: false
+  when:
+    - ansible_distribution == 'Debian'
+    - ansible_distribution_release == 'buster'
+
 - name: Install PyMongo package
   apt:
-    name: python-pymongo
+    name: "{{ 'python-pymongo' if ansible_facts['python'].version.major == 2 else 'python3-pymongo' }}"
   when: not mongodb_pymongo_from_pip
 
 - name: Install PIP
@@ -95,6 +116,7 @@
       - python-pip
   when: mongodb_pymongo_from_pip | bool
 
+  # TODO: check if it is still needed for Debian/Ubuntu
 - name: Install setuptools (required for ansible 2.7+)
   apt:
     pkg:
@@ -103,7 +125,8 @@
 
 - name: Install PyMongo from PIP
   pip:
-    name: pymongo
+    name:
+      - pymongo
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip | bool

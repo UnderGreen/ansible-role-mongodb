@@ -13,4 +13,3 @@
   when:
     - ansible_service_mgr == "systemd"
     - mongodb_disable_transparent_hugepages | bool
-
