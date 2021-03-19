@@ -97,6 +97,14 @@
   notify:
     - reload systemd
 
+# workaround for the issue with pip idempotency
+- name: Forcefully set mongodb_pymongo_from_pip to true on Debian 10
+  set_fact:
+    mongodb_pymongo_from_pip: false
+  when:
+    - ansible_distribution == 'Debian'
+    - ansible_distribution_release == 'buster'
+
 - name: Install PyMongo package
   apt:
     name: python-pymongo
@@ -114,13 +122,6 @@
   apt:
     pkg:
       - python-setuptools
-  when: mongodb_pymongo_from_pip | bool
-
-- name: Upgrade pip to the newer version
-  pip:
-    name: pip
-    state: present
-    version: "20.3.4"
   when: mongodb_pymongo_from_pip | bool
   
 - name: Install PyMongo from PIP
