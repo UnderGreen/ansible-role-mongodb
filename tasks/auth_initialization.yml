@@ -47,8 +47,6 @@
           }
       no_log: true
       when:
-        - mongodb_admin_user_name is defined
-        - mongodb_admin_user_password is defined
         - mongodb_admin_user_name | length > 0
         - mongodb_admin_user_password | length > 0
 

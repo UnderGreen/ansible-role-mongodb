@@ -31,12 +31,14 @@
   command: openssl rand -base64 756
   register: mongodb_key
   run_once: True
-  when: mongodb_replication_replset | length > 0 and not mongodb_keyfile_content
+  when: 
+    - mongodb_replication_replset | length > 0
+    - not mongodb_keyfile_content | length > 0
 
 - name: Create keyFile
   copy:
     dest: "{{ mongodb_security_keyfile }}"
-    content: "{{ mongodb_key.stdout_lines|join('\n') if (not mongodb_keyfile_content) else mongodb_keyfile_content }}"
+    content: "{{ mongodb_keyfile_content if (mongodb_keyfile_content | length > 0) else mongodb_key.stdout_lines|join('\n') }}"
     owner: "{{ mongodb_user }}"
     group: "root"
     mode: 0600

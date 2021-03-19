@@ -112,7 +112,7 @@ mongodb_mms_base_url: https://mms.mongodb.com
 
 # password for inter-process authentication
 # you can generate with command 'openssl rand -base64 756', but if not defined it will be generated at run time
-mongodb_keyfile_content: 
+mongodb_keyfile_content: ""
 mongodb_keyfile_force_renew: false
 
 # names and passwords for administrative users
@@ -123,8 +123,8 @@ mongodb_backup_user_name: backupuser
 mongodb_backup_user_password: passw0rd
 
 # Additional administrator user, if not setted, will not be created
-mongodb_admin_user_name: 
-mongodb_admin_user_password: 
+mongodb_admin_user_name: ""
+mongodb_admin_user_password: ""
 
 # setParameter config
 mongodb_set_parameters:
