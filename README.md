@@ -1,28 +1,28 @@
-# Ansible role for MongoDB 
+# Ansible role for MongoDB
 ![Centos](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/centos.yml/badge.svg) ![Debian](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/debian.yml/badge.svg)
 
-Ansible role which manages [MongoDB](http://www.mongodb.org/).
+Ansible role to install and manage [MongoDB](http://www.mongodb.org/).
 
-- Install and configure the MongoDB;
+- Install and configure the MongoDB
 - Configure mongodb users
+- Configure authentication
 - Configure replication
-- Provide handlers for restart and reload;
 - Setup MMS automation agent;
 
 MongoDB support matrix:
 
-| Distribution   | < MongoDB 3.4 |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |
-| -------------- | :-----------: | :----------------: | :----------------: | :----------------: |
-| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Ubuntu 18.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Debian 9.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Debian 10.x    |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: |
-| RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| RHEL 8.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Amazon Linux 2 |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Distribution   | < MongoDB 3.4 |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |   MongoDB 4.4      |
+| -------------- | :-----------: | :----------------: | :----------------: | :----------------: | :----------------: |
+| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
+| Ubuntu 18.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
+| Ubuntu 20.04   |  :no_entry:   |        :x:         |        :x:         |        :x:         | :white_check_mark: |
+| Debian 9.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Debian 10.x    |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: | :white_check_mark: |
+| RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| RHEL 8.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Amazon Linux 2 |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
-- :white_check_mark: - fully tested, should works fine
-- :interrobang: - maybe works, not tested
+- :white_check_mark: - fully tested
 - :x: - don't have official support
 - :no_entry: - MongoDB has reached EOL
 

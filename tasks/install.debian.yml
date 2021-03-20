@@ -38,10 +38,9 @@
     update_cache: true
 
 - name: Check if NUMA is available on host
-  shell: "set -o pipefail && find /proc -name numa_maps | wc -l"
-  args:
-    executable: /bin/bash
-  register: numa_number_lines
+  command: "ls -1 /proc/1/numa_maps"
+  register: numa_available
+  ignore_errors: true
   changed_when: false
   check_mode: no
   when: mongodb_use_numa | bool
@@ -49,7 +48,7 @@
 - name: Don't use NUMA if it is unavailable on host
   set_fact:
     mongodb_use_numa: false
-  when: (mongodb_use_numa | bool and numa_number_lines.stdout | int == 0)
+  when: (mongodb_use_numa | bool and numa_available.rc != 0)
 
 - name: Install numactl package
   apt:
@@ -81,7 +80,8 @@
   notify:
     - reload systemd
 
-- name: Forcefully set mongodb_pymongo_from_pip to true on Debian 10
+  # Workaround for the idempotence issue on Debian 10 with pip module
+- name: Forcefully set mongodb_pymongo_from_pip to false on Debian 10
   set_fact:
     mongodb_pymongo_from_pip: false
   when:
