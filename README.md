@@ -29,15 +29,16 @@ MongoDB support matrix:
 #### Variables
 
 ```yaml
-# You can use this variable to control installation source of MongoDB
-# 'mongodb' will be installed from Debian/Ubuntu repos
-# 'mongodb-org' will be installed from MongoDB official repos
+# This variable is used to set source of MongoDB installation.
+# 'mongodb' - version provided by Debian-based distributions from their official package repositories.
+# 'mongodb-org' - version provided by MongoDB package repository.
+# 'mongodb' is not included in th role test matrix and working of it is not guarantied.
 mongodb_package: mongodb-org
 
-# You can control installed version via this param.
-# Should be '3.6', '4.0' or '4.2'. This role doesn't support MongoDB < 3.6.
-# I will recommend you to use latest version of MongoDB.
-mongodb_version: "4.2"
+# `mongodb_version` variable sets version of MongoDB.
+# Should be '3.6', '4.0', '4.2' or '4.4'. This role doesn't support MongoDB < 3.6.
+# I would recommend you to use the latest version of MongoDB.
+mongodb_version: "4.4"
 
 mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manager
 mongodb_pymongo_pip_version: 3.6.1 # Choose PyMong version to install from pip. If not set use latest
