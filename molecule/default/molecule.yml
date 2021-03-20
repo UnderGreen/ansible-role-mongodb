@@ -20,6 +20,9 @@ platforms:
       - mongo_master
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      pipelining: true
   log: true
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}

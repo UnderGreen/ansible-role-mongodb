@@ -1,4 +1,4 @@
-name: CentOS
+name: Ubuntu
 
 on:
   push:
@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        molecule_distro: 
-          - centos7
-          - centos8
+        molecule_distro:
+          - ubuntu1604
+          - ubuntu1804
         mongodb_version:
           - '4.2'
           - '4.0'

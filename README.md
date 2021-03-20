@@ -13,15 +13,13 @@ MongoDB support matrix:
 
 | Distribution   | < MongoDB 3.4 |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |
 | -------------- | :-----------: | :----------------: | :----------------: | :----------------: |
-| Ubuntu 14.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: |        :x:         |
 | Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Ubuntu 18.04   |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: |
-| Debian 8.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: |        :x:         |
+| Ubuntu 18.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Debian 9.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Debian 10.x    |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: |
-| RHEL 6.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Amazon Linux 2 |  :no_entry:   |        :x:         | :white_check_mark: | :white_check_mark: |
+| RHEL 8.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Amazon Linux 2 |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 - :white_check_mark: - fully tested, should works fine
 - :interrobang: - maybe works, not tested

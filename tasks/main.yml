@@ -53,7 +53,7 @@
   ignore_errors: true
   when: ( mongodb_security_authorization == 'enabled'
           and not mongodb_replication_replset )
-  no_log: false
+  no_log: true
   tags: [mongodb]
 
 - name: Include authorization configuration
@@ -80,7 +80,7 @@
   when: ( mongodb_replication_replset
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
-  no_log: false
+  no_log: true
   tags: [mongodb]
 
 - name: create normal users without replicaset
@@ -92,14 +92,14 @@
     roles: "{{ item.roles }}"
     login_user: "{{ mongodb_user_admin_name }}"
     login_password: "{{ mongodb_user_admin_password }}"
-    login_port: "{{ mongodb_net_port }}"
+    login_port: "{{ mongodb_net_port | int }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
   with_items:
     - "{{ mongodb_users | default([]) }}"
   when: ( mongodb_security_authorization == 'enabled'
           and not mongodb_replication_replset )
-  no_log: false
+  no_log: true
   tags: [mongodb]
 
 - name: create oplog user with replicaset
@@ -121,7 +121,7 @@
   when: ( mongodb_replication_replset | length > 0
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
-  no_log: false
+  no_log: true
   tags: [mongodb]
 
 - name: service started

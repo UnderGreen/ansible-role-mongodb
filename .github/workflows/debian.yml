@@ -9,11 +9,11 @@ on:
       - master
 
 jobs:
-  python2:
+  python3:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        molecule_distro: 
+        molecule_distro:
           - debian9
           - debian10
         mongodb_version:
@@ -33,7 +33,23 @@ jobs:
         uses: actions/checkout@v2
       - name: Prepare tests
         run: pip install -r requirements.txt
-      - name: Run tests
-        run: |
-          molecule test
-          AUTH_STATE=enabled molecule test
+      - name: Run default test
+        run: molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: Run default test with enabled authentication
+        run: AUTH_STATE=enabled molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: Run cluster test
+        run: molecule test -s cluster
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: Run cluster test with enabled authentication
+        run: AUTH_STATE=enabled molecule test -s cluster
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
