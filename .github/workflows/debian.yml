@@ -33,9 +33,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Prepare tests
         run: pip install -r requirements.txt
-      - name: Run tests
-        run: |
-          molecule test
-          AUTH_STATE=enabled molecule test
-          molecule test -s cluster
-          AUTH_STATE=enabled molecule test -s cluster
+      - name: Run default test
+        run: molecule test
+      - name: Run default test with enabled authentication
+        run: AUTH_STATE=enabled molecule test
+      - name: Run cluster test
+        run: molecule test -s cluster
+      - name: Run cluster test with enabled authentication
+        run: AUTH_STATE=enabled molecule test -s cluster
