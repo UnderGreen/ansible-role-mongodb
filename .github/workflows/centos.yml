@@ -17,6 +17,7 @@ jobs:
           - centos7
           - centos8
         mongodb_version:
+          - '4.4'
           - '4.2'
           - '4.0'
           - '3.6'

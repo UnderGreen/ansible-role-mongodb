@@ -1,43 +1,44 @@
-# Ansible role for MongoDB 
-![Centos](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/centos.yml/badge.svg) ![Debian](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/debian.yml/badge.svg)
+# Ansible role for MongoDB
+![Centos](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/centos.yml/badge.svg) ![Debian](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/debian.yml/badge.svg) ![Ubuntu](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/ubuntu.yml/badge.svg) ![Amazon Linux 2](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/amazonlinux2.yml/badge.svg)
 
-Ansible role which manages [MongoDB](http://www.mongodb.org/).
+Ansible role to install and manage [MongoDB](http://www.mongodb.org/).
 
-- Install and configure the MongoDB;
+- Install and configure the MongoDB
 - Configure mongodb users
+- Configure authentication
 - Configure replication
-- Provide handlers for restart and reload;
 - Setup MMS automation agent;
 
 MongoDB support matrix:
 
-| Distribution   | < MongoDB 3.4 |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |
-| -------------- | :-----------: | :----------------: | :----------------: | :----------------: |
-| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Ubuntu 18.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Debian 9.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Debian 10.x    |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: |
-| RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| RHEL 8.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Amazon Linux 2 |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Distribution   | < MongoDB 3.4 |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |   MongoDB 4.4      |
+| -------------- | :-----------: | :----------------: | :----------------: | :----------------: | :----------------: |
+| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
+| Ubuntu 18.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
+| Ubuntu 20.04   |  :no_entry:   |        :x:         |        :x:         |        :x:         | :white_check_mark: |
+| Debian 9.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Debian 10.x    |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: | :white_check_mark: |
+| RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| RHEL 8.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Amazon Linux 2 |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
-- :white_check_mark: - fully tested, should works fine
-- :interrobang: - maybe works, not tested
+- :white_check_mark: - fully tested
 - :x: - don't have official support
 - :no_entry: - MongoDB has reached EOL
 
 #### Variables
 
 ```yaml
-# You can use this variable to control installation source of MongoDB
-# 'mongodb' will be installed from Debian/Ubuntu repos
-# 'mongodb-org' will be installed from MongoDB official repos
+# This variable is used to set source of MongoDB installation.
+# 'mongodb' - version provided by Debian-based distributions from their official package repositories.
+# 'mongodb-org' - version provided by MongoDB package repository.
+# 'mongodb' is not included in th role test matrix and working of it is not guarantied.
 mongodb_package: mongodb-org
 
-# You can control installed version via this param.
-# Should be '3.6', '4.0' or '4.2'. This role doesn't support MongoDB < 3.6.
-# I will recommend you to use latest version of MongoDB.
-mongodb_version: "4.2"
+# `mongodb_version` variable sets version of MongoDB.
+# Should be '3.6', '4.0', '4.2' or '4.4'. This role doesn't support MongoDB < 3.6.
+# I would recommend you to use the latest version of MongoDB.
+mongodb_version: "4.4"
 
 mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manager
 mongodb_pymongo_pip_version: 3.6.1 # Choose PyMong version to install from pip. If not set use latest

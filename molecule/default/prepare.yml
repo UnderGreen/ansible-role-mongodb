@@ -3,7 +3,7 @@
   remote_user: root
   become: yes
   tasks:
-    - name: Install prerequisite packages for molecule testing for Debian/Ubuntu >= 18
+    - name: Install prerequisite packages for molecule testing on Debian or Ubuntu >= 18
       apt:
         update_cache: true
         name:

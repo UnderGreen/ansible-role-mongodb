@@ -43,7 +43,7 @@
   when: mongodb_replication_replset | length > 0
   tags: [mongodb]
 
-- name: Check where admin user already exists
+- name: Check whether admin user is already exist
   command: >
     mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_user_admin_name }} \
           -p {{ mongodb_user_admin_password }} --port {{ mongodb_net_port }} --eval 'db.version()' admin
