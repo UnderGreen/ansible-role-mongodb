@@ -1,0 +1,50 @@
+name: Ubuntu
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  python3:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        molecule_distro:
+          - ubuntu1604
+          - ubuntu1804
+        mongodb_version:
+          - '4.2'
+          - '4.0'
+          - '3.6'
+    env:
+      MONGODB_VERSION: ${{ matrix.mongodb_version }}
+      MOLECULE_DISTRO: ${{ matrix.molecule_distro }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Prepare tests
+        run: pip install -r requirements.txt
+      - name: Run default test
+        run: molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: Run default test with enabled authentication
+        run: AUTH_STATE=enabled molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: Run cluster test
+        run: molecule test -s cluster
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: Run cluster test with enabled authentication
+        run: AUTH_STATE=enabled molecule test -s cluster
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
