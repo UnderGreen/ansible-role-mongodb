@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 DOCUMENTATION = '''
 ---
 module: mongodb_replication
@@ -156,39 +159,67 @@ host_type:
   type: string
   sample: "replica"
 '''
-import ConfigParser
+
+import os
 import ssl as ssl_lib
 import time
+import traceback
 from datetime import datetime as dtdatetime
 from distutils.version import LooseVersion
+
 try:
-    from pymongo.errors import ConnectionFailure
-    from pymongo.errors import OperationFailure
-    from pymongo.errors import ConfigurationError
-    from pymongo.errors import AutoReconnect
-    from pymongo.errors import ServerSelectionTimeoutError
+    from pymongo.errors import ConnectionFailure, OperationFailure, AutoReconnect, ServerSelectionTimeoutError
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
 except ImportError:
-    pymongo_found = False
+    try:  # for older PyMongo 2.2
+        from pymongo import Connection as MongoClient
+    except ImportError:
+        pymongo_found = False
+    else:
+        pymongo_found = True
 else:
     pymongo_found = True
+
+from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+from ansible.module_utils.six.moves import configparser
+from ansible.module_utils._text import to_native
 
 # =========================================
 # MongoDB module specific support methods.
 #
+
+
 def check_compatibility(module, client):
-    srv_info = client.server_info()
-    if LooseVersion(PyMongoVersion) <= LooseVersion('3.2'):
-        module.fail_json(msg='Note: you must use pymongo 3.2+')
-    if LooseVersion(srv_info['version']) >= LooseVersion('3.4') and LooseVersion(PyMongoVersion) <= LooseVersion('3.4'):
-        module.fail_json(msg='Note: you must use pymongo 3.4+ with MongoDB 3.4.x')
-    if LooseVersion(srv_info['version']) >= LooseVersion('3.6') and LooseVersion(PyMongoVersion) <= LooseVersion('3.6'):
-        module.fail_json(msg='Note: you must use pymongo 3.6+ with MongoDB 3.6.x')
+    """Check the compatibility between the driver and the database.
+       See: https://docs.mongodb.com/ecosystem/drivers/driver-compatibility-reference/#python-driver-compatibility
+    Args:
+        module: Ansible module.
+        client (cursor): Mongodb cursor on admin database.
+    """
+    loose_srv_version = LooseVersion(client.server_info()['version'])
+    loose_driver_version = LooseVersion(PyMongoVersion)
+
+    if loose_srv_version >= LooseVersion('4.0') and loose_driver_version < LooseVersion('3.7'):
+        module.fail_json(msg=' (Note: you must use pymongo 3.7+ with MongoDB >= 4.0)')
+
+    elif loose_srv_version >= LooseVersion('3.6') and loose_driver_version < LooseVersion('3.6'):
+        module.fail_json(msg=' (Note: you must use pymongo 3.6+ with MongoDB >= 3.6)')
+
+    elif loose_srv_version >= LooseVersion('3.2') and loose_driver_version < LooseVersion('3.2'):
+        module.fail_json(msg=' (Note: you must use pymongo 3.2+ with MongoDB >= 3.2)')
+
+    elif loose_srv_version >= LooseVersion('3.0') and loose_driver_version <= LooseVersion('2.8'):
+        module.fail_json(msg=' (Note: you must use pymongo 2.8+ with MongoDB 3.0)')
+
+    elif loose_srv_version >= LooseVersion('2.6') and loose_driver_version <= LooseVersion('2.7'):
+        module.fail_json(msg=' (Note: you must use pymongo 2.7+ with MongoDB 2.6)')
+
+    elif LooseVersion(PyMongoVersion) <= LooseVersion('2.5'):
+        module.fail_json(msg=' (Note: you must be on mongodb 2.4+ and pymongo 2.5+ to use the roles param)')
 
 
 def check_members(state, module, client, host_name, host_port, host_type):
-    admin_db = client['admin']
     local_db = client['local']
 
     if local_db.system.replset.count() > 1:
@@ -214,6 +245,7 @@ def check_members(state, module, client, host_name, host_port, host_type):
                 if "{0}:{1}".format(host_name, host_port) not in member['host'] and member['arbiterOnly']:
                     module.exit_json(changed=False, host_name=host_name, host_port=host_port, host_type=host_type)
 
+
 def add_host(module, client, host_name, host_port, host_type, timeout=180, **kwargs):
     start_time = dtdatetime.now()
     while True:
@@ -229,8 +261,8 @@ def add_host(module, client, host_name, host_port, host_type, timeout=180, **kwa
                 module.fail_json(msg='no config object retrievable from local.system.replset')
 
             cfg['version'] += 1
-            max_id = max(cfg['members'], key=lambda x:x['_id'])
-            new_host = { '_id': max_id['_id'] + 1, 'host': "{0}:{1}".format(host_name, host_port) }
+            max_id = max(cfg['members'], key=lambda x: x['_id'])
+            new_host = {'_id': max_id['_id'] + 1, 'host': "{0}:{1}".format(host_name, host_port)}
             if host_type == 'arbiter':
                 new_host['arbiterOnly'] = True
 
@@ -254,14 +286,14 @@ def add_host(module, client, host_name, host_port, host_type, timeout=180, **kwa
             return
         except (OperationFailure, AutoReconnect) as e:
             if (dtdatetime.now() - start_time).seconds > timeout:
-                module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
+                module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % to_native(e), exception=traceback.format_exc())
             time.sleep(5)
+
 
 def remove_host(module, client, host_name, timeout=180):
     start_time = dtdatetime.now()
     while True:
         try:
-            admin_db = client['admin']
             local_db = client['local']
 
             if local_db.system.replset.count() > 1:
@@ -283,30 +315,32 @@ def remove_host(module, client, host_name, timeout=180):
                     module.fail_json(msg=fail_msg)
         except (OperationFailure, AutoReconnect) as e:
             if (dtdatetime.now() - start_time).seconds > timeout:
-                module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % str(e))
+                module.fail_json(msg='reached timeout while waiting for rs.reconfig(): %s' % to_native(e), exception=traceback.format_exc())
             time.sleep(5)
 
+
 def load_mongocnf():
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     mongocnf = os.path.expanduser('~/.mongodb.cnf')
 
     try:
         config.readfp(open(mongocnf))
         creds = dict(
-          user=config.get('client', 'user'),
-          password=config.get('client', 'pass')
+            user=config.get('client', 'user'),
+            password=config.get('client', 'pass')
         )
-    except (ConfigParser.NoOptionError, IOError):
+    except (configparser.NoOptionError, IOError):
         return False
 
     return creds
 
-def wait_for_ok_and_master(module, connection_params, timeout = 180):
+
+def wait_for_ok_and_master(module, connection_params, timeout=180):
     start_time = dtdatetime.now()
     while True:
         try:
             client = MongoClient(**connection_params)
-            authenticate(client, connection_params["username"], connection_params["password"])
+            authenticate(module, client, connection_params["username"], connection_params["password"])
 
             status = client.admin.command('replSetGetStatus', check=False)
             if status['ok'] == 1 and status['myState'] == 1:
@@ -322,7 +356,8 @@ def wait_for_ok_and_master(module, connection_params, timeout = 180):
 
         time.sleep(1)
 
-def authenticate(client, login_user, login_password):
+
+def authenticate(module, client, login_user, login_password):
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
         if mongocnf_creds is not False:
@@ -338,9 +373,10 @@ def authenticate(client, login_user, login_password):
 # Module execution.
 #
 
+
 def main():
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             login_user=dict(default=None),
             login_password=dict(default=None, no_log=True),
             login_host=dict(default='localhost'),
@@ -349,20 +385,20 @@ def main():
             replica_set=dict(default=None),
             host_name=dict(default='localhost'),
             host_port=dict(default='27017'),
-            host_type=dict(default='replica', choices=['replica','arbiter']),
+            host_type=dict(default='replica', choices=['replica', 'arbiter']),
             ssl=dict(default=False, type='bool'),
             ssl_cert_reqs=dict(default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
-            build_indexes = dict(type='bool', default='yes'),
-            hidden = dict(type='bool', default='no'),
-            priority = dict(default='1.0'),
-            slave_delay = dict(type='int', default='0'),
-            votes = dict(type='int', default='1'),
+            build_indexes=dict(type='bool', default='yes'),
+            hidden=dict(type='bool', default='no'),
+            priority=dict(default='1.0'),
+            slave_delay=dict(type='int', default='0'),
+            votes=dict(type='int', default='1'),
             state=dict(default='present', choices=['absent', 'present']),
         )
     )
 
     if not pymongo_found:
-        module.fail_json(msg='the python pymongo (>= 3.2) module is required')
+        module.fail_json(msg=missing_required_lib('pymongo'))
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']
@@ -398,7 +434,7 @@ def main():
             connection_params["ssl_cert_reqs"] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
 
         client = MongoClient(**connection_params)
-        authenticate(client, login_user, login_password)
+        authenticate(module, client, login_user, login_password)
         client['admin'].command('replSetGetStatus')
 
     except ServerSelectionTimeoutError:
@@ -417,24 +453,25 @@ def main():
                 connection_params["ssl_cert_reqs"] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
 
             client = MongoClient(**connection_params)
-            authenticate(client, login_user, login_password)
+            authenticate(module, client, login_user, login_password)
             if state == 'present':
-                new_host = { '_id': 0, 'host': "{0}:{1}".format(host_name, host_port) }
-                if priority != 1.0: new_host['priority'] = priority
-                config = { '_id': "{0}".format(replica_set), 'members': [new_host] }
+                new_host = {'_id': 0, 'host': "{0}:{1}".format(host_name, host_port)}
+                if priority != 1.0:
+                    new_host['priority'] = priority
+                config = {'_id': "{0}".format(replica_set), 'members': [new_host]}
                 client['admin'].command('replSetInitiate', config)
                 client.close()
                 wait_for_ok_and_master(module, connection_params)
                 replica_set_created = True
                 module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
         except OperationFailure as e:
-            module.fail_json(msg='Unable to initiate replica set: %s' % str(e))
+            module.fail_json(msg='Unable to initiate replica set: %s' % to_native(e), exception=traceback.format_exc())
     except ConnectionFailure as e:
-        module.fail_json(msg='unable to connect to database: %s' % str(e))
+        module.fail_json(msg='unable to connect to database: %s' % to_native(e), exception=traceback.format_exc())
 
     # reconnect again
     client = MongoClient(**connection_params)
-    authenticate(client, login_user, login_password)
+    authenticate(module, client, login_user, login_password)
     check_compatibility(module, client)
     check_members(state, module, client, host_name, host_port, host_type)
 
@@ -445,22 +482,22 @@ def main():
         try:
             if not replica_set_created:
                 add_host(module, client, host_name, host_port, host_type,
-                        build_indexes   = module.params['build_indexes'],
-                        hidden          = module.params['hidden'],
-                        priority        = float(module.params['priority']),
-                        slave_delay     = module.params['slave_delay'],
-                        votes           = module.params['votes'])
+                         build_indexes=module.params['build_indexes'],
+                         hidden=module.params['hidden'],
+                         priority=float(module.params['priority']),
+                         slave_delay=module.params['slave_delay'],
+                         votes=module.params['votes'])
         except OperationFailure as e:
-            module.fail_json(msg='Unable to add new member to replica set: %s' % str(e))
+            module.fail_json(msg='Unable to add new member to replica set: %s' % to_native(e), exception=traceback.format_exc())
 
     elif state == 'absent':
         try:
             remove_host(module, client, host_name)
         except OperationFailure as e:
-            module.fail_json(msg='Unable to remove member of replica set: %s' % str(e))
+            module.fail_json(msg='Unable to remove member of replica set: %s' % to_native(e), exception=traceback.format_exc())
 
     module.exit_json(changed=True, host_name=host_name, host_port=host_port, host_type=host_type)
 
-# import module snippets
-from ansible.module_utils.basic import *
-main()
+
+if __name__ == '__main__':
+    main()

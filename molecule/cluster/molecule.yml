@@ -3,6 +3,11 @@ dependency:
   name: galaxy
 driver:
   name: docker
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+  flake8 library --ignore=E501,E402
 platforms:
   - name: mongo1
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
@@ -45,13 +50,16 @@ provisioner:
   inventory:
     host_vars:
       mongo1:
+        ansible_python_interpreter: auto_silent
         mongodb_master: true
         mongodb_replication_params:
           - host_name: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"
       mongo2:
+        ansible_python_interpreter: auto_silent
         mongodb_replication_params:
           - host_name: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"
       mongo3:
+        ansible_python_interpreter: auto_silent
         mongodb_net_port: 30000
         mongodb_storage_journal_enabled: "{{ mongodb_major_version is version('4.0', '>=') }}"
         mongodb_storage_smallfiles: true
