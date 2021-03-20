@@ -15,22 +15,6 @@
     id: "{{ mongodb_apt_key_id[mongodb_major_version] }}"
   when: mongodb_package == 'mongodb-org'
 
-- name: Fail when used wrong mongodb_version variable with Debian Stretch
-  fail:
-    msg: "mongodb_version variable should be '3.6' or '4.0' or '4.2' for Debian Stretch"
-  when:
-    - mongodb_package == 'mongodb-org'
-    - (mongodb_major_version != '3.6' and mongodb_major_version != '4.0' and mongodb_major_version != '4.2')
-    - ansible_distribution_release == 'stretch'
-
-- name: Fail when used wrong mongodb_version variable with Ubuntu 18.04
-  fail:
-    msg: "mongodb_version variable should be '4.0' or '4.2', or else mongodb_package should be 'mongodb' for Ubuntu 18.04"
-  when:
-    - mongodb_package == 'mongodb-org'
-    - (mongodb_major_version != '4.0' and mongodb_major_version != '4.2')
-    - ansible_distribution_release == "bionic"
-
 - name: Fail when used wrong mongodb_version variable
   fail:
     msg: "mongodb_version variable should be '3.6' or '4.0' or '4.2'"
