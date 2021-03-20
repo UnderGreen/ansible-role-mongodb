@@ -1,4 +1,4 @@
-name: CentOS
+name: Amazon Linux 2
 
 on:
   push:
@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        molecule_distro: 
-          - centos7
+        molecule_distro:
+          - amazonlinux2
         mongodb_version:
           - '4.2'
           - '4.0'

@@ -38,6 +38,9 @@ platforms:
       - mongo_replicas
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      pipelining: true
   log: true
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-../default/converge.yml}

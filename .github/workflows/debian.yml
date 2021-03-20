@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        molecule_distro: 
+        molecule_distro:
           - debian9
           - debian10
         mongodb_version:
@@ -37,3 +37,5 @@ jobs:
         run: |
           molecule test
           AUTH_STATE=enabled molecule test
+          molecule test -s cluster
+          AUTH_STATE=enabled molecule test -s cluster
