@@ -21,7 +21,7 @@
 
 - name: Install MongoDB package
   yum:
-    name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}={{ mongodb_version }}{% endif %}"
+    name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}-{{ mongodb_version }}{% endif %}"
     state: "{{ mongodb_package_state }}"
     lock_timeout: "{{ yum_lock_timeout }}"
 
