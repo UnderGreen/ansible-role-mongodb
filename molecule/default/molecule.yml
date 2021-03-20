@@ -7,7 +7,7 @@ lint: |
   set -e
   yamllint .
   ansible-lint .
-  #flake8
+  flake8 library --ignore=E501,E402
 platforms:
   - name: mongo1
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"

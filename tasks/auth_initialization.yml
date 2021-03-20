@@ -20,14 +20,14 @@
     password: "{{ item.password }}"
     update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_port: "{{ mongodb_net_port }}"
+    login_port: "{{ mongodb_net_port | int }}"
   with_items:
     - {
       name: "{{ mongodb_user_admin_name }}",
       password: "{{ mongodb_user_admin_password }}",
       roles: "userAdminAnyDatabase"
       }
-  no_log: true
+  no_log: false
 
 - name: create administrative user "{{ mongodb_root_admin_name }}"
   mongodb_user:
@@ -36,14 +36,14 @@
     password: "{{ item.password }}"
     update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_port: "{{ mongodb_net_port }}"
+    login_port: "{{ mongodb_net_port | int }}"
   with_items:
     - {
       name: "{{ mongodb_root_admin_name }}",
       password: "{{ mongodb_root_admin_password }}",
       roles: "root"
       }
-  no_log: true
+  no_log: false
 
 - name: create backup user "{{ mongodb_root_backup_name }}"
   mongodb_user:
@@ -52,14 +52,14 @@
     password: "{{ item.password }}"
     update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_port: "{{ mongodb_net_port }}"
+    login_port: "{{ mongodb_net_port | int }}"
   with_items:
     - {
       name: "{{ mongodb_root_backup_name }}",
       password: "{{ mongodb_root_backup_password }}",
       roles: "backup,clusterMonitor"
       }
-  no_log: true
+  no_log: false
 
 - name: Move back mongod.conf
   template:
