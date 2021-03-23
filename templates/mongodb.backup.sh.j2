@@ -12,6 +12,7 @@ BACKUP_STORAGE_DAYS={{ mongodb_backup_store_days }}
 MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
 MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
 MONGO_BACKUP_COMPRESSION={{ mongodb_backup_compression }}
+BACKUP_CURRENT_DATE=$(date +\%Y\%m\%d)
 BACKUP_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y%m%d")
 
 
@@ -36,9 +37,9 @@ if grep -q '"ismaster" : true' /tmp/validate; then
     print "INFO" "Starting MongoDump"
     if [ $MONGO_BACKUP_COMPRESSION = true ]
     then
-        mongodump --gzip --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$(date +\%Y\%m\%d)
+        mongodump --gzip --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$BACKUP_CURRENT_DATE
     else
-        mongodump --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$(date +\%Y\%m\%d)
+        mongodump --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$BACKUP_CURRENT_DATE
     fi
     if [ $? == 0 ]
     then
@@ -74,7 +75,7 @@ if grep -q '"ismaster" : true' /tmp/validate; then
         
         print "INFO" "Copying new backup to Storage"
         mkdir -p $BACKUP_STORAGE_DIR
-        cp -R $BACKUP_LOCAL_DIR/mongodump_$(date +\%Y\%m\%d) $BACKUP_STORAGE_DIR
+        cp -R $BACKUP_LOCAL_DIR/mongodump_$BACKUP_CURRENT_DATE $BACKUP_STORAGE_DIR
         
     else      
         print "INFO" "Backup copy storage was ignored"
