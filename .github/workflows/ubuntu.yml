@@ -32,22 +32,22 @@ jobs:
       - name: Prepare tests
         run: pip install -r requirements.txt
       - name: Run default test
-        run: molecule test
+        run: export "PATH=/home/runner/.local/bin:$PATH" && molecule test
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
       - name: Run default test with enabled authentication
-        run: AUTH_STATE=enabled molecule test
+        run: export "PATH=/home/runner/.local/bin:$PATH" && AUTH_STATE=enabled molecule test
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
       - name: Run cluster test
-        run: molecule test -s cluster
+        run: export "PATH=/home/runner/.local/bin:$PATH" && molecule test -s cluster
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
       - name: Run cluster test with enabled authentication
-        run: AUTH_STATE=enabled molecule test -s cluster
+        run: export "PATH=/home/runner/.local/bin:$PATH" && AUTH_STATE=enabled molecule test -s cluster
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
