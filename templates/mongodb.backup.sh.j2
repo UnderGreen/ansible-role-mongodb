@@ -11,7 +11,7 @@ BACKUP_STORAGE_DIR="{{ mongodb_backup_store_dir }}"
 BACKUP_STORAGE_DAYS={{ mongodb_backup_store_days }}
 MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
 MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
-MONGO_BACKUP_COMPRESSION={{ mongodb_backup_compression }}
+MONGO_BACKUP_PARAMETERS="{{ mongodb_backup_parameters }}"
 BACKUP_CURRENT_DATE=$(date +\%Y\%m\%d)
 BACKUP_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y%m%d")
 
@@ -35,12 +35,7 @@ if grep -q '"ismaster" : true' /tmp/validate; then
     print "INFO" "Primary node detected"
     
     print "INFO" "Starting MongoDump"
-    if [ $MONGO_BACKUP_COMPRESSION = true ]
-    then
-        mongodump --gzip --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$BACKUP_CURRENT_DATE
-    else
-        mongodump --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$BACKUP_CURRENT_DATE
-    fi
+    mongodump $MONGO_BACKUP_PARAMETERS --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$BACKUP_CURRENT_DATE
     if [ $? == 0 ]
     then
           print "INFO" "Mongodump ended successfully"
