@@ -190,7 +190,7 @@ mongodb_backup_log_path: "{{ mongodb_systemlog_path|dirname }}/backup_mongod.log
 mongodb_backup_local_dir: "{{ mongodb_storage_dbpath }}/backup"
 mongodb_backup_store_dir: "{{ mongodb_backup_local_dir }}/storage"
 mongodb_backup_store_days: 0   # if the value is 0, the script will not copy the backups to the storage directory, and will keep only one local copy.
-mongodb_backup_parameters: "--gzip" # other example: "--gzip --numParallelCollections=7"
+mongodb_backup_parameters: "--gzip --forceTableScan" # other example: "--oplog --gzip --forceTableScan --numParallelCollections=7"
 mongodb_backup_cron_time:
   hour: 3
   minute: 0
