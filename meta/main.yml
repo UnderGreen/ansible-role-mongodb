@@ -17,15 +17,15 @@ galaxy_info:
         - bionic
     - name: Debian
       versions:
-        - jessie
         - stretch
+        - buster
     - name: EL
       versions:
-        - 6
         - 7
+        - 8
     - name: Amazon
       versions:
-        - Candidate
+        - Amazon Linux 2
   galaxy_tags:
     - database
     - nosql
