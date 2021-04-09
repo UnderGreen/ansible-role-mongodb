@@ -61,7 +61,7 @@ if grep -q '"ismaster" : true' /tmp/validate; then
               FOLDER_BACKUP_DATE=$(echo "${FOLDER}" | awk -F_ '{print $NF}')
               if [ "${BACKUP_DELETE_DATE}" -gt "${FOLDER_BACKUP_DATE}" ]; then
                   print "INFO" "Deleting folder ${FOLDER}"
-                  rm -rf "${FOLDER}";
+                  rm -rf "${BACKUP_STORAGE_DIR}/${FOLDER}";
               fi
           done
         else
