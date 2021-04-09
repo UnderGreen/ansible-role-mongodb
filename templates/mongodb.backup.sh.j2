@@ -24,7 +24,7 @@ function print {
 print "INFO" "Backup is starting..."
 
 print "INFO" "Deleting old local backups"
-find $BACKUP_STORAGE_DIR -type d -name "mongodump_*" -print -exec rm -rf {} +
+find $BACKUP_LOCAL_DIR -type d -name "mongodump_*" -print -exec rm -rf {} +
 print "INFO" "Backups deleted"
 
 print "INFO" "Verifying if primary or slave"
