@@ -2,7 +2,7 @@
 
 - name: Establish some role-related facts
   set_fact:
-    mongodb_major_version: "{{ mongodb_version[0:3] }}"
+    mongodb_major_version: "{{ mongodb_version[0:3] | string  }}"
 
 - name: Install EPEL release repository
   package:
