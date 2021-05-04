@@ -12,3 +12,5 @@ mongodb_repository_gpgkey:
   "4.0": "https://www.mongodb.org/static/pgp/server-4.0.asc"
   "4.2": "https://www.mongodb.org/static/pgp/server-4.2.asc"
   "4.4": "https://www.mongodb.org/static/pgp/server-4.4.asc"
+
+mongodb_percona_repository: "https://repo.percona.com/apt/percona-release_latest.{{ ansible_distribution_release }}_all.deb"

@@ -2,6 +2,7 @@
 - name: Establish some role-related facts
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
+    mongodb_percona_release: "{{ mongodb_version | replace('.', '') }}"
   tags: [ mongodb, mongodb-install ]
 
 - name: Disable transparent huge pages on systemd systems
@@ -85,6 +86,19 @@
   loop_control:
     loop_var: version_item
   when: mongodb_package == 'mongodb-org'
+  tags: [mongodb-install]
+
+- name: Add Percona MongoDB APT repository
+  apt:
+    deb: "{{ mongodb_percona_repository }}"
+    state: present
+    update_cache: yes
+  when: mongodb_package == 'percona-server-mongodb'
+  tags: [mongodb-install]
+
+- name: Enable Percona Release
+  shell: percona-release enable psmdb-{{ mongodb_percona_release }} release
+  when: mongodb_package == 'percona-server-mongodb'
   tags: [mongodb-install]
 
 - name: Install MongoDB package

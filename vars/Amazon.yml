@@ -14,4 +14,6 @@ mongodb_repository_gpgkey:
 
 mongodb_pidfile_path: "{{ '/var/run/mongodb/mongod.pid' if ('mongodb-org' in mongodb_package) else '' }}"
 
+mongodb_percona_repository: "https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
+
 yum_lock_timeout: 180
