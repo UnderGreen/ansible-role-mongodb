@@ -33,7 +33,8 @@ MongoDB support matrix:
 # You can use this variable to control installation source of MongoDB
 # 'mongodb' will be installed from Debian/Ubuntu repos
 # 'mongodb-org' will be installed from MongoDB official repos
-mongodb_package: mongodb-org
+# 'percona-server-mongodb' will be installed Mongodb from percona
+mongodb_package: percona-server-mongodb
 
 # You can control installed version via this param.
 # Should be '3.4', '3.6', '4.0', '4.2' or '4.4'. This role doesn't support MongoDB < 3.4.

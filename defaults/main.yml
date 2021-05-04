@@ -1,6 +1,6 @@
 ---
 
-mongodb_package: mongodb-org
+mongodb_package: percona-server-mongodb          # percona-server-mongodb | mongodb-org
 mongodb_package_state: present
 mongodb_version: "4.4"
 
