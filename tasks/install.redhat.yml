@@ -121,4 +121,15 @@
     name: mtools
     executable: "{{ 'pip3' if (ansible_distribution_version >= '8') else 'pip' }}"
     state: "latest"
+  when: mongodb_tools
+  tags: [mongodb-install]
+
+- name: Install Mongo tools for high-performance from Percona
+  yum:
+    name: "percona-server-mongodb-tools"
+    state: "{{ mongodb_package_state }}"
+    lock_timeout: "{{ yum_lock_timeout }}"
+  when: 
+    - mongodb_package == 'percona-server-mongodb'
+    - mongodb_tools
   tags: [mongodb-install]

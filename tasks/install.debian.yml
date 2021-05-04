@@ -184,4 +184,15 @@
     name: mtools
     executable: "{{ 'pip3' if (ansible_distribution_release == 'focal') else 'pip' }}"
     state: "latest"
+  when: mongodb_tools
+  tags: [mongodb-install]
+
+- name: Install MongoDB package
+  apt:
+    name: "percona-server-mongodb-tools"
+    state: "{{ mongodb_package_state }}"
+    update_cache: true
+  when: 
+    - mongodb_package == 'percona-server-mongodb'
+    - mongodb_tools
   tags: [mongodb-install]

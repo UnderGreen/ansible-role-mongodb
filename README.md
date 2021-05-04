@@ -41,6 +41,7 @@ mongodb_package: percona-server-mongodb
 # I will recommend you to use latest version of MongoDB.
 mongodb_version: "4.4"
 
+mongodb_tools: true # Install mtools, and percona-server-mongodb-tools if use Percona package
 mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manager
 mongodb_pymongo_pip_version: 3.10.1 # Choose PyMong version to install from pip. If not set use latest
 mongodb_user_update_password: "on_create" # MongoDB user password update default policy
