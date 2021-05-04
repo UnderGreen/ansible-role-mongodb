@@ -119,9 +119,8 @@ mongodb_logrotate: false # Rotate mongodb logs.
 mongodb_logrotate_options: |
   {{ mongodb_systemlog_path }} {
     daily
-    dateext
-    dateformat -%Y%m%d
     rotate 7
+    maxsize 1G
     missingok
     compress
     delaycompress
@@ -197,8 +196,9 @@ mongodb_backup_cron_time:
 mongodb_backup_logrotate: |
   {{ mongodb_backup_log_path }} {
     size 100k
+    dateext
     dateformat -%Y%m%d
-    rotate 10
+    rotate 7
     create 644
   }
 ```
