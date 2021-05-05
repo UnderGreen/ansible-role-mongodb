@@ -86,7 +86,7 @@
     name: python-pymongo
     state: present
     lock_timeout: "{{ yum_lock_timeout }}"
-  when: not mongodb_pymongo_from_pip
+  when: not mongodb_pymongo_from_pip | bool
   tags: [mongodb-install]
 
 - name: Install Python2 PIP
@@ -121,7 +121,7 @@
     name: mtools
     executable: "{{ 'pip3' if (ansible_distribution_version >= '8') else 'pip' }}"
     state: "latest"
-  when: mongodb_tools
+  when: mongodb_tools | bool
   tags: [mongodb-install]
 
 - name: Install Mongo tools for high-performance from Percona
@@ -131,5 +131,5 @@
     lock_timeout: "{{ yum_lock_timeout }}"
   when: 
     - mongodb_package == 'percona-server-mongodb'
-    - mongodb_tools
+    - mongodb_tools | bool
   tags: [mongodb-install]

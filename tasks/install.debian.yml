@@ -144,7 +144,7 @@
 - name: Install PyMongo package
   apt:
     name: python-pymongo
-  when: not mongodb_pymongo_from_pip
+  when: not mongodb_pymongo_from_pip | bool
   tags: [mongodb-install]
 
 - name: Install Python2 PIP
@@ -184,7 +184,7 @@
     name: mtools
     executable: "{{ 'pip3' if (ansible_distribution_release == 'focal') else 'pip' }}"
     state: "latest"
-  when: mongodb_tools
+  when: mongodb_tools | bool
   tags: [mongodb-install]
 
 - name: Install MongoDB package
@@ -194,5 +194,5 @@
     update_cache: true
   when: 
     - mongodb_package == 'percona-server-mongodb'
-    - mongodb_tools
+    - mongodb_tools | bool
   tags: [mongodb-install]

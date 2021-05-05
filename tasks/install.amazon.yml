@@ -79,7 +79,7 @@
     name: python-pymongo
     state: present
     lock_timeout: "{{ yum_lock_timeout }}"
-  when: not mongodb_pymongo_from_pip
+  when: not mongodb_pymongo_from_pip | bool
   tags: [mongodb-install]
 
 - name: Install PIP
@@ -88,7 +88,7 @@
       - python-devel
       - python-pip
     lock_timeout: "{{ yum_lock_timeout }}"
-  when: mongodb_pymongo_from_pip
+  when: mongodb_pymongo_from_pip | bool
   tags: [mongodb-install]
 
 - name: Install PyMongo from PIP
@@ -96,14 +96,14 @@
     name: pymongo
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
-  when: mongodb_pymongo_from_pip
+  when: mongodb_pymongo_from_pip | bool
   tags: [mongodb-install]
 
 - name: Install mtools from PIP
   pip:
     name: mtools
     state: "latest"
-  when: mongodb_tools
+  when: mongodb_tools | bool
   tags: [mongodb-install]
 
 - name: Install Mongo tools for high-performance from Percona
@@ -113,5 +113,5 @@
     lock_timeout: "{{ yum_lock_timeout }}"
   when: 
     - mongodb_package == 'percona-server-mongodb'
-    - mongodb_tools
+    - mongodb_tools | bool
   tags: [mongodb-install]
