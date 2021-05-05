@@ -104,6 +104,13 @@ systemLog:
   {% endfor -%}
   {%- endif %}
 
+{% if mongodb_config['auditLog'] is defined -%}
+auditLog:
+{%- for item in mongodb_config['auditLog'] -%}
+  {{ item }}
+  {% endfor %}
+{% endif %}
+
 operationProfiling:
   slowOpThresholdMs: {{ mongodb_operation_profiling_slow_op_threshold_ms }}
   mode: {{ mongodb_operation_profiling_mode }}
