@@ -93,13 +93,20 @@
     deb: "{{ mongodb_percona_repository }}"
     state: present
     update_cache: yes
-  when: mongodb_package == 'percona-server-mongodb'
-  tags: [mongodb-install]
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install]
 
 - name: Enable Percona Release
   shell: percona-release enable psmdb-{{ mongodb_percona_release }} release
-  when: mongodb_package == 'percona-server-mongodb'
-  tags: [mongodb-install]
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install]
+
+- name: Enable PBM Release
+  shell: percona-release enable pbm release
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install]
 
 - name: Install MongoDB package
   apt:
@@ -196,3 +203,13 @@
     - mongodb_package == 'percona-server-mongodb'
     - mongodb_tools | bool
   tags: [mongodb-install]
+
+- name: "Install Percona Backup"
+  apt:
+    name: percona-backup-mongodb
+    state: present
+    update_cache: true
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]

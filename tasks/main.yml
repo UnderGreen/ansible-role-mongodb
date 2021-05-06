@@ -169,7 +169,14 @@
   when: mongodb_mms_api_key | length > 0
   tags: [mongodb]
 
-- name: Include backup.yml
-  include: backup.yml
+- name: Add task backup/pbm_main.yml to configure PBM
+  include: backup/pbm_main.yml
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb, backup ]
+
+- name: Schedule cron backup script
+  include: backup/backup_scheduler.yml
   when: mongodb_backup|bool
   tags: [ mongodb, backup ]

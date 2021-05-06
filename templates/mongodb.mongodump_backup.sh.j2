@@ -6,13 +6,13 @@ PATH=$PATH:/sbin:/bin:/usr/sbin:/usr/bin
 
 # MongoDB Script Backup Variables
 BACKUP_LOG_PATH="{{ mongodb_backup_log_path }}"
-BACKUP_LOCAL_DIR="{{ mongodb_backup_local_dir }}"
-BACKUP_STORAGE_DIR="{{ mongodb_backup_store_dir }}"
+BACKUP_LOCAL_PATH="{{ mongodb_backup_path }}"
+BACKUP_STORAGE_PATH="{{ mongodb_backup_store_path }}"
 BACKUP_STORAGE_DAYS={{ mongodb_backup_store_days }}
 MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
 MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
 MONGO_BACKUP_PARAMETERS="{{ mongodb_backup_parameters }}"
-BACKUP_CURRENT_DATE=$(date +\%Y\%m\%d)
+BACKUP_CURRENT_DATE=$(date +%Y%m%d)
 BACKUP_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y%m%d")
 
 
@@ -24,7 +24,7 @@ function print {
 print "INFO" "Backup is starting..."
 
 print "INFO" "Deleting old local backups"
-find $BACKUP_LOCAL_DIR -type d -name "mongodump_*" -print -exec rm -rf {} +
+find $BACKUP_LOCAL_PATH -type d -name "mongodump_*" -print -exec rm -rf {} +
 print "INFO" "Backups deleted"
 
 print "INFO" "Verifying if primary or slave"
@@ -35,10 +35,10 @@ if grep -q '"ismaster" : true' /tmp/validate; then
     print "INFO" "Primary node detected"
     
     print "INFO" "Starting MongoDump"
-    mongodump $MONGO_BACKUP_PARAMETERS --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_DIR/mongodump_$BACKUP_CURRENT_DATE
+    mongodump $MONGO_BACKUP_PARAMETERS --authenticationDatabase admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --out $BACKUP_LOCAL_PATH/mongodump_$BACKUP_CURRENT_DATE
     if [ $? == 0 ]
     then
-          print "INFO" "Mongodump ended successfully"
+          print "INFO" "Mongodump finished successfully"
     else
           print "ERRO" "Failed! An error has been found while executing MongoDump!!"
           exit 1
@@ -51,17 +51,17 @@ if grep -q '"ismaster" : true' /tmp/validate; then
         print "INFO" "Deleting backup images from Storage"
         
         # Checks number of backups
-        BACKUP_NB=$(find $BACKUP_STORAGE_DIR -type d -name "mongodump_*" | wc -l)
+        BACKUP_NB=$(find $BACKUP_STORAGE_PATH -type d -name "mongodump_*" | wc -l)
 
         # Delete backups only if the number of existing backups is greater than the desired number of days
         if [[ $BACKUP_NB -gt ${BACKUP_STORAGE_DAYS} ]]
         then
-          find "$BACKUP_STORAGE_DIR" -type d -name "mongodump_*" -printf "%P\n" |
+          find "$BACKUP_STORAGE_PATH" -type d -name "mongodump_*" -printf "%P\n" |
           while IFS= read -r FOLDER; do
               FOLDER_BACKUP_DATE=$(echo "${FOLDER}" | awk -F_ '{print $NF}')
               if [ "${BACKUP_DELETE_DATE}" -gt "${FOLDER_BACKUP_DATE}" ]; then
                   print "INFO" "Deleting folder ${FOLDER}"
-                  rm -rf "${BACKUP_STORAGE_DIR}/${FOLDER}";
+                  rm -rf "${BACKUP_STORAGE_PATH}/${FOLDER}";
               fi
           done
         else
@@ -69,8 +69,8 @@ if grep -q '"ismaster" : true' /tmp/validate; then
         fi
         
         print "INFO" "Copying new backup to Storage"
-        mkdir -p $BACKUP_STORAGE_DIR
-        cp -R $BACKUP_LOCAL_DIR/mongodump_$BACKUP_CURRENT_DATE $BACKUP_STORAGE_DIR
+        mkdir -p $BACKUP_STORAGE_PATH
+        cp -R $BACKUP_LOCAL_PATH/mongodump_$BACKUP_CURRENT_DATE $BACKUP_STORAGE_PATH
         
     else      
         print "INFO" "Backup copy storage was ignored"

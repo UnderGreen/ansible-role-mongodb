@@ -51,13 +51,20 @@
   yum:
     name: "{{ mongodb_percona_repository }}"
     state: present
-  when: mongodb_package == 'percona-server-mongodb'
-  tags: [mongodb-install]
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install]
 
 - name: Enable Percona Release
   shell: percona-release enable psmdb-{{ mongodb_percona_release }} release
-  when: mongodb_package == 'percona-server-mongodb'
-  tags: [mongodb-install]
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install ]
+
+- name: Enable PBM release
+  command: "percona-release enable pbm release"
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]
 
 - name: Install MongoDB package
   yum:
@@ -115,3 +122,12 @@
     - mongodb_package == 'percona-server-mongodb'
     - mongodb_tools | bool
   tags: [mongodb-install]
+
+- name: "Install Percona Backup"
+  yum:
+    name: percona-backup-mongodb
+    state: present
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]

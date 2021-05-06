@@ -1,13 +1,23 @@
 ---
-- name: Add backup script file
+- name: Add backup script file using mongodump
   template:
-    src: mongodb.backup.sh.j2
+    src: mongodb.mongodump_backup.sh.j2
     dest: "{{ mongodb_backup_script_path }}"
     backup: true
     owner: root
     group: root
     mode: 0700
-  when: mongodb_backup_state == "present"
+  when: mongodb_backup_engine == 'mongodump'
+
+- name: Add backup script file using pbm
+  template:
+    src: mongodb.pbpm_backup.sh.j2
+    dest: "{{ mongodb_backup_script_path }}"
+    backup: true
+    owner: root
+    group: root
+    mode: 0700
+  when: mongodb_backup_engine == 'pbm'
 
 - name: Create Backup Schedule
   cron:

@@ -1,0 +1,84 @@
+#!/bin/bash
+SHELL=/bin/bash
+PATH=$PATH:/sbin:/bin:/usr/sbin:/usr/bin
+
+# {{ ansible_managed }}
+# Script to manage MongoDB backups
+
+# MongoDB Script Backup Variables
+BACKUP_LOG_PATH="{{ mongodb_backup_log_path }}"
+BACKUP_PHYSICAL_PATH="{{ mongodb_backup_store_path }}"
+BACKUP_STORAGE_DAYS={{ mongodb_backup_store_days }}
+MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
+MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
+BACKUP_CURRENT_DATE=$(date +%Y%m%d)
+BACKUP_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y%m%d")
+BACKUP_PBM_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y-%m-%d")
+
+function print {
+    mkdir -p "$(dirname "${BACKUP_LOG_PATH}")"
+    echo `date "+%F %T "` $1 $2 >> "${BACKUP_LOG_PATH}"
+}
+
+print "INFO" "Backup is starting..."
+
+print "INFO" "Verifying if primary or slave"
+mongo -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --eval "db.runCommand( { isMaster: 1 } );" > /tmp/validate
+
+if grep -q '"ismaster" : true' /tmp/validate; then
+
+    print "INFO" "Primary node detected"
+    print "INFO" "Starting Backup"
+    
+    # Backup: LOGICAL
+    print "INFO" "Deleting old Logical backups"
+    pbm delete-backup --older-than="${BACKUP_PBM_DELETE_DATE}" --force
+
+    print "INFO" "Starting Full Logical Backups"
+    pbm backup
+    if [ $? != 0 ]; then 
+        print "ERROR" "Error in backup logical"
+    else
+        print "INFO" "Script finished"
+    fi
+    
+    # Backup: PHYSICAL
+    print "INFO" "Deleting Physical Backups"
+
+    # Checks number of backups
+    BACKUP_NB=$(find $BACKUP_PHYSICAL_PATH -type d -name "backup_*" | wc -l)
+
+    # Delete backups only if the number of existing backups is greater than the desired number of days
+    if [[ $BACKUP_NB -gt ${BACKUP_STORAGE_DAYS} ]]
+    then
+      find "$BACKUP_PHYSICAL_PATH" -type d -name "backup_*" -printf "%P\n" |
+      while IFS= read -r FOLDER; do
+          FOLDER_BACKUP_DATE=$(echo "${FOLDER}" | awk -F_ '{print $NF}')
+          if [ "${BACKUP_DELETE_DATE}" -gt "${FOLDER_BACKUP_DATE}" ]; then
+              print "INFO" "Deleting backup ${FOLDER}"
+              rm -rf "${BACKUP_PHYSICAL_PATH}/${FOLDER}";
+          fi
+      done
+      print "INFO" "Physical Backups deleted!"  
+    else
+      echo "INFO" "No backup to remove!"
+    fi
+
+    print "INFO" "Starting Full Physical Backup"
+    mongo admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --eval "db.runCommand({ ele : 1, archive: '${BACKUP_PHYSICAL_PATH}/backup_${BACKUP_CURRENT_DATE}.tar' });"
+    if [ $? != 0 ]; then 
+        print "ERROR" "Error in Physical Backup"
+        exit 1;
+    else
+        print "INFO" "Physical Backup finished successfully"
+    fi
+elif grep -q "Connection refused" /tmp/validate; then
+    print "ERROR" "Connection refused, ending backup script..."
+    exit 1
+elif grep -q "Authentication failed" /tmp/validate; then
+    print "ERROR" "Authentication failed, ending backup script..."
+    exit 1
+else
+    print "WARNING" "This is not the primary node, ending backup script..."
+    exit 1
+fi

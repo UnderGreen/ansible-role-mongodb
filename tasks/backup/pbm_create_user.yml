@@ -1,0 +1,41 @@
+---
+- name: Check if Role pbmAnyAction already exists
+  command: >
+    mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_user_admin_name }} \
+          -p {{ mongodb_user_admin_password }} --port {{ mongodb_net_port }} --eval 'db.getSiblingDB("admin").getRole( "pbmAnyAction" )' admin
+  register: mongodb_role_pbm_check
+  changed_when: false
+  check_mode: no
+  ignore_errors: true
+  no_log: true
+
+- name: Create MongoDB Role pbmAnyAction
+  command: >
+    mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_user_admin_name }} \
+          -p {{ mongodb_user_admin_password }} --port {{ mongodb_net_port }} \
+          --eval 'db.getSiblingDB("admin").createRole({ role:"pbmAnyAction",privileges:[{ resource:{ "anyResource":true }, actions:[ "anyAction" ] }], roles:[] })'    
+  check_mode: no
+  no_log: true
+  when: mongodb_role_pbm_check.rc != 0
+
+- name: "Update MongoDb Backup User {{ mongodb_backup_user_name }} to PBM" 
+  mongodb_user:
+    database: admin
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    update_password: "{{ mongodb_user_update_password }}"
+    roles: "{{ item.roles }}"
+    login_port: "{{ mongodb_net_port }}"
+  with_items:
+    - {
+      name: "{{ mongodb_backup_user_name }}",
+      password: "{{ mongodb_backup_user_password }}",
+      roles:
+        - { db: "admin", role: "readWrite", "collection": "" }
+        - { db: "admin", role: "backup" }
+        - { db: "admin", role: "clusterMonitor" }
+        - { db: "admin", role: "restore" }
+        - { db: "admin", role: "pbmAnyAction" }
+      }
+  no_log: true
+

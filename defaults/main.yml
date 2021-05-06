@@ -132,15 +132,15 @@ mongodb_set_parameters:
 # custom config options
 mongodb_config:
 
-# Daily MongoDB Backup script schedule (do not use "/" in the end of directories)
+# MongoDB Backup
 mongodb_backup: false
+mongodb_backup_engine: pbm  # pbm | mongodump
 mongodb_backup_state: present
 mongodb_backup_script_path: "/etc/mongodb-backup.sh"
 mongodb_backup_log_path: "{{ mongodb_systemlog_path|dirname }}/backup_mongod.log"
-mongodb_backup_local_dir: "{{ mongodb_storage_dbpath }}/backup"
-mongodb_backup_store_dir: "{{ mongodb_backup_local_dir }}/storage"
-mongodb_backup_store_days: 0   # if the value is 0, the script will not copy the backups to the storage directory, and will keep only one local copy.
-mongodb_backup_parameters: "--gzip --forceTableScan"
+mongodb_backup_path: "{{ mongodb_storage_dbpath }}/backup"     # Local path to mongodump, or PBM path to backups  # Do not use "/" in the end of directories
+mongodb_backup_store_path: "{{ mongodb_backup_path }}/storage" # Path to storage mongodump backup, or path to PBM Hot Backups when use PBM  # Do not use "/" in the end of directories
+mongodb_backup_store_days: 0   # if the value is 0, the script will not copy the backups to the storage directory, and will keep only one local copy (mongodump).
 mongodb_backup_cron_time:
   hour: 3
   minute: 0
@@ -152,3 +152,9 @@ mongodb_backup_logrotate: |
     rotate 7
     create 644
   }
+
+# Mongodump configs
+mongodb_backup_parameters: "--gzip --forceTableScan"
+
+# PBM configs
+mongodb_backup_pbm_pitr_enable: true
