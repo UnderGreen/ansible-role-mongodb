@@ -16,7 +16,7 @@
           --eval 'db.getSiblingDB("admin").createRole({ role:"pbmAnyAction",privileges:[{ resource:{ "anyResource":true }, actions:[ "anyAction" ] }], roles:[] })'    
   check_mode: no
   no_log: true
-  when: mongodb_role_pbm_check.rc != 0
+  when: mongodb_role_pbm_check.stdout == "null"
 
 - name: "Create Backup User {{ mongodb_backup_user_name }} to PBM" 
   mongodb_user:
