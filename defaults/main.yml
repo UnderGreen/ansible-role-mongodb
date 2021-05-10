@@ -25,7 +25,7 @@ mongodb_use_numa: true
 mongodb_user: "{{ 'mongod' if ('RedHat' == ansible_os_family) else 'mongodb' }}"
 mongodb_uid:
 mongodb_gid:
-mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
+mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' or 'percona-server-mongodb' in mongodb_package) else 'mongodb' }}"
 
 ## net Options
 mongodb_net_bindip: 127.0.0.1                    # Comma separated list of ip addresses to listen on
@@ -88,7 +88,7 @@ mongodb_logrotate_options: |
     create 640 {{ mongodb_user }} {{ mongodb_user }}
     sharedscripts
     postrotate
-      /bin/kill -SIGUSR1 `cat /run/mongodb/mongod.pid 2>/dev/null` >/dev/null 2>&1
+      /bin/kill -SIGUSR1 `cat {{ '/run/mongodb/mongod.pid' if ('mongodb-org' in mongodb_package) else '/run/mongod.pid' }} 2>/dev/null` >/dev/null 2>&1
     endscript
   }
 

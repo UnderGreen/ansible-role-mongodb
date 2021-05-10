@@ -13,7 +13,7 @@ mongodb_repository_gpgkey:
   "4.2": "https://www.mongodb.org/static/pgp/server-4.2.asc"
   "4.4": "https://www.mongodb.org/static/pgp/server-4.4.asc"
 
-mongodb_pidfile_path: "{{ '/var/run/mongodb/mongod.pid' if ('mongodb-org' in mongodb_package) else '' }}"
+mongodb_pidfile_path: "{{ '/var/run/mongodb/mongod.pid' if ('mongodb-org' in mongodb_package) else '/var/run/mongod.pid' }}"
 
 mongodb_percona_repository: "https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
