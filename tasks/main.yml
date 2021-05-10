@@ -169,11 +169,22 @@
   when: mongodb_mms_api_key | length > 0
   tags: [mongodb]
 
-- name: Add task backup/pbm_main.yml to configure PBM
-  include: backup/pbm_main.yml
+- name: Add task backup/pbm_configure.yml
+  include: backup/pbm_configure.yml
   when: 
     - mongodb_backup|bool
     - mongodb_backup_engine == 'pbm'
+    - mongodb_backup_state == "present"
+    - mongodb_replication_replset | length > 0
+  tags: [ mongodb, backup ]
+
+- name: Add task backup/pbm_remove.yml
+  include: backup/pbm_remove.yml
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+    - mongodb_backup_state == "absent"
+    - mongodb_replication_replset | length > 0
   tags: [ mongodb, backup ]
 
 - name: Schedule cron backup script
