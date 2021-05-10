@@ -11,6 +11,7 @@ BACKUP_PHYSICAL_PATH="{{ mongodb_backup_path_hot_storage  }}"
 BACKUP_STORAGE_DAYS={{ mongodb_backup_store_days }}
 MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
 MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
+MONGO_BACKUP_PARAMETERS="{{ mongodb_backup_parameters }}"
 BACKUP_CURRENT_DATE=$(date +%Y%m%d)
 BACKUP_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y%m%d")
 BACKUP_PBM_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y-%m-%d")
@@ -31,15 +32,16 @@ if grep -q '"ismaster" : true' /tmp/validate; then
     print "INFO" "Starting Backup"
     
     # Backup: LOGICAL
-    print "INFO" "Deleting old Logical backups"
-    pbm delete-backup --older-than="${BACKUP_PBM_DELETE_DATE}" --force
+    print "INFO" "Deleting Logical backups"
+    pbm delete-backup $MONGO_BACKUP_PARAMETERS --older-than="${BACKUP_PBM_DELETE_DATE}" --force
+    print "INFO" "Logical backups deleted"
 
     print "INFO" "Starting Full Logical Backups"
-    pbm backup
+    pbm backup $MONGO_BACKUP_PARAMETERS
     if [ $? != 0 ]; then 
         print "ERROR" "Error in backup logical"
     else
-        print "INFO" "Script finished"
+        print "INFO" "Logical backup finished successfully"
     fi
     
     # Backup: PHYSICAL
@@ -59,19 +61,21 @@ if grep -q '"ismaster" : true' /tmp/validate; then
               rm -rf "${BACKUP_PHYSICAL_PATH}/${FOLDER}";
           fi
       done
-      print "INFO" "Physical Backups deleted!"  
+      print "INFO" "Physical Backups deleted"  
     else
-      echo "INFO" "No backup to remove!"
+      echo "INFO" "No Physical backup to remove"
     fi
 
     print "INFO" "Starting Full Physical Backup"
-    mongo admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --eval "db.runCommand({ ele : 1, archive: '${BACKUP_PHYSICAL_PATH}/backup_${BACKUP_CURRENT_DATE}.tar' });"
+    mongo admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --eval "db.runCommand({ createBackup: 1, archive: '${BACKUP_PHYSICAL_PATH}/backup_${BACKUP_CURRENT_DATE}.tar' });"
     if [ $? != 0 ]; then 
         print "ERROR" "Error in Physical Backup"
         exit 1;
     else
         print "INFO" "Physical Backup finished successfully"
     fi
+    print "INFO" "Script ended successfully!"
+
 elif grep -q "Connection refused" /tmp/validate; then
     print "ERROR" "Connection refused, ending backup script..."
     exit 1
