@@ -7,7 +7,7 @@ PATH=$PATH:/sbin:/bin:/usr/sbin:/usr/bin
 # MongoDB Script Backup Variables
 BACKUP_LOG_PATH="{{ mongodb_backup_log_path }}"
 BACKUP_LOCAL_PATH="{{ mongodb_backup_path }}"
-BACKUP_STORAGE_PATH="{{ mongodb_backup_store_path }}"
+BACKUP_STORAGE_PATH="{{ mongodb_backup_path_hot_storage  }}"
 BACKUP_STORAGE_DAYS={{ mongodb_backup_store_days }}
 MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
 MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
