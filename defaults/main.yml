@@ -47,7 +47,7 @@ mongodb_processmanagement_fork: "{{ 'RedHat' == ansible_os_family }}"
 # Disable or enable security. Possible values: 'disabled', 'enabled'
 mongodb_security_authorization: "enabled"
 mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
-mongodb_security_javascript_enabled: false
+mongodb_security_javascript_enabled: true
 
 ## storage Options
 mongodb_storage_dbpath: /data/mongodb            # Directory for datafiles
