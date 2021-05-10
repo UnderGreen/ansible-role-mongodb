@@ -1,4 +1,30 @@
---- 
+---
+- name: "Add user pbm to group {{ mongodb_user }}"
+  user:
+    name: pbm
+    group: "{{ mongodb_user }}"
+    state: present
+
+- name: Ensure backup directory
+  file:
+    path: "{{ mongodb_backup_path }}"
+    state: directory
+    owner: pbm
+    group: pbm
+    mode: 0775
+    recurse: true
+  when: not ansible_check_mode
+
+- name: Ensure hot backup directory
+  file:
+    path: "{{ mongodb_backup_path_hot_storage  }}"
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+    mode: 0775
+    recurse: true
+  when: not ansible_check_mode
+
 - name: Create file pbm-agent
   template:
     src: pbm-agent.j2
@@ -14,25 +40,12 @@
     mode: 0664
   when: not ansible_check_mode
 
-- name: Alter owner backup directory
-  file:
-    path: "{{ mongodb_backup_path }}"
-    owner: pbm
-    group: pbm
-  when: not ansible_check_mode
-
 - name: PBM Config PBM_MONGODB_URI
-  command: pbm config --file /mongodb/pbm_config.yml --mongodb-uri "mongodb://{{ mongodb_pbm_user_name }}:{{ mongodb_pbm_user_name_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin"
-  when: mongodb_replication_replset | length == 0
-
-- name: PBM Config PBM_MONGODB_URI to Replicaset
-  command: pbm config --file /mongodb/pbm_config.yml --mongodb-uri "mongodb://{{ mongodb_pbm_user_name }}:{{ mongodb_pbm_user_name_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin?replicaSet={{ mongodb_replication_replset }}"
-  when: mongodb_replication_replset | length > 0
+  command: pbm config --file /mongodb/pbm_config.yml --mongodb-uri "mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin?replicaSet={{ mongodb_replication_replset }}"
 
 - name: PBM Enable Point-in-Time Recovery
-  command: pbm config --set pitr.enabled=true --mongodb-uri "mongodb://{{ mongodb_pbm_user_name }}:{{ mongodb_pbm_user_name_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin?replicaSet={{ mongodb_replication_replset }}"
+  command: pbm config --set pitr.enabled=true --mongodb-uri "mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin?replicaSet={{ mongodb_replication_replset }}"
   when: 
-    - mongodb_replication_replset | length > 0
     - mongodb_backup_pbm_pitr_enable|bool
 
 - name: Start service pbm-agent
@@ -43,11 +56,4 @@
 - name: Add PBM_MONGODB_URI to bash profile
   lineinfile:
     path: /root/.bash_profile
-    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_pbm_user_name }}:{{ mongodb_pbm_user_name_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default("27017") }}/admin"'
-  when: mongodb_replication_replset | length == 0
-
-- name: Add PBM_MONGODB_URI to bash profile to Replicaset
-  lineinfile:
-    path: /root/.bash_profile
-    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_pbm_user_name }}:{{ mongodb_pbm_user_name_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default("27017") }}/admin?replicaSet={{ mongodb_replication_replset }}"'
-  when: mongodb_replication_replset | length > 0
+    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default("27017") }}/admin?replicaSet={{ mongodb_replication_replset }}"'
