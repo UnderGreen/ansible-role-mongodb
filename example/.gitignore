@@ -1,0 +1,12 @@
+tests/*.retry
+*~
+\#*\#
+.\#*
+/.python-version
+*.pyc
+crash.log
+
+# Ansible
+.fact_cache
+roles
+Pipfile.lock
