@@ -20,7 +20,7 @@ vm_swappiness:
 vm_dirty_ratio: 
 vm_dirty_background_ratio: 
 
-mongodb_use_numa: true
+mongodb_use_numa: false
 
 mongodb_user: "{{ 'mongod' if ('RedHat' == ansible_os_family) else 'mongodb' }}"
 mongodb_uid:
@@ -31,7 +31,7 @@ mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' or 'percona-server-mongodb' 
 mongodb_net_bindip: 127.0.0.1                    # Comma separated list of ip addresses to listen on
 mongodb_net_http_enabled: false                  # Enable http interface
 mongodb_net_ipv6: false                          # Enable IPv6 support (disabled by default)
-mongodb_net_maxconns: 65536                      # Max number of simultaneous connections
+mongodb_net_maxconns: 51200                      # Max number of simultaneous connections
 mongodb_net_port: 27017                          # Specify port number
 mongodb_net_ssl: disabled                        # Enable or disable ssl connections
 mongodb_net_ssl_mode: ""                         # Set the ssl mode (RequireSSL / preferSSL / AllowSSL / disabled)
@@ -45,7 +45,7 @@ mongodb_processmanagement_fork: "{{ 'RedHat' == ansible_os_family }}"
 
 ## security Options
 # Disable or enable security. Possible values: 'disabled', 'enabled'
-mongodb_security_authorization: "disabled"
+mongodb_security_authorization: "enabled"
 mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
 mongodb_security_javascript_enabled: false
 
