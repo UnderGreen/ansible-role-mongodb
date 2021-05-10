@@ -4,19 +4,17 @@
     name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
     state: absent
     lock_timeout: 180
-  tags: [pbm-remove]
 
 - name: "Remove Percona Backup MongoDB Package"
   yum:
     name: percona-backup-mongodb
     state: absent
-  tags: [pbm-remove]
   
 - name: Drop MongoDb User to PBM
   mongodb_user:
     database: admin
-    name: "{{ mongodb_pbm_user_name }}"
-    password: "{{ mongodb_pbm_user_password }}"
+    name: "{{ mongodb_backup_user_name }}"
+    password: "{{ mongodb_backup_user_password }}"
     update_password: on_create
     login_user: "{{ mongodb_root_user_name }}"
     login_password: "{{ mongodb_root_user_password }}"
@@ -33,6 +31,7 @@
       --eval 'db.getSiblingDB("admin").dropRole("pbmAnyAction")'
   ignore_errors: true
   no_log: true
+  tags: [pbm-remove]
 
 - name: Remove file pbm_config.yml
   file:
