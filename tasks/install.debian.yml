@@ -204,6 +204,16 @@
     - mongodb_tools | bool
   tags: [mongodb-install]
 
+- name: "Install libkrb5 for Kerberos authentication in Percona Server"
+  apt:
+    name: libkrb5-dev
+    state: present
+    update_cache: true
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]
+
 - name: "Install Percona Backup"
   apt:
     name: percona-backup-mongodb
