@@ -1,0 +1,13 @@
+---
+mongodb_config:
+  replication:
+    enableMajorityReadConcern: "true"
+  auditLog:
+    destination: "file"
+    format: "JSON"
+    path: "{{ mongodb_systemlog_path|dirname }}/audit.json"
+
+mongodb_set_parameters:
+  auditAuthorizationSuccess: "true"
+  authenticationMechanisms: "PLAIN,SCRAM-SHA-1,SCRAM-SHA-256"
+  ldapFollowReferrals: "true"
