@@ -2,7 +2,7 @@
 - name: Check if Role pbmAnyAction already exists
   command: >
     mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_root_user_name }} \
-          -p {{ mongodb_root_user_password }} --port {{ mongodb_net_port }} --eval 'db.getSiblingDB("admin").getRole( "pbmAnyAction" )' admin
+          -p {{ mongodb_root_user_password }} --port {{ mongodb_net_port }} --eval 'db.getSiblingDB("admin").getRole( "pbmAnyAction" )'
   register: mongodb_role_pbm_check
   changed_when: false
   check_mode: no
