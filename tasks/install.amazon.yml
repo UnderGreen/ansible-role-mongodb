@@ -47,10 +47,17 @@
   when: mongodb_package == 'mongodb-org'
   tags: [mongodb-install]
 
+- rpm_key:
+    state: present
+    key: https://downloads.percona.com/downloads/RPM-GPG-KEY-percona
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install]
+
 - name: "Add Percona YUM repository"
   yum:
     name: "{{ mongodb_percona_repository }}"
     state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
   when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
   tags: [ mongodb-install, pbm-install]
 
