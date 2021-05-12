@@ -178,8 +178,8 @@ mongodb_keyfile_content:
 mongodb_root_user_name: admin
 mongodb_root_user_password: passw0rd
 
-mongodb_backup_user_name: backup
-mongodb_backup_user_password: passw0rd
+mongodb_backup_user_name: ""
+mongodb_backup_user_password: ""
 
 # Additional administrator user, if not setted, will not be created
 mongodb_admin_user_name: 

@@ -65,7 +65,10 @@
           roles: "backup,clusterMonitor"
           }
       no_log: true
-      when: not mongodb_backup|bool or mongodb_backup_engine != 'pbm' or mongodb_backup_state != "present" or mongodb_replication_replset | length == 0
+      when: 
+        - not mongodb_backup|bool or mongodb_backup_engine != 'pbm' or mongodb_backup_state != "present" or mongodb_replication_replset | length == 0
+        - mongodb_backup_user_name | length > 0
+        - mongodb_backup_user_password | length > 0
 
     - name: Include backup/pbm_create_user.yml
       include: backup/pbm_create_user.yml
