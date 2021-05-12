@@ -75,7 +75,7 @@ mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log f
 mongodb_systemlog_verbosity: 0                                           # Default log message verbosity level for components
 
 ## Create config file in /etc/logrotate.d/
-mongodb_logrotate: false
+mongodb_logrotate: true
 mongodb_logrotate_options: |
   {{ mongodb_systemlog_path }} {
     daily

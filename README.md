@@ -117,7 +117,7 @@ mongodb_systemlog_component:
     verbosity: 5
 
 # Log rotation
-mongodb_logrotate: false # Rotate mongodb logs.
+mongodb_logrotate: true # Rotate mongodb logs.
 mongodb_logrotate_options: |
   {{ mongodb_systemlog_path }} {
     daily
