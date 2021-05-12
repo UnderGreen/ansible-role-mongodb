@@ -1,0 +1,9 @@
+---
+mongodb_package: "percona-server-mongodb"
+mongodb_net_bindip: "0.0.0.0"
+mongodb_version: "4.4"
+mongodb_login_host: "{{ hostvars[groups['master'][0]].ansible_default_ipv4.address }}"
+mongodb_replication_replset: "rs0"
+
+mongodb_storage_dbpath: "/mongodb/data"
+mongodb_systemlog_path: "/mongodb/logs/mongod.log"

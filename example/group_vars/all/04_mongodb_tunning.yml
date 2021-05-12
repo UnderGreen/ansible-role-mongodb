@@ -1,0 +1,8 @@
+---
+mongodb_disable_transparent_hugepages: true
+vm_swappiness: "1"
+vm_dirty_ratio: "15"
+vm_dirty_background_ratio: "5"
+
+mongodb_operation_profiling_mode: "slowOp"
+mongodb_operation_profiling_slow_op_threshold_ms: 10000
