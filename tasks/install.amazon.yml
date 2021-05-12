@@ -113,6 +113,15 @@
   when: mongodb_pymongo_from_pip | bool
   tags: [mongodb-install]
 
+- name: "Install cyrus-sasl-plain for ldap plain text"
+  yum:
+    name: cyrus-sasl-plain
+    state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
+  when: 
+    - mongodb_config['security'].ldap is defined
+  tags: [ mongodb-install, pbm-install ]
+
 - name: Install mtools from PIP
   pip:
     name: mtools
@@ -134,6 +143,7 @@
   yum:
     name: percona-backup-mongodb
     state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
   when: 
     - mongodb_backup|bool
     - mongodb_backup_engine == 'pbm'
