@@ -119,6 +119,7 @@ mongodb_systemlog_component:
 # Log rotation
 mongodb_logrotate: true # Rotate mongodb logs.
 mongodb_logrotate_options: |
+  {{ mongodb_config['auditLog'].path | default('') }}
   {{ mongodb_systemlog_path }} {
     daily
     rotate 7

@@ -77,6 +77,7 @@ mongodb_systemlog_verbosity: 0                                           # Defau
 ## Create config file in /etc/logrotate.d/
 mongodb_logrotate: true
 mongodb_logrotate_options: |
+  {{ mongodb_config['auditLog'].path | default(None) }}
   {{ mongodb_systemlog_path }} {
     daily
     rotate 7
