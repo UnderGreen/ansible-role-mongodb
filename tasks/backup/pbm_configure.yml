@@ -28,7 +28,7 @@
 - name: Create file pbm-agent
   template:
     src: pbm-agent.j2
-    dest: /etc/sysconfig/pbm-agent
+    dest: /etc/{{ 'default' if ansible_distribution|lower == "debian" else 'sysconfig' }}/pbm-agent
   when: not ansible_check_mode
 
 - name: Create file pbm_config.yml
