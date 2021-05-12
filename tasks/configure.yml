@@ -99,7 +99,9 @@
     proto: tcp
     setype: mongod_port_t
     state: present
-  when: mongodb_net_port not in [ "27017", "27018", "27019" ]
+  when: 
+    - mongodb_net_port not in [ "27017", "27018", "27019" ]
+    - ansible_distribution | lower == "redhat" or ansible_distribution | lower == "amazon"
 
 - name: Configure mongorc.js
   template:
