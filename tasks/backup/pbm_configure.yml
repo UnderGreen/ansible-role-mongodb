@@ -55,5 +55,5 @@
 
 - name: Add PBM_MONGODB_URI to bash profile
   lineinfile:
-    path: /root/.bash_profile
+    path: /root/.bashrc
     line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default("27017") }}/admin?replicaSet={{ mongodb_replication_replset }}"'
