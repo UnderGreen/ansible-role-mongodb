@@ -49,7 +49,7 @@
 
 - rpm_key:
     state: present
-    key: https://downloads.percona.com/downloads/RPM-GPG-KEY-percona
+    key: "{{ mongodb_percona_repository_gpgkey }}"
   when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
   tags: [ mongodb-install, pbm-install]
 
