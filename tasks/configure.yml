@@ -72,6 +72,17 @@
         and logfile_stat is defined
         and not logfile_stat.stat.exists )
 
+- name: Ensure audit log directory
+  file:
+    path: "{{ mongodb_config['auditLog'].path|dirname }}"
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+    mode: 0755
+    setype: 'mongod_log_t'
+    follow: true
+  when: mongodb_config['auditLog'].path is defined
+
 - name: Ensure dbpath directory
   file:
     path: "{{ mongodb_storage_dbpath }}"
