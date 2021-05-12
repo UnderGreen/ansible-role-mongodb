@@ -31,31 +31,20 @@ processManagement:
   {% endfor %}
   {% endif %}
 
+
 {% if mongodb_replication_replset -%}
 replication:
   oplogSizeMB: {{ mongodb_replication_oplogsize | int }}
   replSetName: {{ mongodb_replication_replset }}
   {% if mongodb_storage_engine == 'mmapv1' -%}
   secondaryIndexPrefetch: {{ mongodb_replication_replindexprefetch }}
-  {%- endif %}
-  {%- if mongodb_config['replication'] is defined and mongodb_config['replication'] is iterable %}
-  {%- for item in mongodb_config['replication'] -%}
-  {{ item }}
+  {% endif -%}
+  {% if mongodb_config['replication'] is defined -%}
+  {% for key, value in mongodb_config['replication'].items() -%}
+  {{ key }}: {{ value | to_nice_json }}
   {% endfor %}
   {% endif %}
 {% endif %}
-
-security:
-  authorization: {{ mongodb_security_authorization }}
-  {% if mongodb_replication_replset and mongodb_security_authorization == 'enabled' -%}
-  keyFile: {{ mongodb_security_keyfile }}
-  {% endif -%}
-  javascriptEnabled: {{ mongodb_security_javascript_enabled | to_nice_json }}
-  {%- if mongodb_config['security'] is defined and mongodb_config['security'] is iterable %}
-  {%- for item in mongodb_config['security'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
 
 storage:
   dbPath: {{ mongodb_storage_dbpath }}
@@ -83,6 +72,22 @@ storage:
   {{ item }}
   {% endfor %}
   {% endif %}
+  
+
+security:
+  authorization: {{ mongodb_security_authorization }}
+  {% if mongodb_replication_replset and mongodb_security_authorization == 'enabled' -%}
+  keyFile: {{ mongodb_security_keyfile }}
+  {% endif -%}
+  javascriptEnabled: {{ mongodb_security_javascript_enabled | to_nice_json }}
+  {% if mongodb_config['security'] is defined and mongodb_config['security'] is iterable -%}
+  {% for item in mongodb_config['security'] -%}
+  {{ item }}:
+  {% for key, value in mongodb_config['security'][item].items() %}
+  {{ key }}: {{ value | to_nice_json }}
+  {% endfor -%}
+  {% endfor %}
+  {% endif %}
 
 systemLog:
   destination: {{ mongodb_systemlog_destination }}
@@ -90,10 +95,22 @@ systemLog:
   logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
   logRotate: {{ mongodb_systemlog_logrotate }}
   path: {{ mongodb_systemlog_path }}
+  {% endif -%}
+  {% if mongodb_systemlog_verbosity > 0 -%}
+  verbosity: {{ mongodb_systemlog_verbosity }}
+  {% endif -%}
+  {% if mongodb_systemlog_component is defined and mongodb_systemlog_component | length > 0 -%}
+  component:
+  {% for item in mongodb_systemlog_component %}
+  {{ item }}:
+      verbosity: {{ mongodb_systemlog_component[item]['verbosity'] }}
+  {% endfor -%}
   {%- endif %}
-  {%- if mongodb_config['systemLog'] is defined and mongodb_config['systemLog'] is iterable %}
-  {%- for item in mongodb_config['systemLog'] -%}
-  {{ item }}
+
+{% if mongodb_config['auditLog'] is defined -%}
+auditLog:
+  {% for key, value in mongodb_config['auditLog'].items() -%}
+  {{ key }}: {{ value | to_nice_json }}
   {% endfor %}
   {% endif %}
 
@@ -106,6 +123,7 @@ operationProfiling:
   {% endfor %}
   {% endif %}
 
+
 {% if mongodb_major_version is version("4.0", ">=") -%}
 cloud:
   monitoring:
@@ -116,11 +134,12 @@ cloud:
   {{ item }}
   {% endfor %}
   {% endif %}
-{% endif %}
+  {% endif %}
+
 
 {% if mongodb_set_parameters -%}
 setParameter:
   {% for key, value in mongodb_set_parameters.items() -%}
-  {{ key }}: {{ value }}
+  {{ key }}: {{ value | to_nice_json }}
   {% endfor %}
-{% endif %}
+  {% endif %}

@@ -3,11 +3,45 @@
 - name: Establish some role-related facts
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
+    mongodb_percona_release: "{{ mongodb_version | replace('.', '') }}"
+  tags: [ mongodb, mongodb-install ]
+
+- name: Disable transparent huge pages on systemd systems
+  include_tasks: disable_transparent_hugepages.yml
+  when:
+    - mongodb_disable_transparent_hugepages | bool
+    - ansible_service_mgr == "systemd"
+  tags: [mongodb-install]
+
+- name: Set vm.swappiness to {{ vm_swappiness }}
+  sysctl:
+    name: vm.swappiness
+    value: "{{ vm_swappiness }}"
+    state: present
+  when: vm_swappiness | length > 0
+  tags: [mongodb-install]
+
+- name: Set vm.dirty_ratio to {{ vm_dirty_ratio }}
+  sysctl:
+    name: vm.dirty_ratio
+    value: "{{ vm_dirty_ratio }}"
+    state: present
+  when: vm_dirty_ratio | length > 0
+  tags: [mongodb-install]
+
+- name: Set dirty_background_ratio to {{ vm_dirty_background_ratio }}
+  sysctl:
+    name: vm.dirty_background_ratio
+    value: "{{ vm_dirty_background_ratio }}"
+    state: present
+  when: vm_dirty_background_ratio | length > 0
+  tags: [mongodb-install]
 
 - name: Install EPEL release repository
   package:
     name: epel-release
     state: present
+  tags: [mongodb-install]
 
 - name: Add YUM repository
   template:
@@ -18,12 +52,40 @@
   loop_control:
     loop_var: version_item
   when: mongodb_package == 'mongodb-org'
+  tags: [mongodb-install]
+
+- rpm_key:
+    state: present
+    key: "{{ mongodb_percona_repository_gpgkey }}"
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install]
+  
+- name: "Add Percona YUM repository"
+  yum:
+    name: "{{ mongodb_percona_repository }}"
+    state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install]
+
+- name: Enable Percona Release
+  shell: percona-release enable psmdb-{{ mongodb_percona_release }} release
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install ]
+
+- name: Enable PBM release
+  command: "percona-release enable pbm release"
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]
 
 - name: Install MongoDB package
   yum:
-    name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}={{ mongodb_version }}{% endif %}"
+    name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}-{{ mongodb_version }}{% endif %}"
     state: "{{ mongodb_package_state }}"
     lock_timeout: "{{ yum_lock_timeout }}"
+  tags: [mongodb-install]
 
 - name: Install numactl package
   yum:
@@ -31,25 +93,86 @@
     state: present
     lock_timeout: "{{ yum_lock_timeout }}"
   when: mongodb_use_numa | bool
+  tags: [mongodb-install]
 
 - name: Install PyMongo package
   yum:
     name: python-pymongo
     state: present
     lock_timeout: "{{ yum_lock_timeout }}"
-  when: not mongodb_pymongo_from_pip
+  when: not mongodb_pymongo_from_pip | bool
+  tags: [mongodb-install]
 
-- name: Install PIP
+- name: Install Python2 PIP
   yum:
     name:
       - python-devel
       - python-pip
     lock_timeout: "{{ yum_lock_timeout }}"
-  when: mongodb_pymongo_from_pip | bool
+  when: mongodb_pymongo_from_pip | bool and ansible_distribution_version < '8'
+  tags: [mongodb-install]
+
+- name: Install Python3 PIP
+  yum:
+    name:
+      - python3-devel
+      - python3-pip
+    lock_timeout: "{{ yum_lock_timeout }}"
+  when: mongodb_pymongo_from_pip | bool and ansible_distribution_version >= '8'
+  tags: [mongodb-install]
 
 - name: Install PyMongo from PIP
   pip:
     name: pymongo
+    executable: "{{ 'pip3' if (ansible_distribution_version >= '8') else 'pip' }}"  # different pip for python3
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip | bool
+  tags: [mongodb-install]
+
+- name: "Install cyrus-sasl-plain for ldap plain text"
+  yum:
+    name: cyrus-sasl-plain
+    state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
+  when: 
+    - mongodb_config['security'].ldap is defined
+  tags: [ mongodb-install, pbm-install ]
+
+- name: Install mtools from PIP
+  pip:
+    name: mtools
+    executable: "{{ 'pip3' if (ansible_distribution_version >= '8') else 'pip' }}"
+    state: "latest"
+  when: mongodb_tools | bool
+  tags: [mongodb-install]
+
+- name: Install Mongo tools for high-performance from Percona
+  yum:
+    name: "percona-server-mongodb-tools"
+    state: "{{ mongodb_package_state }}"
+    lock_timeout: "{{ yum_lock_timeout }}"
+  when: 
+    - mongodb_package == 'percona-server-mongodb'
+    - mongodb_tools | bool
+  tags: [mongodb-install]
+
+- name: "Install libkrb5 for Kerberos authentication in Percona Server"
+  yum:
+    name: krb5-devel
+    state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]
+
+- name: "Install Percona Backup"
+  yum:
+    name: percona-backup-mongodb
+    state: present
+    lock_timeout: "{{ yum_lock_timeout }}"
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]

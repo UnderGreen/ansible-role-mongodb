@@ -48,3 +48,6 @@ systemLog:
   logRotate: {{ mongodb_systemlog_logrotate }}
   path: {{ mongodb_systemlog_path }}
   {% endif -%}
+  {% if mongodb_systemlog_verbosity > 0 -%}
+  verbosity: {{ mongodb_systemlog_verbosity }}
+  {% endif -%}

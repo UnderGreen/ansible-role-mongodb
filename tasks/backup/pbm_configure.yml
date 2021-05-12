@@ -1,0 +1,59 @@
+---
+- name: "Add user pbm to group {{ mongodb_user }}"
+  user:
+    name: pbm
+    group: "{{ mongodb_user }}"
+    state: present
+
+- name: Ensure backup directory
+  file:
+    path: "{{ mongodb_backup_path }}"
+    state: directory
+    owner: pbm
+    group: pbm
+    mode: 0775
+    recurse: true
+  when: not ansible_check_mode
+
+- name: Ensure hot backup directory
+  file:
+    path: "{{ mongodb_backup_path_hot_storage  }}"
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+    mode: 0775
+    recurse: true
+  when: not ansible_check_mode
+
+- name: Create file pbm-agent
+  template:
+    src: pbm-agent.j2
+    dest: /etc/{{ 'default' if ansible_distribution|lower == "debian" else 'sysconfig' }}/pbm-agent
+  when: not ansible_check_mode
+
+- name: Create file pbm_config.yml
+  template:
+    src: pbm_config.yml.j2
+    dest: /mongodb/pbm_config.yml
+    owner: pbm
+    group: pbm
+    mode: 0664
+  when: not ansible_check_mode
+
+- name: PBM Config PBM_MONGODB_URI
+  command: pbm config --file /mongodb/pbm_config.yml --mongodb-uri "mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin?replicaSet={{ mongodb_replication_replset }}"
+
+- name: PBM Enable Point-in-Time Recovery
+  command: pbm config --set pitr.enabled=true --mongodb-uri "mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin?replicaSet={{ mongodb_replication_replset }}"
+  when: 
+    - mongodb_backup_pbm_pitr_enable|bool
+
+- name: Start service pbm-agent
+  service:
+    name: "pbm-agent"
+    state: started
+
+- name: Add PBM_MONGODB_URI to bash profile
+  lineinfile:
+    path: /root/.bashrc
+    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default("27017") }}/admin?replicaSet={{ mongodb_replication_replset }}"'

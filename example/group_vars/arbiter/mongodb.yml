@@ -1,0 +1,6 @@
+---
+mongodb_storage_smallfiles: true
+mongodb_storage_prealloc: false
+mongodb_replication_params:
+  - host_name: "{{ inventory_hostname }}"
+    host_type: "arbiter"

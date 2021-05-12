@@ -2,41 +2,81 @@
 - name: Establish some role-related facts
   set_fact:
     mongodb_major_version: "{{ mongodb_version[0:3] }}"
+    mongodb_percona_release: "{{ mongodb_version | replace('.', '') }}"
+  tags: [ mongodb, mongodb-install ]
 
 - name: Disable transparent huge pages on systemd systems
   include_tasks: disable_transparent_hugepages.yml
   when:
     - mongodb_disable_transparent_hugepages | bool
     - ansible_service_mgr == "systemd"
+  tags: [mongodb-install]
+
+- name: Set vm.swappiness to {{ vm_swappiness }}
+  sysctl:
+    name: vm.swappiness
+    value: "{{ vm_swappiness }}"
+    state: present
+  when: vm_swappiness | length > 0
+  tags: [mongodb-install]
+
+- name: Set vm.dirty_ratio to {{ vm_dirty_ratio }}
+  sysctl:
+    name: vm.dirty_ratio
+    value: "{{ vm_dirty_ratio }}"
+    state: present
+  when: vm_dirty_ratio | length > 0
+  tags: [mongodb-install]
+
+- name: Set dirty_background_ratio to {{ vm_dirty_background_ratio }}
+  sysctl:
+    name: vm.dirty_background_ratio
+    value: "{{ vm_dirty_background_ratio }}"
+    state: present
+  when: vm_dirty_background_ratio | length > 0
+  tags: [mongodb-install]
+
+- name: Install Required Dependency Packages
+  apt:
+    pkg:
+      - software-properties-common
+      - dirmngr
+      - apt-transport-https
+      - lsb-release
+      - ca-certificates
+  tags: [mongodb-install]
 
 - name: Add APT key
   apt_key:
-    keyserver: "{{ mongodb_apt_keyserver }}"
-    id: "{{ mongodb_apt_key_id[mongodb_major_version] }}"
+    url: "{{ mongodb_repository_gpgkey[mongodb_version] }}"
   when: mongodb_package == 'mongodb-org'
+  tags: [mongodb-install]
 
 - name: Fail when used wrong mongodb_version variable with Debian Stretch
   fail:
-    msg: "mongodb_version variable should be '3.6' or '4.0' or '4.2' for Debian Stretch"
+    msg: "mongodb_version variable should be '3.6' or '4.0' or '4.2' or '4.4' for Debian Stretch"
   when:
     - mongodb_package == 'mongodb-org'
-    - (mongodb_major_version != '3.6' and mongodb_major_version != '4.0' and mongodb_major_version != '4.2')
+    - (mongodb_major_version != '3.6' and mongodb_major_version != '4.0' and mongodb_major_version != '4.2' and mongodb_major_version != '4.4')
     - ansible_distribution_release == 'stretch'
+  tags: [mongodb-install]
 
 - name: Fail when used wrong mongodb_version variable with Ubuntu 18.04
   fail:
-    msg: "mongodb_version variable should be '4.0' or '4.2', or else mongodb_package should be 'mongodb' for Ubuntu 18.04"
+    msg: "mongodb_version variable should be '4.0' or '4.2' or '4.4', or else mongodb_package should be 'mongodb' for Ubuntu 18.04"
   when:
     - mongodb_package == 'mongodb-org'
-    - (mongodb_major_version != '4.0' and mongodb_major_version != '4.2')
+    - (mongodb_major_version != '4.0' and mongodb_major_version != '4.2' and mongodb_major_version != '4.4')
     - ansible_distribution_release == "bionic"
+  tags: [mongodb-install]
 
 - name: Fail when used wrong mongodb_version variable
   fail:
-    msg: "mongodb_version variable should be '3.4', '3.6' or '4.0' or '4.2'"
+    msg: "mongodb_version variable should be '3.4', '3.6' or '4.0' or '4.2' or '4.4'"
   when: (mongodb_package == 'mongodb-org' and
         (mongodb_version is not defined
          or mongodb_repository[mongodb_major_version] is not defined))
+  tags: [mongodb-install]
 
 - name: Add APT repository
   apt_repository:
@@ -46,23 +86,46 @@
   loop_control:
     loop_var: version_item
   when: mongodb_package == 'mongodb-org'
+  tags: [mongodb-install]
+
+- name: Add Percona MongoDB APT repository
+  apt:
+    deb: "{{ mongodb_percona_repository }}"
+    state: present
+    update_cache: yes
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install]
+
+- name: Enable Percona Release
+  shell: percona-release enable psmdb-{{ mongodb_percona_release }} release
+  when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
+  tags: [ mongodb-install, pbm-install]
+
+- name: Enable PBM Release
+  shell: percona-release enable pbm release
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install]
 
 - name: Install MongoDB package
   apt:
     name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}={{ mongodb_version }}{% endif %}"
     state: "{{ mongodb_package_state }}"
     update_cache: true
+  tags: [mongodb-install]
 
 - name: Install numactl package
   apt:
     name: numactl
     state: present
   when: mongodb_use_numa | bool
+  tags: [mongodb-install]
 
 - name: Add systemd configuration if present
   template:
     src: mongodb.service.j2
-    dest: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
+    dest: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
     owner: root
     group: root
     mode: '0644'
@@ -71,39 +134,92 @@
     - mongodb_manage_systemd_unit | bool
   notify:
     - reload systemd
+  tags: [mongodb-install]
 
 - name: Add symlink for systemd
   file:
-    src: "/lib/systemd/system/{{mongodb_daemon_name}}.service"
-    dest: "/etc/systemd/system/multi-user.target.wants/{{mongodb_daemon_name}}.service"
+    src: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+    dest: "/etc/systemd/system/multi-user.target.wants/{{ mongodb_daemon_name }}.service"
     state: link
   when:
     - ansible_service_mgr == "systemd"
     - mongodb_manage_systemd_unit | bool
   notify:
     - reload systemd
+  tags: [mongodb-install]
 
 - name: Install PyMongo package
   apt:
     name: python-pymongo
-  when: not mongodb_pymongo_from_pip
+  when: not mongodb_pymongo_from_pip | bool
+  tags: [mongodb-install]
 
-- name: Install PIP
+- name: Install Python2 PIP
   apt:
     pkg:
       - python-dev
       - python-pip
-  when: mongodb_pymongo_from_pip | bool
+  when: mongodb_pymongo_from_pip | bool and ansible_distribution_release != 'focal'
+  tags: [mongodb-install]
+
+- name: Install Python3 PIP
+  apt:
+    pkg:
+      - python3-dev
+      - python3-pip
+  when: mongodb_pymongo_from_pip | bool and ansible_distribution_release == 'focal'
+  tags: [mongodb-install]
 
 - name: Install setuptools (required for ansible 2.7+)
   apt:
     pkg:
-      - python-setuptools
+      - "{{ 'python3-setuptools' if (ansible_distribution_release == 'focal') else 'python-setuptools' }}"  # different setuptools for python3
   when: mongodb_pymongo_from_pip | bool
+  tags: [mongodb-install]
 
 - name: Install PyMongo from PIP
   pip:
     name: pymongo
+    executable: "{{ 'pip3' if (ansible_distribution_release == 'focal') else 'pip' }}"  # different pip for python3
     state: "{{ mongodb_pymongo_pip_version is defined | ternary('present', 'latest') }}"
     version: "{{ mongodb_pymongo_pip_version | default(omit) }}"
   when: mongodb_pymongo_from_pip | bool
+  tags: [mongodb-install]
+
+- name: Install mtools from PIP
+  pip:
+    name: mtools
+    executable: "{{ 'pip3' if (ansible_distribution_release == 'focal') else 'pip' }}"
+    state: "latest"
+  when: mongodb_tools | bool
+  tags: [mongodb-install]
+
+- name: Install MongoDB package
+  apt:
+    name: "percona-server-mongodb-tools"
+    state: "{{ mongodb_package_state }}"
+    update_cache: true
+  when: 
+    - mongodb_package == 'percona-server-mongodb'
+    - mongodb_tools | bool
+  tags: [mongodb-install]
+
+- name: "Install libkrb5 for Kerberos authentication in Percona Server"
+  apt:
+    name: libkrb5-dev
+    state: present
+    update_cache: true
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]
+
+- name: "Install Percona Backup"
+  apt:
+    name: percona-backup-mongodb
+    state: present
+    update_cache: true
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+  tags: [ mongodb-install, pbm-install ]

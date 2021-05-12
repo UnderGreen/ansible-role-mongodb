@@ -1,0 +1,50 @@
+---
+- name: Remove Percona yum repository
+  yum:
+    name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    state: absent
+    lock_timeout: 180
+
+- name: "Remove Percona Backup MongoDB Package"
+  yum:
+    name: percona-backup-mongodb
+    state: absent
+  
+- name: Drop MongoDb User to PBM
+  mongodb_user:
+    database: admin
+    name: "{{ mongodb_backup_user_name }}"
+    password: "{{ mongodb_backup_user_password }}"
+    update_password: on_create
+    login_user: "{{ mongodb_root_user_name }}"
+    login_password: "{{ mongodb_root_user_password }}"
+    login_port: "{{ mongodb_net_port|default('27017') }}"
+    state: absent
+  no_log: true
+
+- name: Remove MongoDB Role pbmAnyAction
+  command: >
+    mongo --quiet {{ '--ssl' if newrelic_mongodb_ssl == 'true' else '' }} \
+      --host {{ inventory_hostname }}  \
+      -u {{ mongodb_root_user_name }} -p {{ mongodb_root_user_password }} \
+      --port {{ mongodb_net_port|default('27017') }} \
+      --eval 'db.getSiblingDB("admin").dropRole("pbmAnyAction")'
+  ignore_errors: true
+  no_log: true
+  tags: [pbm-remove]
+
+- name: Remove file pbm_config.yml
+  file:
+    state: "absent"
+    path: "/mongodb/pbm_config.yml"
+
+- name: Remove file pbm-agent
+  file:
+    state: "absent"
+    path: "/etc/sysconfig/pbm-agent"
+
+- name: Remove PBM_MONGODB_URI to bash profile
+  lineinfile:
+    path: /root/.bash_profile
+    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_pbm_user_name }}:{{ mongodb_pbm_user_name_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default("27017") }}/admin?replicaSet={{ mongodb_replication_replset }}"'
+    state: absent

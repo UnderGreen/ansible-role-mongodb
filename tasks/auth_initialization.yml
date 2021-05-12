@@ -1,76 +1,120 @@
 ---
-- name: Use different mongod.conf for auth initialization
-  template:
-    src: mongod_init.conf.j2
-    dest: /etc/mongod.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify:
-    - mongodb restart
-    - wait when mongodb is started on localhost
+- name: Create MongoDB Users
+  block:
+    - name: Use different mongod.conf for auth initialization
+      template:
+        src: mongod_init.conf.j2
+        dest: /etc/mongod.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - mongodb restart
+        - wait when mongodb is started on localhost
 
-- name: Flush all handlers at this point
-  meta: flush_handlers
+    - name: Flush all handlers at this point
+      meta: flush_handlers
 
-- name: create administrative user "{{ mongodb_user_admin_name }}"
-  mongodb_user:
-    database: admin
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
-    update_password: "{{ mongodb_user_update_password }}"
-    roles: "{{ item.roles }}"
-    login_port: "{{ mongodb_net_port }}"
-  with_items:
-    - {
-      name: "{{ mongodb_user_admin_name }}",
-      password: "{{ mongodb_user_admin_password }}",
-      roles: "userAdminAnyDatabase"
-      }
-  no_log: true
+    - name: create administrative user "{{ mongodb_root_user_name }}"
+      mongodb_user:
+        database: admin
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        update_password: "{{ mongodb_user_update_password }}"
+        roles: "{{ item.roles }}"
+        login_port: "{{ mongodb_net_port }}"
+      with_items:
+        - {
+          name: "{{ mongodb_root_user_name }}",
+          password: "{{ mongodb_root_user_password }}",
+          roles: "root"
+          }
+      no_log: true
 
-- name: create administrative user "{{ mongodb_root_admin_name }}"
-  mongodb_user:
-    database: admin
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
-    update_password: "{{ mongodb_user_update_password }}"
-    roles: "{{ item.roles }}"
-    login_port: "{{ mongodb_net_port }}"
-  with_items:
-    - {
-      name: "{{ mongodb_root_admin_name }}",
-      password: "{{ mongodb_root_admin_password }}",
-      roles: "root"
-      }
-  no_log: true
+    - name: create additional administrative user "{{ mongodb_admin_user_name }}"
+      mongodb_user:
+        database: admin
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        update_password: "{{ mongodb_user_update_password }}"
+        roles: "{{ item.roles }}"
+        login_port: "{{ mongodb_net_port }}"
+      with_items:
+        - {
+          name: "{{ mongodb_admin_user_name }}",
+          password: "{{ mongodb_admin_user_password }}",
+          roles: "userAdminAnyDatabase"
+          }
+      no_log: true
+      when:
+        - mongodb_admin_user_name | length > 0
+        - mongodb_admin_user_password | length > 0
 
-- name: create backup user "{{ mongodb_root_backup_name }}"
-  mongodb_user:
-    database: admin
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
-    update_password: "{{ mongodb_user_update_password }}"
-    roles: "{{ item.roles }}"
-    login_port: "{{ mongodb_net_port }}"
-  with_items:
-    - {
-      name: "{{ mongodb_root_backup_name }}",
-      password: "{{ mongodb_root_backup_password }}",
-      roles: "backup,clusterMonitor"
-      }
-  no_log: true
+    - name: create backup user "{{ mongodb_backup_user_name }}"
+      mongodb_user:
+        database: admin
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        update_password: "{{ mongodb_user_update_password }}"
+        roles: "{{ item.roles }}"
+        login_port: "{{ mongodb_net_port }}"
+      with_items:
+        - {
+          name: "{{ mongodb_backup_user_name }}",
+          password: "{{ mongodb_backup_user_password }}",
+          roles: "backup,clusterMonitor"
+          }
+      no_log: true
+      when: 
+        - not mongodb_backup|bool or mongodb_backup_engine != 'pbm' or mongodb_backup_state != "present" or mongodb_replication_replset | length == 0
+        - mongodb_backup_user_name | length > 0
+        - mongodb_backup_user_password | length > 0
 
-- name: Move back mongod.conf
-  template:
-    src: mongod.conf.j2
-    dest: /etc/mongod.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify:
-    - mongodb restart
-    - wait when mongodb is started
+    - name: Include backup/pbm_create_user.yml
+      include: backup/pbm_create_user.yml
+      when:
+        - mongodb_backup|bool
+        - mongodb_backup_engine == 'pbm'
+        - mongodb_backup_state == "present"
+        - mongodb_replication_replset | length > 0
 
-- name: Flush all handlers at this point
-  meta: flush_handlers
+    - name: Check if Active Directory Role already exists
+      command: >
+        mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_root_user_name }} \
+              -p {{ mongodb_root_user_password }} --port {{ mongodb_net_port }} --eval 'db.getSiblingDB("admin").getRole( "{{ mongodb_active_directory_role }}" )'
+      register: mongodb_role_ad_check
+      changed_when: false
+      check_mode: no
+      ignore_errors: true
+      no_log: true
+      when: mongodb_active_directory_role | length > 0
+
+    - name: Create MongoDB Active Directory Role
+      command: >
+        mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_root_user_name }} \
+              -p {{ mongodb_root_user_password }} --port {{ mongodb_net_port }} \
+              --eval 'db.getSiblingDB("admin").createRole({ role:"{{ mongodb_active_directory_role }}",privileges:[], roles:["root"] })'    
+      check_mode: no
+      no_log: true
+      when:
+        - mongodb_active_directory_role | length > 0 
+        - mongodb_role_ad_check.stdout == "null"
+
+  always:
+    - name: Move back mongod.conf
+      template:
+        src: mongod.conf.j2
+        dest: /etc/mongod.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - mongodb restart
+        - wait when mongodb is started
+
+    - name: Flush all handlers at this point
+      meta: flush_handlers
+      
+  become: true
+  ignore_errors: false
+  

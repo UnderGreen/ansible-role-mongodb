@@ -1,0 +1,8 @@
+---
+mongodb_backup: true
+mongodb_backup_path: "/mongodb/backups"
+mongodb_backup_path_hot_storage: "/mongodb/HotBackups"
+mongodb_backup_store_days: 3
+mongodb_backup_cron_time:
+  hour: 1
+  minute: 0

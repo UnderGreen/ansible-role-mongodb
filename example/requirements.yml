@@ -1,0 +1,4 @@
+---
+- src: git+git@github.com:stone-payments/ansible-role-mongodb.git
+  version: master
+  name: stone-payments.mongodb

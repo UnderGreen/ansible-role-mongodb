@@ -1,0 +1,50 @@
+---
+- name: Add backup script file using mongodump
+  template:
+    src: mongodb.mongodump_backup.sh.j2
+    dest: "{{ mongodb_backup_script_path }}"
+    backup: true
+    owner: root
+    group: root
+    mode: 0700
+  when: mongodb_backup_engine == 'mongodump'
+
+- name: Add backup script file using pbm
+  template:
+    src: mongodb.pbpm_backup.sh.j2
+    dest: "{{ mongodb_backup_script_path }}"
+    backup: true
+    owner: root
+    group: root
+    mode: 0700
+  when: mongodb_backup_engine == 'pbm'
+
+- name: Create Backup Schedule
+  cron:
+    name: MongoDB Backup
+    state: "{{ mongodb_backup_state }}"
+    minute: "{{ mongodb_backup_cron_time['minute'] }}"
+    hour: "{{ mongodb_backup_cron_time['hour'] }}"
+    user: root
+    job: "{{ mongodb_backup_script_path }}"
+
+- name: Configure logrotate to backup log
+  copy:
+    dest: /etc/logrotate.d/mongodb-backup
+    content: "{{ mongodb_backup_logrotate }}"
+    owner: root
+    group: root
+    mode: 0644
+  when: 
+    - mongodb_backup_logrotate | length > 0
+    - mongodb_backup_state == "present"
+
+# Delete files
+- name: Remove logrotate to backup log
+  file:
+    state: "absent"
+    path: "{{ item }}"
+  with_items:
+    - "/etc/logrotate.d/mongodb-backup"
+    - "{{ mongodb_backup_script_path }}"
+  when: mongodb_backup_state == "absent"

@@ -1,10 +1,35 @@
 ---
+- name: Ensuring interoperability with discontinued variables
+  set_fact:
+    mongodb_root_user_name: "{{ mongodb_root_admin_name }}"
+    mongodb_root_user_password: "{{ mongodb_root_admin_password }}"
+    mongodb_backup_user_name: "{{ mongodb_root_backup_name }}"
+    mongodb_backup_user_password: "{{ mongodb_root_backup_password }}"
+  when:
+    - mongodb_root_admin_name is defined
+    - mongodb_root_admin_password is defined
+    - mongodb_root_backup_name is defined
+    - mongodb_root_backup_password is defined
+    - mongodb_root_user_name == "siteUserAdmin"
+    - mongodb_root_user_password == "passw0rd"
+    - mongodb_backup_user_name == "backupuser"
+    - mongodb_backup_user_password == "passw0rd"
+  tags: [ mongodb-check, mongodb ]
+
+- name: Ensure users and passwords are defined
+  assert:
+    that: 
+      - mongodb_root_user_name | length != 0
+      - mongodb_root_user_password | length != 0
+    fail_msg: "Please check the user and password variables to Mongodb!"
+  tags: [mongodb-check]
 
 - name: Check value of variable mongodb_net_ssl_host
   fail:
     msg: 'Set mongodb_net_ssl_mode is preferSSL or set valid hostname for mongodb_net_ssl_host!'
   when: ( mongodb_net_ssl_mode == 'requireSSL'
-          and mongodb_net_ssl_host == '' )
+          and mongodb_net_ssl_host | length > 0 )
+  tags: [mongodb-check]
 
 - name: Check value of variable mongodb_login_host
   fail:
@@ -12,6 +37,11 @@
   when: ( mongodb_net_ssl_mode == 'requireSSL'
           and mongodb_net_ssl_host != mongodb_login_host
           and not mongodb_replication_replset )
+  tags: [mongodb-check]
+
+- name: Check if password is default
+  include: warning_default_password.yml
+  tags: [mongodb-check]
 
 - name: Include OS-specific variables
   include_vars: "{{ item }}"
@@ -19,13 +49,14 @@
     - "{{ ansible_distribution_release }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
+  tags: [ mongodb, mongodb-install ]
 
 - name: Include installation tasks
   include: "{{ item }}"
   with_first_found:
     - "install.{{ ansible_distribution | lower }}.yml"
     - "install.{{ ansible_os_family | lower }}.yml"
-  tags: [mongodb]
+  tags: [ mongodb, mongodb-install ]
 
 - name: Include configuration.yml
   include: configure.yml
@@ -129,8 +160,32 @@
     name: "{{ mongodb_daemon_name }}"
     state: started
     enabled: yes
+  tags: [mongodb]
 
 - name: Include MMS Agent configuration
   include: mms-agent.yml
   when: mongodb_mms_api_key | length > 0
   tags: [mongodb]
+
+- name: Add task backup/pbm_configure.yml
+  include: backup/pbm_configure.yml
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+    - mongodb_backup_state == "present"
+    - mongodb_replication_replset | length > 0
+  tags: [ mongodb, backup ]
+
+- name: Add task backup/pbm_remove.yml
+  include: backup/pbm_remove.yml
+  when: 
+    - mongodb_backup|bool
+    - mongodb_backup_engine == 'pbm'
+    - mongodb_backup_state == "absent"
+    - mongodb_replication_replset | length > 0
+  tags: [ mongodb, backup ]
+
+- name: Schedule cron backup script
+  include: backup/backup_scheduler.yml
+  when: mongodb_backup|bool
+  tags: [ mongodb, backup ]

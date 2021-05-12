@@ -1,0 +1,10 @@
+- name: Common configs for MongoDB servers
+  hosts: mongodb
+  become: true
+  
+  tasks: 
+    - name: Configure MongoDB
+      include_role:
+        name: stone-payments.mongodb
+      tags: mongodb
+      
