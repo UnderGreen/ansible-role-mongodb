@@ -47,7 +47,8 @@
   when: mongodb_package == 'mongodb-org'
   tags: [mongodb-install]
 
-- rpm_key:
+- name: "Add Percona RPM key"
+  rpm_key:
     state: present
     key: "{{ mongodb_percona_repository_gpgkey }}"
   when: mongodb_package == 'percona-server-mongodb' or (mongodb_backup|bool and mongodb_backup_engine == 'pbm')
