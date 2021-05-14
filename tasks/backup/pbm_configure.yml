@@ -5,6 +5,12 @@
     group: "{{ mongodb_user }}"
     state: present
 
+- name: "Add user {{ mongodb_user }} to group pbm"
+  user:
+    name: "{{ mongodb_user }}"
+    group: pbm
+    state: present
+
 - name: Ensure backup directory
   file:
     path: "{{ mongodb_backup_path }}"
@@ -13,6 +19,7 @@
     group: pbm
     mode: 0775
     recurse: true
+  ignore_errors: true
   when: not ansible_check_mode
 
 - name: Ensure hot backup directory
@@ -23,6 +30,7 @@
     group: "{{ mongodb_user }}"
     mode: 0775
     recurse: true
+  ignore_errors: true
   when: not ansible_check_mode
 
 - name: Create file pbm-agent
