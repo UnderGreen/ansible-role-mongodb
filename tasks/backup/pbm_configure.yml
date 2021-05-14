@@ -13,6 +13,7 @@
     group: pbm
     mode: 0775
     recurse: true
+  ignore_errors: true
   when: not ansible_check_mode
 
 - name: Ensure hot backup directory
@@ -23,6 +24,7 @@
     group: "{{ mongodb_user }}"
     mode: 0775
     recurse: true
+  ignore_errors: true
   when: not ansible_check_mode
 
 - name: Create file pbm-agent
