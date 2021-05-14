@@ -5,6 +5,12 @@
     group: "{{ mongodb_user }}"
     state: present
 
+- name: "Add user {{ mongodb_user }} to group pbm"
+  user:
+    name: "{{ mongodb_user }}"
+    group: pbm
+    state: present
+
 - name: Ensure backup directory
   file:
     path: "{{ mongodb_backup_path }}"
