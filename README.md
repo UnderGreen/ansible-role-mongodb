@@ -149,16 +149,18 @@ mongodb_replication_oplogsize: 1024 # specifies a maximum size in megabytes for 
 # Configure setParameter option.
 # Example :
 mongodb_set_parameters:
-  {
-    "enableLocalhostAuthBypass": "true",
-    "authenticationMechanisms": "SCRAM-SHA-1,MONGODB-CR",
-  }
+  enableLocalhostAuthBypass: "true"
+  authenticationMechanisms: "SCRAM-SHA-1,MONGODB-CR"
 
 ## Extend config with arbitrary values
 # Example :
 mongodb_config:
   replication:
-    - "enableMajorityReadConcern: false"
+    enableMajorityReadConcern: "false"
+  auditLog:
+    destination: "file"
+    format: "JSON"
+    path: "/var/log/mongodb/audit.json"
 
 # MMS Agent
 mongodb_mms_agent_pkg: https://cloud.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_7.2.0.488-1_amd64.ubuntu1604.deb
