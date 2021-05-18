@@ -78,7 +78,9 @@ mongodb_processmanagement_fork: false # Fork server process
 # Disable or enable security. Possible values: 'disabled', 'enabled'
 mongodb_security_authorization: "disabled"
 mongodb_security_keyfile: /etc/mongodb-keyfile  # Specify path to keyfile with password for inter-process authentication
-mongodb_active_directory_role: ""               # Create role root to active directory integration
+mongodb_active_directory_role:                  # Create role root to active directory integration
+  - role_name: "CN=sysadmin,OU=grants,OU=Groups,OU=base,DC=mycompany,DC=com,DC=br"
+    role_permission: "root"
 
 ## storage Options
 mongodb_storage_dbpath: /data/mongodb # Directory for datafiles
