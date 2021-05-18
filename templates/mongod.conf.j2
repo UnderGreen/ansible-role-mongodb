@@ -82,10 +82,27 @@ security:
   javascriptEnabled: {{ mongodb_security_javascript_enabled | to_nice_json }}
   {% if mongodb_config['security'] is defined and mongodb_config['security'] is iterable -%}
   {% for item in mongodb_config['security'] -%}
+  {% if item == 'ldap' -%}
+  ldap:
+    transportSecurity: "{{ mongodb_config['security']['ldap'].transportSecurity }}"
+    servers: "{{ mongodb_config['security']['ldap'].servers }}"
+    bind:
+      queryUser: "{{ mongodb_config['security']['ldap'].bind.queryUser }}"
+      queryPassword: "{{ mongodb_config['security']['ldap'].bind.queryPassword }}"
+    authz:
+      queryTemplate: "{{ mongodb_config['security']['ldap'].authz.queryTemplate }}"
+    userToDNMapping: 
+      {{ mongodb_config['security']['ldap'].userToDNMapping }}
+  {% else -%}
+  {% if mongodb_config['security'][item] is mapping -%}
   {{ item }}:
   {% for key, value in mongodb_config['security'][item].items() %}
   {{ key }}: {{ value | to_nice_json }}
   {% endfor -%}
+  {% else -%}
+  {{ item }}: {{ mongodb_config['security'][item] | to_nice_json }}
+  {% endif -%}
+  {% endif -%}
   {% endfor %}
   {% endif %}
 

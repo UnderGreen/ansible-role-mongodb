@@ -78,7 +78,9 @@ mongodb_processmanagement_fork: false # Fork server process
 # Disable or enable security. Possible values: 'disabled', 'enabled'
 mongodb_security_authorization: "disabled"
 mongodb_security_keyfile: /etc/mongodb-keyfile  # Specify path to keyfile with password for inter-process authentication
-mongodb_active_directory_role: ""               # Create role root to active directory integration
+mongodb_active_directory_role:                  # Create role root to active directory integration
+  - role_name: "CN=sysadmin,OU=grants,OU=Groups,OU=base,DC=mycompany,DC=com,DC=br"
+    role_permission: "root"
 
 ## storage Options
 mongodb_storage_dbpath: /data/mongodb # Directory for datafiles
@@ -149,16 +151,18 @@ mongodb_replication_oplogsize: 1024 # specifies a maximum size in megabytes for 
 # Configure setParameter option.
 # Example :
 mongodb_set_parameters:
-  {
-    "enableLocalhostAuthBypass": "true",
-    "authenticationMechanisms": "SCRAM-SHA-1,MONGODB-CR",
-  }
+  enableLocalhostAuthBypass: "true"
+  authenticationMechanisms: "SCRAM-SHA-1,MONGODB-CR"
 
 ## Extend config with arbitrary values
 # Example :
 mongodb_config:
   replication:
-    - "enableMajorityReadConcern: false"
+    enableMajorityReadConcern: "false"
+  auditLog:
+    destination: "file"
+    format: "JSON"
+    path: "/var/log/mongodb/audit.json"
 
 # MMS Agent
 mongodb_mms_agent_pkg: https://cloud.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_7.2.0.488-1_amd64.ubuntu1604.deb
