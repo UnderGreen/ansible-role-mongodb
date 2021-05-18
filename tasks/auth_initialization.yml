@@ -81,24 +81,27 @@
     - name: Check if Active Directory Role already exists
       command: >
         mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_root_user_name }} \
-              -p {{ mongodb_root_user_password }} --port {{ mongodb_net_port }} --eval 'db.getSiblingDB("admin").getRole( "{{ mongodb_active_directory_role }}" )'
+              -p {{ mongodb_root_user_password }} --port {{ mongodb_net_port }} --eval 'db.getSiblingDB("admin").getRole( "{{ item.role_name }}" )'
       register: mongodb_role_ad_check
-      changed_when: false
+      changed_when: mongodb_role_ad_check.stdout == 'null'
       check_mode: no
       ignore_errors: true
       no_log: true
+      loop: "{{ mongodb_active_directory_role }}"
       when: mongodb_active_directory_role | length > 0
 
     - name: Create MongoDB Active Directory Role
       command: >
         mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_root_user_name }} \
               -p {{ mongodb_root_user_password }} --port {{ mongodb_net_port }} \
-              --eval 'db.getSiblingDB("admin").createRole({ role:"{{ mongodb_active_directory_role }}",privileges:[], roles:["root"] })'    
+              --eval 'db.getSiblingDB("admin").createRole({ role:"{{ item.role_name }}",privileges:[], roles:["{{ item.role_permission }}"] })'    
       check_mode: no
+      ignore_errors: true
       no_log: true
+      loop: "{{ mongodb_active_directory_role }}"
       when:
         - mongodb_active_directory_role | length > 0 
-        - mongodb_role_ad_check.stdout == "null"
+        - mongodb_role_ad_check.changed
 
   always:
     - name: Move back mongod.conf
