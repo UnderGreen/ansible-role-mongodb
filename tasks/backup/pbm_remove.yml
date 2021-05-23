@@ -41,7 +41,7 @@
 - name: Remove file pbm-agent
   file:
     state: "absent"
-    path: "/etc/{{ 'default' if ansible_distribution|lower == "debian" else 'sysconfig' }}/pbm-agent"
+    path: /etc/{{ 'default' if ansible_distribution|lower == "debian" else 'sysconfig' }}/pbm-agent
 
 - name: Remove PBM_MONGODB_URI to bashrc
   lineinfile:
