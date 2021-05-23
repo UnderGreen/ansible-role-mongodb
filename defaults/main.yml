@@ -156,5 +156,9 @@ mongodb_backup_logrotate: |
     create 644
   }
 
+# PBM Backup
+mongodb_backup_logical_store_days: "{{ mongodb_backup_store_days }}" # Number of days to store pbm logical backups
+mongodb_backup_hot_store_days: "{{ mongodb_backup_store_days }}"     # Number of days to storage hot backups in disk
+
 # Enable PBM Point-in-Time Recovery
 mongodb_backup_pbm_pitr_enable: true
