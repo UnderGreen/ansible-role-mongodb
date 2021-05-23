@@ -49,11 +49,11 @@
   when: not ansible_check_mode
 
 - name: PBM Config PBM_MONGODB_URI
-  command: pbm config --file /mongodb/pbm_config.yml --mongodb-uri "mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin?replicaSet={{ mongodb_replication_replset }}"
+  command: pbm config --file /mongodb/pbm_config.yml --mongodb-uri "mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port }}/admin?replicaSet={{ mongodb_replication_replset }}"
   no_log: true
 
 - name: PBM Enable Point-in-Time Recovery
-  command: pbm config --set pitr.enabled=true --mongodb-uri "mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default('27017') }}/admin?replicaSet={{ mongodb_replication_replset }}"
+  command: pbm config --set pitr.enabled=true --mongodb-uri "mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port }}/admin?replicaSet={{ mongodb_replication_replset }}"
   no_log: true
   when: 
     - mongodb_backup_pbm_pitr_enable|bool
@@ -66,5 +66,5 @@
 - name: Add PBM_MONGODB_URI to bashrc
   lineinfile:
     path: /root/.bashrc
-    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default("27017") }}/admin?replicaSet={{ mongodb_replication_replset }}"'
+    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port }}/admin?replicaSet={{ mongodb_replication_replset }}"'
   no_log: true

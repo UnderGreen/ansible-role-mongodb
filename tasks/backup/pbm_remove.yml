@@ -18,7 +18,7 @@
     update_password: on_create
     login_user: "{{ mongodb_root_user_name }}"
     login_password: "{{ mongodb_root_user_password }}"
-    login_port: "{{ mongodb_net_port|default('27017') }}"
+    login_port: "{{ mongodb_net_port }}"
     state: absent
   no_log: true
 
@@ -27,7 +27,7 @@
     mongo --quiet {{ '--ssl' if newrelic_mongodb_ssl == 'true' else '' }} \
       --host {{ inventory_hostname }}  \
       -u {{ mongodb_root_user_name }} -p {{ mongodb_root_user_password }} \
-      --port {{ mongodb_net_port|default('27017') }} \
+      --port {{ mongodb_net_port }} \
       --eval 'db.getSiblingDB("admin").dropRole("pbmAnyAction")'
   ignore_errors: true
   no_log: true
@@ -46,5 +46,6 @@
 - name: Remove PBM_MONGODB_URI to bashrc
   lineinfile:
     path: /root/.bashrc
+    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_pbm_user_name }}:{{ mongodb_pbm_user_name_password }}@{{ inventory_hostname }}:{{ mongodb_net_port }}/admin?replicaSet={{ mongodb_replication_replset }}"'
     state: absent
   no_log: true
