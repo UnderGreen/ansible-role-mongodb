@@ -48,17 +48,17 @@ if grep -q '"ismaster" : true' /tmp/validate; then
     print "INFO" "Deleting Physical Backups"
 
     # Checks number of backups
-    BACKUP_NB=$(find $BACKUP_PHYSICAL_PATH -type d -name "backup_*" | wc -l)
+    BACKUP_NB=$(find $BACKUP_PHYSICAL_PATH -type f -name "backup_*" | wc -l)
 
     # Delete backups only if the number of existing backups is greater than the desired number of days
     if [[ $BACKUP_NB -gt ${BACKUP_STORAGE_DAYS} ]]
     then
-      find "$BACKUP_PHYSICAL_PATH" -type d -name "backup_*" -printf "%P\n" |
-      while IFS= read -r FOLDER; do
-          FOLDER_BACKUP_DATE=$(echo "${FOLDER}" | awk -F_ '{print $NF}')
-          if [ "${BACKUP_DELETE_DATE}" -gt "${FOLDER_BACKUP_DATE}" ]; then
-              print "INFO" "Deleting backup ${FOLDER}"
-              rm -rf "${BACKUP_PHYSICAL_PATH}/${FOLDER}";
+      find "$BACKUP_PHYSICAL_PATH" -type f -name "backup_*" -printf "%P\n" |
+      while IFS= read -r BACKUP; do
+          BACKUP_DATE=$(echo "${BACKUP}" | awk -F_ '{print $NF}' | cut -f1 -d".")
+          if [ "${BACKUP_HOT_DELETE_DATE}" -gt "${BACKUP_DATE}" ]; then
+              print "INFO" "Deleting backup ${BACKUP}"
+              rm -f "${BACKUP_PHYSICAL_PATH}/${BACKUP}";
           fi
       done
       print "INFO" "Physical Backups deleted"  
