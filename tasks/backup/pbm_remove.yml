@@ -43,8 +43,8 @@
     state: "absent"
     path: "/etc/sysconfig/pbm-agent"
 
-- name: Remove PBM_MONGODB_URI to bash profile
+- name: Remove PBM_MONGODB_URI to bashrc
   lineinfile:
-    path: /root/.bash_profile
-    line: 'export PBM_MONGODB_URI="mongodb://{{ mongodb_pbm_user_name }}:{{ mongodb_pbm_user_name_password }}@{{ inventory_hostname }}:{{ mongodb_net_port|default("27017") }}/admin?replicaSet={{ mongodb_replication_replset }}"'
+    path: /root/.bashrc
     state: absent
+  no_log: true
