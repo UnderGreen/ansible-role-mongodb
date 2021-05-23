@@ -197,6 +197,7 @@ mongodb_backup_script_path: "/etc/mongodb-backup.sh"
 mongodb_backup_log_path: "{{ mongodb_systemlog_path|dirname }}/backup_mongod.log"
 mongodb_backup_path: "{{ mongodb_storage_dbpath }}/backup"     # Local path to mongodump, or PBM path to backups  # Do not use "/" in the end of directories
 mongodb_backup_path_hot_storage : "{{ mongodb_backup_path }}/storage" # Path to storage mongodump backup, or path to PBM Hot Backups when use PBM  # Do not use "/" in the end of directories
+mongodb_backup_store_days: 0   # if the value is 0, the script will not copy the backups to the storage directory, and will keep only one local copy (mongodump).
 mongodb_backup_parameters: "--mongodb-uri \"mongodb://{{ mongodb_backup_user_name }}:{{ mongodb_backup_user_password }}@{{ inventory_hostname }}:{{ mongodb_net_port }}/admin?replicaSet={{ mongodb_replication_replset }}\"" # Mongodump: "--gzip --forceTableScan"
 mongodb_backup_cron_time:
   hour: 3
@@ -209,6 +210,10 @@ mongodb_backup_logrotate: |
     rotate 7
     create 644
   }
+
+# PBM Backup
+mongodb_backup_logical_store_days: "{{ mongodb_backup_store_days }}" # Number of days to store pbm logical backups
+mongodb_backup_hot_store_days: "{{ mongodb_backup_store_days }}"     # Number of days to storage hot backups in disk
 
 # Enable PBM Point-in-Time Recovery
 mongodb_backup_pbm_pitr_enable: true
