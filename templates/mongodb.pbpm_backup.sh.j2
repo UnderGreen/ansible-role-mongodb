@@ -14,7 +14,7 @@ MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
 MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
 MONGO_BACKUP_PARAMETERS="{{ mongodb_backup_parameters }}"
 BACKUP_CURRENT_DATE=$(date +%Y%m%d)
-BACKUP_PBM_DELETE_DATE=$(date -d "${BACKUP_LOGICAL_STORAGE_DAYS} days ago" "+%Y-%m-%d")
+BACKUP_PBM_DELETE_DATE=$(date -d "${BACKUP_LOGICAL_STORAGE_DAYS} days ago" "+%Y-%m-%dT%H:%M:%S")
 BACKUP_HOT_DELETE_DATE=$(date -d "${BACKUP_HOT_STORAGE_DAYS} days ago" "+%Y%m%d")
 
 function print {
