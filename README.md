@@ -126,10 +126,9 @@ mongodb_logrotate_options: |
   {{ mongodb_systemlog_path }} {
     daily
     rotate 7
-    maxsize 1G
+    maxsize 10G
     missingok
     compress
-    delaycompress
     notifempty
     create 640 {{ mongodb_user }} {{ mongodb_user }}
     sharedscripts
