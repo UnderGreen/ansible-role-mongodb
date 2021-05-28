@@ -76,8 +76,8 @@
 
 - name: Check where admin user already exists
   command: >
-    mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_user_admin_name }} \
-          -p {{ mongodb_user_admin_password }} --port {{ mongodb_net_port }} --eval 'db.version()' admin
+    mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_root_user_name }} \
+          -p {{ mongodb_root_user_password }} --port {{ mongodb_net_port }} --eval 'db.version()' admin
   register: mongodb_user_admin_check
   changed_when: false
   check_mode: no
@@ -101,8 +101,8 @@
     password: "{{ item.password }}"
     update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_user: "{{ mongodb_user_admin_name }}"
-    login_password: "{{ mongodb_user_admin_password }}"
+    login_user: "{{ mongodb_root_user_name }}"
+    login_password: "{{ mongodb_root_user_password }}"
     login_port: "{{ mongodb_login_port|default(27017) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
@@ -121,8 +121,8 @@
     password: "{{ item.password }}"
     update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_user: "{{ mongodb_user_admin_name }}"
-    login_password: "{{ mongodb_user_admin_password }}"
+    login_user: "{{ mongodb_root_user_name }}"
+    login_password: "{{ mongodb_root_user_password }}"
     login_port: "{{ mongodb_net_port }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
@@ -142,8 +142,8 @@
     roles:
       - db: local
         role: read
-    login_user: "{{ mongodb_user_admin_name }}"
-    login_password: "{{ mongodb_user_admin_password }}"
+    login_user: "{{ mongodb_root_user_name }}"
+    login_password: "{{ mongodb_root_user_password }}"
     login_port: "{{ mongodb_login_port|default(27017) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
