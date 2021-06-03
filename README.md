@@ -95,6 +95,9 @@ mongodb_systemlog_destination: "file"
 mongodb_systemlog_logappend: true # Append to logpath instead of over-writing
 mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log # Log file to send write to instead of stdout
 
+## Pid
+mongodb_pidfile_path: "/var/run/mongodb/{{ mongodb_daemon_name }}.pid"
+
 ## replication Options
 mongodb_replication_replset: # Enable replication <setname>[/<optionalseedhostlist>]
 mongodb_replication_replindexprefetch: "all" # specify index prefetching behavior (if secondary) [none|_id_only|all]
