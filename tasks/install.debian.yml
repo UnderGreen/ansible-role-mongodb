@@ -1,7 +1,7 @@
 ---
 - name: Establish some role-related facts
   set_fact:
-    mongodb_major_version: "{{ mongodb_version[0:3] }}"
+    mongodb_major_version: "{{ mongodb_version[0:3] | string }}"
 
 - name: Disable transparent huge pages on systemd systems
   include_tasks: disable_transparent_hugepages.yml
