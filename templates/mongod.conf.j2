@@ -127,7 +127,7 @@ systemLog:
 {% if mongodb_config['auditLog'] is defined -%}
 auditLog:
   {% for key, value in mongodb_config['auditLog'].items() -%}
-  {{ key }}: {{ value | to_nice_json }}
+  {{ key }}: {{ value }}
   {% endfor %}
   {% endif %}
 
