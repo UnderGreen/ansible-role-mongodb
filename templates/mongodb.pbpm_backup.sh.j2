@@ -38,7 +38,7 @@ if grep -q '"ismaster" : true' /tmp/validate; then
     print "INFO" "Logical backups deleted"
 
     print "INFO" "Starting Full Logical Backups"
-    pbm backup $MONGO_BACKUP_PARAMETERS
+    pbm backup --compression=snappy $MONGO_BACKUP_PARAMETERS
     if [ $? != 0 ]; then 
         print "ERROR" "Error in backup logical"
     else
@@ -74,6 +74,7 @@ if grep -q '"ismaster" : true' /tmp/validate; then
         exit 1;
     else
         print "INFO" "Physical Backup finished successfully"
+        pigz ${BACKUP_PHYSICAL_PATH}/backup_${BACKUP_CURRENT_DATE}.tar
     fi
     print "INFO" "Script ended successfully!"
 
