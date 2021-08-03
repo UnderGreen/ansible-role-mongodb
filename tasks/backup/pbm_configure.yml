@@ -32,6 +32,11 @@
     recurse: true
   ignore_errors: true
   when: not ansible_check_mode
+  
+- name: Install pigz package
+  yum:
+    name: pigz
+    state: present
 
 - name: Create file pbm-agent
   template:
