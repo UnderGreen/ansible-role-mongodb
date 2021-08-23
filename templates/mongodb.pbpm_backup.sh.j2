@@ -8,14 +8,13 @@ PATH=$PATH:/sbin:/bin:/usr/sbin:/usr/bin
 # MongoDB Script Backup Variables
 BACKUP_LOG_PATH="{{ mongodb_backup_log_path }}"
 BACKUP_PHYSICAL_PATH="{{ mongodb_backup_path_hot_storage  }}"
-BACKUP_LOGICAL_STORAGE_DAYS={{ mongodb_backup_logical_store_days }}
-BACKUP_HOT_STORAGE_DAYS={{ mongodb_backup_hot_store_days }}
+BACKUP_STORAGE_DAYS={{ mongodb_backup_store_days }}
 MONGO_BACKUP_USER="{{ mongodb_backup_user_name }}"
 MONGO_BACKUP_PASSWORD="{{ mongodb_backup_user_password }}"
 MONGO_BACKUP_PARAMETERS="{{ mongodb_backup_parameters }}"
 BACKUP_CURRENT_DATE=$(date +%Y%m%d)
-BACKUP_PBM_DELETE_DATE=$(date -d "${BACKUP_LOGICAL_STORAGE_DAYS} days ago" "+%Y-%m-%dT%H:%M:%S")
-BACKUP_HOT_DELETE_DATE=$(date -d "${BACKUP_HOT_STORAGE_DAYS} days ago" "+%Y%m%d")
+BACKUP_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y%m%d")
+BACKUP_PBM_DELETE_DATE=$(date -d "${BACKUP_STORAGE_DAYS} days ago" "+%Y-%m-%d")
 
 function print {
     mkdir -p "$(dirname "${BACKUP_LOG_PATH}")"
@@ -31,20 +30,17 @@ if grep -q '"ismaster" : true' /tmp/validate; then
 
     print "INFO" "Primary node detected"
     print "INFO" "Starting Backup"
-    
-    # Backup: LOGICAL
-    print "INFO" "Deleting Logical backups"
-    pbm delete-backup $MONGO_BACKUP_PARAMETERS --older-than="${BACKUP_PBM_DELETE_DATE}" --force
-    print "INFO" "Logical backups deleted"
 
+    # Backup: LOGICAL
     print "INFO" "Starting Full Logical Backups"
     pbm backup --compression=snappy $MONGO_BACKUP_PARAMETERS
-    if [ $? != 0 ]; then 
+    if [ $? != 0 ]; then
         print "ERROR" "Error in backup logical"
+        exit 1
     else
         print "INFO" "Logical backup finished successfully"
     fi
-    
+
     # Backup: PHYSICAL
     print "INFO" "Deleting Physical Backups"
 
@@ -62,14 +58,14 @@ if grep -q '"ismaster" : true' /tmp/validate; then
               rm -f "${BACKUP_PHYSICAL_PATH}/${BACKUP}";
           fi
       done
-      print "INFO" "Physical Backups deleted"  
+      print "INFO" "Physical Backups deleted"
     else
       echo "INFO" "No Physical backup to remove"
     fi
 
     print "INFO" "Starting Full Physical Backup"
     mongo admin -u $MONGO_BACKUP_USER -p $MONGO_BACKUP_PASSWORD --eval "db.runCommand({ createBackup: 1, archive: '${BACKUP_PHYSICAL_PATH}/backup_${BACKUP_CURRENT_DATE}.tar' });"
-    if [ $? != 0 ]; then 
+    if [ $? != 0 ]; then
         print "ERROR" "Error in Physical Backup"
         exit 1;
     else
@@ -77,6 +73,9 @@ if grep -q '"ismaster" : true' /tmp/validate; then
         pigz ${BACKUP_PHYSICAL_PATH}/backup_${BACKUP_CURRENT_DATE}.tar
     fi
     print "INFO" "Script ended successfully!"
+    print "INFO" "Deleting Logical backups"
+    pbm delete-backup $MONGO_BACKUP_PARAMETERS --older-than="${BACKUP_PBM_DELETE_DATE}" --force
+    print "INFO" "Logical backups deleted"
 
 elif grep -q "Connection refused" /tmp/validate; then
     print "ERROR" "Connection refused, ending backup script..."
@@ -88,3 +87,4 @@ else
     print "WARNING" "This is not the primary node, ending backup script..."
     exit 1
 fi
+                    
