@@ -11,7 +11,8 @@
 
 - name: Add APT key
   apt_key:
-    keyserver: "{{ mongodb_apt_keyserver }}"
+    keyserver: "{{ mongodb_apt_keyserver if not mongodb_apt_key_from_url|bool else omit }}"
+    url: "{{ mongodb_apt_key_url[mongodb_major_version] if mongodb_apt_key_from_url|bool else omit }}"
     id: "{{ mongodb_apt_key_id[mongodb_major_version] }}"
   when: mongodb_package == 'mongodb-org'
 
@@ -44,7 +45,7 @@
   changed_when: false
   check_mode: no
   when: mongodb_use_numa | bool
-  
+
 - name: Don't use NUMA if it is unavailable on host
   set_fact:
     mongodb_use_numa: false
