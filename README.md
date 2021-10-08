@@ -13,7 +13,7 @@ MongoDB support matrix:
 
 | Distribution   | < MongoDB 3.4 |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |   MongoDB 4.4      |
 | -------------- | :-----------: | :----------------: | :----------------: | :----------------: | :----------------: |
-| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
+| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :x: | :x: |        :x:         |
 | Ubuntu 18.04   |  :no_entry:   | :white_check_mark: | :x: | :x: |        :x:         |
 | Ubuntu 20.04   |  :no_entry:   |        :x:         |        :x:         |        :x:         | :white_check_mark: |
 | Debian 9.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
