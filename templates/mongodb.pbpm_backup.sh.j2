@@ -74,7 +74,9 @@ if grep -q '"ismaster" : true' /tmp/validate; then
     fi
     print "INFO" "Script ended successfully!"
     print "INFO" "Deleting Logical backups"
+    pbm config --set pitr.enabled=false
     pbm delete-backup $MONGO_BACKUP_PARAMETERS --older-than="${BACKUP_PBM_DELETE_DATE}" --force
+    pbm config --set pitr.enabled=true
     print "INFO" "Logical backups deleted"
 
 elif grep -q "Connection refused" /tmp/validate; then
