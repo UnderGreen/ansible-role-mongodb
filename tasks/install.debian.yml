@@ -34,9 +34,16 @@
 
 - name: Install MongoDB package
   apt:
-    name: "{{ mongodb_package }}{% if (mongodb_version | length > 3) %}={{ mongodb_version }}{% endif %}"
+    name: "{{ item }}{% if (mongodb_version | length > 3) %}={{ mongodb_version }}{% endif %}"
     state: "{{ mongodb_package_state }}"
     update_cache: true
+  with_items:
+    - "{{ mongodb_package }}"
+    - "{{ mongodb_package }}-database-tools-extra"
+    - "{{ mongodb_package }}-mongos"
+    - "{{ mongodb_package }}-server"
+    - "{{ mongodb_package }}-shell"
+    - "{{ mongodb_package }}-tools"
 
 - name: Check if NUMA is available on host
   command: "ls -1 /proc/1/numa_maps"
