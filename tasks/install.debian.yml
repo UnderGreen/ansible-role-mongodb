@@ -44,6 +44,7 @@
     - "{{ mongodb_package }}-server"
     - "{{ mongodb_package }}-shell"
     - "{{ mongodb_package }}-tools"
+  notify: mongodb restart
 
 - name: Check if NUMA is available on host
   command: "ls -1 /proc/1/numa_maps"
