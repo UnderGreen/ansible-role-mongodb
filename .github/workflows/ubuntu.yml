@@ -23,6 +23,8 @@ jobs:
         include:
           - molecule_distro: ubuntu2004
             mongodb_version: '4.4'
+          - molecule_distro: ubuntu2004
+            mongodb_version: '5.0'
     env:
       MONGODB_VERSION: ${{ matrix.mongodb_version }}
       MOLECULE_DISTRO: ${{ matrix.molecule_distro }}
