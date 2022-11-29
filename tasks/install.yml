@@ -1,0 +1,62 @@
+---
+# tasks file for install
+
+- import_tasks: cleanup-apt-packages.yml
+  tags: [always]
+
+- import_tasks: percona-release-package.yml
+  tags: [always]
+
+- import_tasks: install-pymongo.yml
+  tags: [always]
+
+- import_tasks: install-numa.yml
+  tags: [always]
+
+- name: Set Percona version via percona-release command
+  ansible.builtin.command: "percona-release enable {{ mongodb_repository[mongodb_major_version] }}"
+
+- name: Install Percona (MongoDB fork) package
+  ansible.builtin.apt:
+    name: percona-server-mongodb
+    state: latest
+    update_cache: true
+  ignore_errors: true # This will fail first time as the apt installs default config and try to start the service
+
+- name: Add systemd configuration if present
+  ansible.builtin.template:
+    src: mongodb.service.j2
+    dest: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_systemd_unit | bool
+  notify:
+    - reload systemd
+
+- name: Add symlink for systemd
+  ansible.builtin.file:
+    src: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+    dest: "/etc/systemd/system/multi-user.target.wants/{{ mongodb_daemon_name }}.service"
+    state: link
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_systemd_unit | bool
+  notify:
+    - reload systemd
+
+#  percona-server-mongodb-helper.sh
+- name: Place percona-server-helper shell script
+  ansible.builtin.template:
+    src: percona-server-mongodb-helper.sh.j2
+    dest: /usr/bin/percona-server-mongodb-helper.sh
+    owner: root
+    group: root
+    mode: "0751"
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_systemd_unit | bool
+  notify:
+    - reload systemd

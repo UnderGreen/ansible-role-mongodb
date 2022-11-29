@@ -1,0 +1,14 @@
+/var/log/mongodb/*.log
+/var/log/mongodb/audit.json {
+    daily
+    rotate 5
+    size 50M
+    compress
+    dateext
+    missingok
+    notifempty
+    sharedscripts
+    postrotate
+        /bin/kill -SIGUSR1 `cat {{ mongodb_pidfile_path }} 2> /dev/null` 2> /dev/null || true
+    endscript
+}

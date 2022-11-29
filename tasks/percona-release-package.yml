@@ -1,0 +1,39 @@
+---
+# tasks file for percona release packages
+
+- name: Install dependencies
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - gnupg2
+    - wget
+  tags: ['packages']
+
+- name: Check if percona-release is already installed
+  ansible.builtin.command: dpkg-query -W percona-release
+  failed_when: false
+  changed_when: false
+  register: percona_release_deb
+
+- name: Download and install percona-release package
+  block:
+    - name: Download percona-release package
+      ansible.builtin.get_url:
+        url: "https://repo.percona.com/apt/percona-release_latest.{{ ansible_distribution_release }}_all.deb"
+        dest: /tmp/percona-release-latest.deb
+
+    - name: Install percona-release
+      ansible.builtin.apt:
+        deb: /tmp/percona-release-latest.deb
+
+    - name: Clean percona-release deb file
+      ansible.builtin.file:
+        path: /tmp/percona-release-latest.deb
+        state: absent
+
+    - name: Run the equivalent of "apt-get update" as a separate step
+      ansible.builtin.apt:
+        update_cache: true
+
+  when: percona_release_deb.rc != 0 or percona_release_deb.failed | default(false)

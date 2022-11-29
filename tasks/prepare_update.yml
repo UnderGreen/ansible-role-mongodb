@@ -1,0 +1,104 @@
+---
+# tasks file for prepare_update
+
+# Always ensure that mongo service is running before the upgrade
+- name: Cluster | Ensure mongo is running
+  ansible.builtin.systemd:
+    name: mongod
+    state: started
+
+- import_tasks: facts.yml
+  tags: [always]
+
+# Do not skip, it is required
+- include_tasks: assert.yml
+  tags: [always]
+
+# Perform a full backup of your data and configuration files before upgrading.
+# Right now it is rudimentary
+- name: Backup | Perform a full backup of data and configuration files before upgrading
+  block:
+    - name: Backup | Copy mongobackup script
+      ansible.builtin.template:
+        src: mongobackup.sh.j2
+        dest: /usr/local/bin/mongobackup.sh
+        mode: 0755
+
+    - name: Backup | Run backup of data
+      ansible.builtin.shell: "/usr/local/bin/mongobackup.sh {{ mongodb_backup_db }} > /dev/null 2>&1"
+      ignore_errors: true
+
+    - name: Backup | Create Directories for Config backups
+      ansible.builtin.file:
+        path: /tmp/config_backup/
+        state: directory
+        mode: '0700'
+    - name: Backup | Percona config files
+      ansible.builtin.archive:
+        path:
+          - /etc/mongod.conf
+          - "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+          - /usr/bin/percona-server-mongodb-helper.sh
+        dest: /tmp/config_backup/{{ ansible_hostname }}-percona-cfg.tgz
+
+    - name: Backup | Create TAR Directory
+      ansible.builtin.archive:
+        path: /tmp/config_backup
+        dest: /tmp/{{ ansible_hostname }}_config_backup.tgz
+
+    - name: Backup | Copy Configs to Centralized Location
+      ansible.builtin.fetch:
+        src: /tmp/{{ ansible_hostname }}_config_backup.tgz
+        dest: /tmp/{{ ansible_hostname }}/
+        flat: true
+
+- import_tasks: cleanup-apt-packages.yml
+  tags: [always]
+
+- import_tasks: percona-release-package.yml
+  tags: [always]
+
+- import_tasks: install-pymongo.yml
+  tags: [always]
+
+- name: Replica | Get replica set information ismaster
+  ansible.builtin.shell: "mongo --port {{ mongo_net.port }} --quiet --eval 'rs.isMaster().ismaster'"
+  register: mongo_primary
+
+- name: Replica | Set fact
+  ansible.builtin.set_fact:
+    mongo_primary: "{{ mongo_primary.stdout }}"
+
+- name: Cluster | Set fact about mongo primary
+  ansible.builtin.set_fact:
+    replica_member: primary
+  when: mongo_primary
+
+- name: Cluster | Set fact about mongo secondary
+  ansible.builtin.set_fact:
+    replica_member: secondary
+  when: not mongo_primary
+
+- name: Cluster | Create groups based on the replica_member
+  ansible.builtin.group_by:
+    key: mongo_{{ replica_member }}
+  register: replica_members
+
+- name: Cluster | Fail if we don't have a mongo_primary
+  ansible.builtin.fail:
+    msg: There must be exactly one Mongo primary
+  when:
+    - groups['mongo_primary'] is defined
+    - groups['mongo_primary'] | length | int != 1
+  run_once: true
+
+- name: Cluster | Fail if we have odd number of secondaries
+  ansible.builtin.fail:
+    msg: Uneven amount of secondary hosts are detected
+  when:
+    - groups['mongo_secondary'] is defined
+    - groups['mongo_secondary'] | length | int % 2 != 0
+  run_once: true
+
+- import_tasks: check_cluster_health.yml
+  tags: [always]

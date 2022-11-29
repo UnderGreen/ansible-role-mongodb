@@ -1,0 +1,57 @@
+---
+# tasks file for percona upgrading primary
+
+- import_tasks: facts.yml
+  tags: [always]
+
+- name: Replica| Instructs the primary of the replica set to become a secondary
+  community.mongodb.mongodb_shell:
+    login_host: localhost
+    login_port: "{{ mongo_net.port }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
+    eval: "db.adminCommand( { replSetStepDown: 300, secondaryCatchUpPeriodSecs: 30 } )"
+  ignore_errors: true
+  # This will fail when version is lover than 4.2!
+  # Upon successful stepdown, rs.stepDown() forces all clients currently connected to the database to disconnect.
+
+- name: Replica | Pause for 1 minutes
+  ansible.builtin.pause:
+    minutes: 1
+
+- import_tasks: check_cluster_health.yml
+  tags: [always]
+
+- import_tasks: upgrade_tasks.yml
+  tags: [always]
+
+- import_tasks: check_cluster_health.yml
+  tags: [always]
+
+- name: Replica | Lookup PRIMARY replicaset member
+  ansible.builtin.set_fact:
+    replica_primary: "{{ item.key.split(':')[0] }}"
+  loop: "{{ lookup('dict', replica_status.replicaset) }}"
+  when:
+    - "'PRIMARY' in item.value"
+    - replica_status is defined
+
+- name: Replica | Set ip address for current host
+  ansible.builtin.set_fact:
+    host_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4'].address }}"
+  when: "'ansible_default_ipv4' in hostvars[inventory_hostname]"
+
+- name: Assert | That new primary is not the one the play is running
+  ansible.builtin.assert:
+    that: "{{ replica_primary !=  host_ip }}"
+    msg: "PRIMARY was not elected successfully"
+  when: replica_primary is defined
+
+- name: Replica| Enable backwards-incompatible {{ mongodb_version }} features
+  community.mongodb.mongodb_shell:
+    login_host: "{{ replica_primary }}"
+    login_port: "{{ mongo_net.port }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
+    eval: "db.adminCommand( { setFeatureCompatibilityVersion: '{{ mongodb_version }}' } )"
+  when: replica_primary is defined

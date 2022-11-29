@@ -1,16 +1,17 @@
 # {{ ansible_managed }}
+
 [Unit]
-Description=An object/document-oriented database
+Description=High-performance, schema-free document-oriented database
 Documentation=man:mongod(1)
-After=network-online.target
+After=time-sync.target network.target
 
 [Service]
-User={{ mongodb_user }}
-{% if mongodb_use_numa | bool %}
-ExecStart=/usr/bin/numactl --interleave=all /usr/bin/mongod --config /etc/mongod.conf
-{% else %}
-ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+{% if mongodb_processmanagement_fork | bool %}
+Type=forking
 {% endif %}
+User={{ mongodb_user }}
+Group={{ mongodb_user }}
+PermissionsStartOnly=true
 # file size
 LimitFSIZE=infinity
 # cpu time
@@ -26,6 +27,14 @@ LimitMEMLOCK=infinity
 # total threads (user+kernel)
 TasksMax=infinity
 TasksAccounting=false
+EnvironmentFile=-/etc/default/mongod
+ExecStartPre=/usr/bin/percona-server-mongodb-helper.sh
+{% if mongodb_use_numa | bool %}
+ExecStart=/usr/bin/env bash -c "${NUMACTL} /usr/bin/mongod ${OPTIONS} > ${STDOUT} 2> ${STDERR}"
+{% else %}
+ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+{% endif %}
+PIDFile={{ mongodb_pidfile_path }}
 
 # Recommended limits for for mongod as specified in
 # http://docs.mongodb.org/manual/reference/ulimit/#recommended-settings

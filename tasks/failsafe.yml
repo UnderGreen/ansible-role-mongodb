@@ -1,0 +1,30 @@
+---
+# failsafe file for percona
+
+# playbook `percona-install.yml` should run only
+# * If MongoDB is NOT installed on server -> mongo_check.rc == 1
+# * If MongoDB is installed on server. The installed major version must be the same as configured.
+#     We don't allow upgrades with this playbook -> mongo_check.rc == 0 and additional checks
+
+- name: Check if mongo client is already installed
+  ansible.builtin.command: /usr/bin/mongo --version
+  register: mongo_check
+  failed_when: false
+  changed_when: false
+
+- name: MongoDB is already installed
+  block:
+    - name: Register MongoDB version from the client
+      ansible.builtin.command: /usr/bin/mongo --quiet --eval 'db.version()'
+      register: mongo_version_check
+
+    - name: Establish MongoDB version from the client
+      ansible.builtin.set_fact:
+        mongodb_version_from_check: "{{ mongo_version_check.stdout[0:3] | string }}"
+
+    - name: Fail when installed major version is different from the one passed to the playbook
+      ansible.builtin.fail:
+        msg: "variable `mongodb_version` '{{ mongodb_version }}' differs from the version installed on server '{{ mongodb_version_from_check }}'"
+      when: (mongodb_version is not defined or mongodb_version != mongodb_version_from_check)
+
+  when: mongo_check.rc == 0

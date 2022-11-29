@@ -1,6 +1,8 @@
 ---
+# tasks file for replica auth initialization
+
 - name: Use different mongod.conf for auth initialization
-  template:
+  ansible.builtin.template:
     src: mongod_init.conf.j2
     dest: /etc/mongod.conf
     owner: root
@@ -8,13 +10,13 @@
     mode: 0644
   notify:
     - mongodb restart
-    - wait when mongodb is started on localhost
+    - wait for mongodb to be started
 
 - name: Flush all handlers at this point
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
-- name: create administrative user "{{ mongodb_user_admin_name }}"
-  mongodb_user:
+- name: create administrative user {{ mongodb_root_admin_name }}
+  community.mongodb.mongodb_user:
     database: admin
     name: "{{ item.name }}"
     password: "{{ item.password }}"
@@ -23,49 +25,11 @@
     login_host: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list  | first }}"
     login_port: "{{ mongodb_net_port | int }}"
   with_items:
-    - {
-      name: "{{ mongodb_user_admin_name }}",
-      password: "{{ mongodb_user_admin_password }}",
-      roles: "userAdminAnyDatabase"
-      }
-  no_log: true
-
-- name: create administrative user "{{ mongodb_root_admin_name }}"
-  mongodb_user:
-    database: admin
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
-    update_password: "{{ mongodb_user_update_password }}"
-    roles: "{{ item.roles }}"
-    login_host: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list  | first }}"
-    login_port: "{{ mongodb_net_port | int }}"
-  with_items:
-    - {
-      name: "{{ mongodb_root_admin_name }}",
-      password: "{{ mongodb_root_admin_password }}",
-      roles: "root"
-      }
-  no_log: true
-
-- name: create backup user "{{ mongodb_root_backup_name }}"
-  mongodb_user:
-    database: admin
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
-    update_password: "{{ mongodb_user_update_password }}"
-    roles: "{{ item.roles }}"
-    login_host: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list  | first }}"
-    login_port: "{{ mongodb_net_port | int }}"
-  with_items:
-    - {
-      name: "{{ mongodb_root_backup_name }}",
-      password: "{{ mongodb_root_backup_password }}",
-      roles: "backup,clusterMonitor"
-      }
+    - {name: "{{ mongodb_root_admin_name }}", password: "{{ mongodb_root_admin_password }}", roles: "root"}
   no_log: true
 
 - name: Move back mongod.conf
-  template:
+  ansible.builtin.template:
     src: mongod.conf.j2
     dest: /etc/mongod.conf
     owner: root
@@ -73,7 +37,7 @@
     mode: 0644
   notify:
     - mongodb restart
-    - wait when mongodb is started
+    - wait for mongodb to be started
 
 - name: Flush all handlers at this point
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

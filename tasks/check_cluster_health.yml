@@ -1,0 +1,16 @@
+---
+# wait until cluster health is ok
+
+- name: Replica | Wait until cluster health is ok
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: "{{ mongo_net.port }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
+    validate: default
+    poll: 5
+    interval: 12
+    replica_set: "{{ mongo_replication.replSetName }}"
+  run_once: true
+  register: replica_status
+  ignore_errors: true # This will fail in mongo version 3.6 as the Ansible modules are not supported

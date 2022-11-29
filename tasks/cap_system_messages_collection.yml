@@ -1,0 +1,12 @@
+---
+# This is a workaroung until a permanent fix is implemented into graylog-cloud.
+# see https://github.com/Graylog2/graylog-cloud/issues/2341 for more details.
+
+- name: cap system_messages collection to {{ mongodb_system_messages_cap }}
+  community.mongodb.mongodb_shell:
+    login_host: "{{ mongodb_login_host|default('localhost') }}"
+    login_port: "{{ mongodb_net_port|default(27017) }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
+    eval: "db.runCommand({'convertToCapped': 'system_messages', size: {{ mongodb_system_messages_cap | human_to_bytes }} })"
+    db: graylog

@@ -1,0 +1,82 @@
+# encoding: utf-8
+
+##
+# Backup Generated: graylog_backup
+# Once configured, you can run the backup with the following command:
+#
+# $ backup perform -t graylog_backup [-c <path_to_configuration_file>]
+#
+# For more information about Backup's components, see the documentation at:
+# http://backup.github.io/backup
+#
+
+require 'aws-sdk'
+
+Model.new(:graylog_backup, 'Graylog configuration backup') do
+
+  ##
+  # MongoDB [Database]
+  #
+  database MongoDB do |db|
+    db.name               = "graylog"
+    {% if mongodb_root_admin_name is defined and mongodb_root_admin_password is defined -%}
+    db.username           = "{{ mongodb_root_admin_name }}"
+    db.password           = "{{ mongodb_root_admin_password }}"
+    db.additional_options = ["--authenticationDatabase=admin"]
+    {% endif -%}
+    db.host               = "localhost"
+    db.port               = 27017
+    db.ipv6               = false
+    {% if mongodb_backup_collections is defined -%}
+    db.only_collections   = [{{ mongodb_backup_collections }}]
+    {% endif -%}
+    db.lock               = false
+    db.oplog              = false
+  end
+
+  {% if customer.mongodb_backup_encryption_password is defined -%}
+  ##
+  # Encrypt backup with OpenSSL
+  # To decrypt your backup, use the following command:
+  # openssl aes-256-cbc -d -base64 -in my_backup.tar.enc -out my_backup.tar
+  encrypt_with OpenSSL do |encryption|
+    encryption.password      = "{{ mongodb_backup_encryption_password }}"
+    encryption.base64        = true
+    encryption.salt          = true
+  end
+  {% endif %}
+
+  {% if customer.mongodb_backup_iam_role_arn is defined -%}
+  ##
+  # S3 storage
+  #
+  sts = Aws::STS::Client.new
+  session = sts.assume_role(role_arn: '{{ customer.mongodb_backup_iam_role_arn }}',
+                            role_session_name: 'mongodb_backup')
+
+   store_with S3 do |s3|
+    # AWS Credentials
+    s3.access_key_id     = session.credentials.access_key_id
+    s3.secret_access_key = session.credentials.secret_access_key
+
+    s3.encryption = :aes256
+
+    s3.region             = '{{ mongodb_backup_region }}'
+    s3.bucket             = '{{ mongodb_backup_bucket }}'
+    s3.path               = 'mongodb/customers/{{ setup_name }}'
+    s3.fog_options       = {
+            aws_session_token: session.credentials.session_token,
+            aws_credentials_expire_at: session.credentials.expiration
+    }
+  end
+  {% endif %}
+
+{% if customer.graylog_transport_email_auth_username is defined and customer.graylog_transport_email_auth_password is defined -%}
+  ##
+  # Notifications
+  #
+  notify_by Mail do |mail|
+    mail.to = 'cloud-ops@graylog.com'
+  end
+{% endif -%}
+end

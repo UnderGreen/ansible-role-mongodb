@@ -1,42 +1,25 @@
 ---
+# handlers file for percona
 
 - name: reload systemd
-  systemd:
-    daemon_reload: yes
-
-- name: run disable-transparent-hugepages
-  systemd:
-    name: disable-transparent-hugepages
-    enabled: true
-    state: started
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
 
 - name: mongodb restart
-  service:
+  ansible.builtin.service:
     name: "{{ mongodb_daemon_name }}"
     state: restarted
   when: mongodb_manage_service | bool
 
-- name: mongodb-mms-monitoring-agent restart
-  service:
-    name: mongodb-mms-monitoring-agent
-    state: restarted
-  when: mongodb_manage_service | bool
-
-- name: restart sysfsutils
-  service:
-    name: sysfsutils
-    state: restarted
-
-- name: wait when mongodb is started
-  wait_for:
+- name: wait for mongodb to be started
+  ansible.builtin.wait_for:
     host: "{{ item }}"
     port: "{{ mongodb_net_port }}"
     timeout: 120
   with_items: "{{ mongodb_net_bindip.split(',') | map('replace', '0.0.0.0', '127.0.0.1') | list }}"
 
-- name: wait when mongodb is started on localhost
-  wait_for:
+- name: wait for mongodb to be reachable on localhost
+  ansible.builtin.wait_for:
     host: "127.0.0.1"
     port: "{{ mongodb_net_port }}"
     delay: 5

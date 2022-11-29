@@ -1,55 +1,61 @@
 ---
+# tasks file for main
+
+- import_tasks: facts.yml
+  tags: [always]
 
 - name: Check value of variable mongodb_net_ssl_host
-  fail:
+  ansible.builtin.fail:
     msg: 'Set mongodb_net_ssl_mode is preferSSL or set valid hostname for mongodb_net_ssl_host!'
   when: ( mongodb_net_ssl_mode == 'requireSSL'
           and mongodb_net_ssl_host|length == 0 )
 
 - name: Check value of variable mongodb_login_host
-  fail:
+  ansible.builtin.fail:
     msg: 'Set mongodb_login_host equal mongodb_net_ssl_host!'
   when: ( mongodb_net_ssl_mode == 'requireSSL'
           and mongodb_net_ssl_host != mongodb_login_host
           and not mongodb_replication_replset )
 
-- name: Include OS-specific variables
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_distribution_release }}.yml"
-    - "{{ ansible_distribution }}.yml"
-    - "{{ ansible_os_family }}.yml"
+- name: Include failsafe.yml
+  import_tasks: failsafe.yml
+  tags: [mongodb]
 
-- name: Include installation tasks
-  include: "{{ item }}"
-  with_first_found:
-    - "install.{{ ansible_distribution | lower }}.yml"
-    - "install.{{ ansible_os_family | lower }}.yml"
+- name: Include installation.yml
+  import_tasks: install.yml
   tags: [mongodb]
 
 - name: Include configuration.yml
-  include: configure.yml
+  import_tasks: configure.yml
   tags: [mongodb]
 
 - name: Include replication and auth configuration
-  include: replication_init_auth.yml
+  include_tasks:
+    file: replication_init_auth.yml
+    apply:
+      tags:
+        - mongodb
   when: ( mongodb_replication_replset | length > 0
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   tags: [mongodb]
 
 - name: Include replication configuration
-  include: replication.yml
+  include_tasks:
+    file: replication.yml
+    apply:
+      tags:
+        - mongodb
   when: mongodb_replication_replset | length > 0
   tags: [mongodb]
 
-- name: Check whether admin user is already exist
-  command: >
-    mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_user_admin_name }} \
-          -p {{ mongodb_user_admin_password }} --port {{ mongodb_net_port }} --eval 'db.version()' admin
+- name: Check whether admin user already exist
+  ansible.builtin.command: >
+    mongo --quiet {{ '--ssl --host ' + mongodb_net_ssl_host if mongodb_net_ssl_mode == 'requireSSL' else '' }} -u {{ mongodb_root_admin_name }} \
+          -p {{ mongodb_root_admin_password }} --port {{ mongodb_net_port }} --eval 'db.version()' admin
   register: mongodb_user_admin_check
   changed_when: false
-  check_mode: no
+  check_mode: false
   ignore_errors: true
   when: ( mongodb_security_authorization == 'enabled'
           and not mongodb_replication_replset )
@@ -57,7 +63,11 @@
   tags: [mongodb]
 
 - name: Include authorization configuration
-  include: auth_initialization.yml
+  include_tasks:
+    file: auth_initialization.yml
+    apply:
+      tags:
+        - mongodb
   when: ( mongodb_security_authorization == 'enabled'
           and not mongodb_replication_replset
           and mongodb_user_admin_check.rc != 0 )
@@ -70,8 +80,8 @@
     password: "{{ item.password }}"
     update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_user: "{{ mongodb_user_admin_name }}"
-    login_password: "{{ mongodb_user_admin_password }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
     login_port: "{{ mongodb_login_port|default(27017) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
@@ -90,8 +100,8 @@
     password: "{{ item.password }}"
     update_password: "{{ mongodb_user_update_password }}"
     roles: "{{ item.roles }}"
-    login_user: "{{ mongodb_user_admin_name }}"
-    login_password: "{{ mongodb_user_admin_password }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
     login_port: "{{ mongodb_net_port | int }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
@@ -111,8 +121,8 @@
     roles:
       - db: local
         role: read
-    login_user: "{{ mongodb_user_admin_name }}"
-    login_password: "{{ mongodb_user_admin_password }}"
+    login_user: "{{ mongodb_root_admin_name }}"
+    login_password: "{{ mongodb_root_admin_password }}"
     login_port: "{{ mongodb_login_port|default(27017) }}"
     login_host: "{{ mongodb_login_host|default('localhost') }}"
     ssl: "{{ True if mongodb_net_ssl_mode == 'requireSSL' else False }}"
@@ -125,12 +135,16 @@
   tags: [mongodb]
 
 - name: service started
-  service:
+  ansible.builtin.service:
     name: "{{ mongodb_daemon_name }}"
     state: started
-    enabled: yes
+    enabled: true
 
-- name: Include MMS Agent configuration
-  include: mms-agent.yml
-  when: mongodb_mms_api_key | length > 0
+- name: Include task to cap system_messages collection
+  include_tasks:
+    file: cap_system_messages_collection.yml
+    apply:
+      tags:
+        - mongodb
+  when: mongodb_master is defined and mongodb_master
   tags: [mongodb]
