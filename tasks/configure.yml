@@ -32,7 +32,7 @@
 - name: Create keyFile
   ansible.builtin.copy:
     dest: "{{ mongodb_security_keyfile }}"
-    content: "{{ mongodb_keyfile_content }}"
+    content: "{{ mongodb_keyfile_content | join('\n') }}"
     owner: "{{ mongodb_user }}"
     group: root
     mode: 0600
