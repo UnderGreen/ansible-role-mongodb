@@ -21,25 +21,25 @@
     - "{{ ansible_os_family }}.yml"
 
 - name: Include installation tasks
-  include: "{{ item }}"
+  include_tasks: "{{ item }}"
   with_first_found:
     - "install.{{ ansible_distribution | lower }}.yml"
     - "install.{{ ansible_os_family | lower }}.yml"
   tags: [mongodb]
 
 - name: Include configuration.yml
-  include: configure.yml
+  include_tasks: configure.yml
   tags: [mongodb]
 
 - name: Include replication and auth configuration
-  include: replication_init_auth.yml
+  include_tasks: replication_init_auth.yml
   when: ( mongodb_replication_replset | length > 0
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   tags: [mongodb]
 
 - name: Include replication configuration
-  include: replication.yml
+  include_tasks: replication.yml
   when: mongodb_replication_replset | length > 0
   tags: [mongodb]
 
@@ -57,7 +57,7 @@
   tags: [mongodb]
 
 - name: Include authorization configuration
-  include: auth_initialization.yml
+  include_tasks: auth_initialization.yml
   when: ( mongodb_security_authorization == 'enabled'
           and not mongodb_replication_replset
           and mongodb_user_admin_check.rc != 0 )
@@ -131,6 +131,6 @@
     enabled: yes
 
 - name: Include MMS Agent configuration
-  include: mms-agent.yml
+  include_tasks: mms-agent.yml
   when: mongodb_mms_api_key | length > 0
   tags: [mongodb]
