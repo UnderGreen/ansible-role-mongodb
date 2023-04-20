@@ -1,0 +1,12 @@
+#!/bin/bash
+
+date=$(date +%F)
+backupDir="{{ mongodb_backup_path }}${date}/"
+[ -z "$1" ] && echo "Missing param" && exit 1
+database=$1
+
+mkdir -p "${backupDir}"
+# Dump all
+mongodump --username={{ mongodb_root_admin_name }} --password={{ mongodb_root_admin_password }} \
+  --authenticationDatabase=admin --db "${database}" \
+  --out "${backupDir}"

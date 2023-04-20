@@ -1,0 +1,14 @@
+---
+# tasks file for percona upgrading secondaries
+
+- import_tasks: facts.yml
+  tags: [always]
+
+- import_tasks: check_cluster_health.yml
+  tags: [always]
+
+- import_tasks: upgrade_tasks.yml
+  tags: [always]
+
+- import_tasks: check_cluster_health.yml
+  tags: [always]

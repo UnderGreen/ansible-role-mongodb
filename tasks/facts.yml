@@ -1,0 +1,41 @@
+---
+# facts file for percona
+
+- ansible.builtin.set_fact:
+    mongodb_keyfile_content: "{{ customer.mongodb_keyfile_content | join('\n') }}"
+  when: customer.mongodb_keyfile_content is defined
+  no_log: true
+
+- ansible.builtin.set_fact:
+    mongodb_root_admin_name: "{{ customer.mongodb_root_admin_name }}"
+  when: customer.mongodb_root_admin_name is defined
+
+- ansible.builtin.set_fact:
+    mongodb_root_admin_password: "{{ customer.mongodb_root_admin_password }}"
+  when: customer.mongodb_root_admin_password is defined
+  no_log: true
+
+- ansible.builtin.set_fact:
+    mongodb_backup_encryption_password: "{{ customer.mongodb_backup_encryption_password }}"
+  when: customer.mongodb_backup_encryption_password is defined
+  no_log: true
+
+- ansible.builtin.set_fact:
+    mongodb_users:
+      - {name: "{{ customer.mongodb_graylog_user }}", password: "{{ customer.mongodb_graylog_password }}", roles: readWrite, database: graylog}
+      - name: "{{ customer.mongodb_prometheus_exporter_user }}"
+        password: "{{ customer.mongodb_prometheus_exporter_password }}"
+        roles: [clusterMonitor, {db: graylog, role: read}]
+        database: admin
+  when: customer.mongodb_graylog_user is defined and customer.mongodb_graylog_password is defined
+    and customer.mongodb_prometheus_exporter_user is defined and customer.mongodb_prometheus_exporter_password  is defined
+  no_log: true
+
+- name: Establish some role-related facts
+  ansible.builtin.set_fact:
+    mongodb_major_version: "{{ mongodb_version[0:3] | string }}"
+
+- name: Fail when used wrong mongodb_version variable
+  ansible.builtin.fail:
+    msg: "mongodb_version variable should be '4.0', '4.2', '4.4' or '5.0'"
+  when: (mongodb_version is not defined or mongodb_repository[mongodb_major_version] is not defined)

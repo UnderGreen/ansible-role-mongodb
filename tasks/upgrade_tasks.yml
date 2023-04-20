@@ -1,0 +1,78 @@
+---
+# upgrade tasks file for percona
+
+# shutdown mongo application
+- name: Replica | Shutdown Mongo DB service
+  ansible.builtin.systemd:
+    name: mongod
+    state: stopped
+
+# Set Percona version via percona-release command
+- name: Replica | Set Percona version via percona-release command
+  ansible.builtin.command: "percona-release enable {{ mongodb_repository[mongodb_major_version] }}"
+
+# update mongo
+- name: Replica | Update mongo
+  ansible.builtin.apt:
+    name: percona-server-mongodb
+    state: latest
+    update_cache: true
+    autoremove: true
+    dpkg_options: "force-confold"
+  ignore_errors: true # This could fail first time as the apt installs default config although force-confold is set
+  tags: ['packages']
+
+#  mongod config
+- name: Replica | Place mongod configs
+  ansible.builtin.template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+#  systemd configuration
+- name: Replica | Place systemd configuration
+  ansible.builtin.template:
+    src: mongodb.service.j2
+    dest: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_systemd_unit | bool
+
+- name: Replica | Add symlink for systemd
+  ansible.builtin.file:
+    src: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+    dest: "/etc/systemd/system/multi-user.target.wants/{{ mongodb_daemon_name }}.service"
+    state: link
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_systemd_unit | bool
+
+#  percona-server-mongodb-helper.sh
+- name: Replica | Place percona-server-helper shell script
+  ansible.builtin.template:
+    src: percona-server-mongodb-helper.sh.j2
+    dest: /usr/bin/percona-server-mongodb-helper.sh
+    owner: root
+    group: root
+    mode: "0751"
+  when:
+    - ansible_service_mgr == "systemd"
+    - mongodb_manage_systemd_unit | bool
+
+- name: Cluster | Just force systemd to re-execute itself
+  ansible.builtin.systemd:
+    daemon_reexec: true
+
+# Restart mongo on all instances
+- name: Cluster | Restart mongod service one by one
+  ansible.builtin.shell: systemctl restart mongod && sleep 30
+  delegate_to: "{{ item }}"
+  loop: "{{ ansible_play_hosts }}"
+  args:
+    warn: false
+  run_once: true

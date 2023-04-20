@@ -1,0 +1,18 @@
+---
+# tasks file for cleanup
+
+- name: Remove old APT repository
+  ansible.builtin.apt_repository:
+    repo: "{{ item }}"
+    state: absent
+  loop: "{{ apt_repository_cleanup|flatten(levels=1) }}"
+  when: apt_repository_cleanup | length > 0
+  tags: ['packages']
+
+- name: Remove unused packages
+  ansible.builtin.apt:
+    name: "{{ mongodb_package_cleanup }}"
+    state: absent
+    purge: true
+  when: mongodb_package_cleanup is defined
+  tags: ['packages']

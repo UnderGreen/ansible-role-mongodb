@@ -1,0 +1,14 @@
+---
+# vars file for percona
+mongodb_repository:
+  "4.0": "psmdb-40"
+  "4.2": "psmdb-42"
+  "4.4": "psmdb-44"
+  "5.0": "psmdb-50"
+
+mongodb_pymongo_package: "{{ 'python3-pymongo' if ansible_facts['python'].version.major == 3 else 'python-pymongo' }}"
+mongodb_pymongo_deps:
+  - "{{ 'python3-dev' if ansible_facts['python'].version.major == 3 else 'python-dev' }}"
+  - "{{ 'python3-pip' if ansible_facts['python'].version.major == 3 else 'python-pip' }}"
+mongodb_python_setuptools: "{{ 'python3-setuptools' if ansible_facts['python'].version.major == 3 else 'python-setuptools' }}"
+mongodb_pip_executable: "{{ 'pip3' if ansible_facts['python'].version.major == 3 else 'pip' }}"

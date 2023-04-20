@@ -1,0 +1,44 @@
+---
+# tasks file for assertions
+
+- name: Cluster | Assertions and Facts
+  block:
+  - name: Assert | Set fact for amount of hosts
+    ansible.builtin.set_fact:
+      host_count: "{{ ansible_play_hosts | length }}"
+
+  - name: Assert | That uneven amount of hosts are set
+    ansible.builtin.assert:
+      that: "{{ host_count | int % 2 != 0 }}"
+      msg: "Uneven amount of hosts must be set"
+
+  # verify cluster health, if ok, continue
+  - name: Cluster | Check if hosts are in clustered state
+    ansible.builtin.shell: >-
+      mongo --port {{ mongo_net.port }} --quiet --eval 'db.isMaster().hosts'
+    register: check_cluster
+    changed_when: false
+
+  - name: Cluster | Set fact
+    ansible.builtin.set_fact:
+      check_cluster: "{{ check_cluster.stdout }}"
+
+  - name: Cluster | Create dict of cluster check
+    ansible.builtin.set_fact:
+      all_cluster_check: "{{ dict(keys|zip(values)) }}"
+    vars:
+      keys: "{{ ansible_play_hosts }}"
+      values: "{{ ansible_play_hosts |
+                  map('extract', hostvars, ['check_cluster'])
+                  | list }}"
+
+  - name: Cluster | Set number of hosts in cluster
+    ansible.builtin.set_fact:
+      hosts_in_cluster: "{{ all_cluster_check.values() | list | length }}"
+
+  - name: Assert | That amount of hosts matches the amount of hosts are in clustered state
+    ansible.builtin.assert:
+      that: host_count == hosts_in_cluster
+      msg: "Amount of hosts don't match the amount of hosts in clustered state"
+
+  run_once: true

@@ -1,11 +1,13 @@
 ---
+# tasks file for config
+
 - name: create mongodb group
-  group:
+  ansible.builtin.group:
     name: "{{ mongodb_user }}"
     state: present
 
 - name: create mongodb user
-  user:
+  ansible.builtin.user:
     name: "{{ mongodb_user }}"
     group: "{{ mongodb_user }}"
     state: present
@@ -13,14 +15,14 @@
 # Workaround because default(omit) is not working. At least in Ansible 2.8.
 
 - name: set mongodb gid
-  group:
+  ansible.builtin.group:
     name: "{{ mongodb_user }}"
     gid: "{{ mongodb_gid }}"
     state: present
   when: mongodb_gid is defined
 
 - name: set mongodb uid
-  user:
+  ansible.builtin.user:
     name: "{{ mongodb_user }}"
     uid: "{{ mongodb_uid }}"
     group: "{{ mongodb_user }}"
@@ -28,16 +30,16 @@
   when: mongodb_uid is defined
 
 - name: Create keyFile
-  copy:
+  ansible.builtin.copy:
     dest: "{{ mongodb_security_keyfile }}"
-    content: "{{ mongodb_keyfile_content }}"
+    content: "{{ mongodb_keyfile_content | join('\n') }}"
     owner: "{{ mongodb_user }}"
-    group: "root"
+    group: root
     mode: 0600
   when: mongodb_replication_replset | length > 0
 
 - name: Create log dir if missing
-  file:
+  ansible.builtin.file:
     state: directory
     dest: "{{ mongodb_systemlog_path|dirname }}"
     owner: "{{ mongodb_user }}"
@@ -46,12 +48,12 @@
   when: mongodb_systemlog_destination == "file"
 
 - name: Check than logfile exists
-  stat: path={{ mongodb_systemlog_path }}
+  ansible.builtin.stat: path={{ mongodb_systemlog_path }}
   register: logfile_stat
   when: mongodb_systemlog_destination == "file"
 
 - name: Create log if missing
-  file:
+  ansible.builtin.file:
     state: touch
     dest: "{{ mongodb_systemlog_path }}"
     owner: "{{ mongodb_user }}"
@@ -62,7 +64,7 @@
         and not logfile_stat.stat.exists )
 
 - name: Ensure dbpath directory
-  file:
+  ansible.builtin.file:
     path: "{{ mongodb_storage_dbpath }}"
     state: directory
     owner: "{{ mongodb_user }}"
@@ -71,8 +73,16 @@
     recurse: true
     follow: true
 
+- name: Configure logrotation
+  ansible.builtin.template:
+    src: mongod.logrotate.j2
+    dest: /etc/logrotate.d/mongod
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+
 - name: Configure mongodb
-  template:
+  ansible.builtin.template:
     src: mongod.conf.j2
     dest: /etc/mongod.conf
     backup: true
@@ -81,7 +91,7 @@
     mode: 0644
   notify:
     - mongodb restart
-    - wait when mongodb is started
+    - wait for mongodb to be started
 
 - name: Flush all handlers at this point
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

@@ -1,23 +1,21 @@
 ---
+# defaults file for percona
 
-mongodb_package: mongodb-org
-mongodb_package_state: present
+# APT cleanups
+apt_repository_cleanup:
+  - "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/3.6 multiverse"
+  - "deb https://repo.percona.com/percona/apt {{ ansible_distribution_release }} main"
+
+# Package cleanups
+mongodb_package_cleanup: [mongodb, mongodb-clients, mongodb-server, mongodb-server-core, mongo-tools]
+
+mongodb_backup_path: "/data/db/backups/"
+mongodb_backup_db: graylog
+
 mongodb_version: "4.4"
-mongodb_apt_key_from_url: false
-mongodb_apt_keyserver: 'hkp://keyserver.ubuntu.com:80'
-mongodb_apt_key_id:
-  "3.6": "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
-  "4.0": "9DA31620334BD75D9DCB49F368818C72E52529D4"
-  "4.2": "E162F504A20CDF15827F718D4B7C549A058F8B6B"
-  "4.4": "20691eec35216c63caf66ce1656408e390cfb1f5"
-mongodb_apt_key_url:
-  "3.6": "https://www.mongodb.org/static/pgp/server-3.6.asc"
-  "4.0": "https://www.mongodb.org/static/pgp/server-4.0.asc"
-  "4.2": "https://www.mongodb.org/static/pgp/server-4.2.asc"
-  "4.4": "https://www.mongodb.org/static/pgp/server-4.4.asc"
 
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
-mongodb_pymongo_pip_version: 3.11.3
+mongodb_pymongo_pip_version: 3.12.3
 
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true
@@ -25,14 +23,7 @@ mongodb_manage_systemd_unit: true
 mongodb_systemd_unit_limit_nofile: 64000
 mongodb_systemd_unit_limit_nproc: 64000
 
-mongodb_disable_transparent_hugepages: false
-
 mongodb_use_numa: true
-
-mongodb_user: "{{ 'mongod' if ('RedHat' == ansible_os_family) else 'mongodb' }}"
-mongodb_uid:
-mongodb_gid:
-mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 
 ## net Options
 mongodb_net_bindip: 127.0.0.1                    # Comma separated list of ip addresses to listen on
@@ -47,30 +38,18 @@ mongodb_net_ssl_host: ""                         # Valid ssl hostname
 
 ## processManagement Options
 # Fork server process
-# Enabled by default for RedHat as the init scripts assume forking is enabled.
-mongodb_processmanagement_fork: "{{ 'RedHat' == ansible_os_family }}"
+# Enabled by default
+mongodb_processmanagement_fork: true
 
 ## security Options
 # Disable or enable security. Possible values: 'disabled', 'enabled'
 mongodb_security_authorization: "disabled"
 mongodb_security_keyfile: /etc/mongodb-keyfile   # Specify path to keyfile with password for inter-process authentication
-mongodb_security_javascript_enabled: true        # Enables or disables server-side JavaScript execution
+mongodb_security_javascript_enabled: false       # Enables or disables server-side JavaScript execution
 
 ## storage Options
 mongodb_storage_dbpath: /data/db                 # Directory for datafiles
 mongodb_storage_dirperdb: false                  # Use one directory per DB
-
-# The storage engine for the mongod database
-mongodb_storage_engine: "wiredTiger"
-# mmapv1 specific options
-mongodb_storage_quota_enforced: false            # Limits each database to a certain number of files
-mongodb_storage_quota_maxfiles: 8                # Number of quota files per DB
-mongodb_storage_smallfiles: false                # Very useful for non-data nodes
-
-mongodb_storage_journal_enabled: true            # Enable journaling
-mongodb_storage_prealloc: true                   # Enable data file preallocation
-
-mongodb_wiredtiger_directory_for_indexes: false
 
 ## systemLog Options
 ## The destination to which MongoDB sends all log output. Specify either 'file' or 'syslog'.
@@ -88,15 +67,10 @@ mongodb_operation_profiling_mode: "off"
 mongodb_cloud_monitoring_free_state: "runtime"
 
 ## replication Options
-mongodb_replication_replset: ""                   # Enable replication
-mongodb_replication_replindexprefetch: "all"      # specify index prefetching behavior (if secondary) [none|_id_only|all]
-mongodb_replication_oplogsize: 1024               # specifies a maximum size in megabytes for the replication operation log
+mongodb_replication_replset: ""               # Enable replication
+mongodb_replication_replindexprefetch: "all"  # specify index prefetching behavior (if secondary) [none|_id_only|all]
+mongodb_replication_oplogsize: 1024           # specifies a maximum size in megabytes for the replication operation log
 
-# MMS Agent
-mongodb_mms_agent_pkg: https://cloud.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_7.2.0.488-1_amd64.ubuntu1604.deb
-mongodb_mms_group_id: ""
-mongodb_mms_api_key: ""
-mongodb_mms_base_url: https://mms.mongodb.com
 
 # password for inter-process authentication
 # please regenerate this file on production environment with command 'openssl rand -base64 741'
@@ -118,18 +92,73 @@ mongodb_keyfile_content: |
   T+c73exupZFxItXs1Bnhe3djgE3MKKyYvxNUIbcTJoe7nhVMrwO/7lBSpVLvC4p3
   wR700U0LDaGGQpslGtiE56SemgoP
 
-# names and passwords for administrative users
-mongodb_user_admin_name: siteUserAdmin
-mongodb_user_admin_password: passw0rd
+# name and password for administrative user
+mongodb_root_admin_name: root
+mongodb_root_admin_password:
 
-mongodb_root_admin_name: siteRootAdmin
-mongodb_root_admin_password: passw0rd
+# backup config
+mongodb_backup_region: "us-east-1"
+mongodb_backup_bucket: "glc-mongodb-backup"
 
-mongodb_root_backup_name: backupuser
-mongodb_root_backup_password: passw0rd
+# collection cap size for system_messages
+mongodb_system_messages_cap: "50 MB"
 
 # setParameter config
 mongodb_set_parameters:
 
 # custom config options
 mongodb_config:
+
+# --- Defaults for mongod.conf
+mongo_net:
+  port: "{{ mongodb_net_port }}"
+  bindIp: "{{ mongodb_net_bindip }}"
+  ipv6: "{{ mongodb_net_ipv6 }}"
+  maxIncomingConnections: "{{ mongodb_net_maxconns }}"
+
+mongo_processmanagement:
+  fork: "{{ mongodb_processmanagement_fork }}"
+  pidFilePath: "{{ mongodb_pidfile_path }}"
+
+mongo_replication:
+  replSetName: "{{ mongodb_replication_replset }}"
+  oplogSizeMB: "{{ mongodb_replication_oplogsize }}"
+
+mongo_security:
+  authorization: "{{ mongodb_security_authorization }}"
+  keyFile: /etc/mongodb-keyfile # Specify path to keyfile with password for inter-process authentication
+  javascriptEnabled: false
+
+mongo_storage:
+  dbPath: "{{ mongodb_storage_dbpath }}"
+  directoryPerDB: "{{ mongodb_storage_dirperdb | to_nice_json }}"
+  journal:
+    enabled: true
+  engine: wiredTiger
+  wiredTiger:
+    engineConfig:
+      cacheSizeGB: 1
+      checkpointSizeMB: 1000
+      statisticsLogDelaySecs: 0
+      journalCompressor: snappy
+      directoryForIndexes: false
+    collectionConfig:
+      blockCompressor: snappy
+    indexConfig:
+      prefixCompression: true
+
+mongo_systemlog:
+  destination: "{{ mongodb_systemlog_destination }}"
+  logAppend: "{{ mongodb_systemlog_logappend }}"
+  logRotate: "{{ mongodb_systemlog_logrotate }}"
+  path: "{{ mongodb_systemlog_path }}"
+
+mongo_operationprofiling:
+  slowOpThresholdMs: "{{ mongodb_operation_profiling_slow_op_threshold_ms }}"
+  mode: "{{ mongodb_operation_profiling_mode }}"
+
+mongo_auditlog:
+  destination: "{{ mongodb_auditlog_destination }}"
+  format: "{{ mongodb_auditlog_format }}"
+  path: "{{ mongodb_auditlog_path }}"
+  filter: "{{ mongodb_auditlog_filter }}"

@@ -1,112 +1,38 @@
 # {{ ansible_managed }}
 
 net:
-  bindIp: {{ mongodb_net_bindip }}
-  {% if mongodb_major_version is version("3.6", "<") -%}
-  http:
-    enabled: {{ mongodb_net_http_enabled | to_nice_json }}
-  {% endif -%}
-  ipv6: {{ mongodb_net_ipv6 | to_nice_json }}
-  maxIncomingConnections: {{ mongodb_net_maxconns }}
-  port: {{ mongodb_net_port }}
-  {% if mongodb_net_ssl_pemfile is defined and mongodb_net_ssl_mode is defined and mongodb_net_ssl == 'enabled' -%}
-  ssl:
-    mode: {{ mongodb_net_ssl_mode }}
-    PEMKeyFile: {{ mongodb_net_ssl_pemfile }}
-  {%- endif %}
-  {%- if mongodb_config['net'] is defined and mongodb_config['net'] is iterable %}
-  {%- for item in mongodb_config['net'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
+{{ mongo_net | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
 
 processManagement:
-  fork: {{ mongodb_processmanagement_fork | to_nice_json}}
-  {% if mongodb_pidfile_path is defined and mongodb_pidfile_path != '' -%}
-  pidFilePath: {{ mongodb_pidfile_path }}
-  {%- endif %}
-  {%- if mongodb_config['processManagement'] is defined and mongodb_config['processManagement'] is iterable %}
-  {%- for item in mongodb_config['processManagement'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
+{{ mongo_processmanagement | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
 
-{% if mongodb_replication_replset -%}
+{% if mongo_replication != '' %}
 replication:
-  oplogSizeMB: {{ mongodb_replication_oplogsize | int }}
-  replSetName: {{ mongodb_replication_replset }}
-  {% if mongodb_storage_engine == 'mmapv1' -%}
-  secondaryIndexPrefetch: {{ mongodb_replication_replindexprefetch }}
-  {%- endif %}
-  {%- if mongodb_config['replication'] is defined and mongodb_config['replication'] is iterable %}
-  {%- for item in mongodb_config['replication'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
+{{ mongo_replication | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
+{% else %}
+#replication:
 {% endif %}
 
+{% if mongo_security != '' %}
 security:
-  authorization: {{ mongodb_security_authorization }}
-  {% if mongodb_replication_replset and mongodb_security_authorization == 'enabled' -%}
-  keyFile: {{ mongodb_security_keyfile }}
-  {% endif -%}
-  javascriptEnabled: {{ mongodb_security_javascript_enabled | to_nice_json }}
-  {%- if mongodb_config['security'] is defined and mongodb_config['security'] is iterable %}
-  {%- for item in mongodb_config['security'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
+{{ mongo_security | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
+{% else %}
+#security:
+{% endif %}
 
 storage:
-  dbPath: {{ mongodb_storage_dbpath }}
-  directoryPerDB: {{ mongodb_storage_dirperdb | to_nice_json }}
-  engine: {{ mongodb_storage_engine }}
-  journal:
-    enabled: {{ mongodb_storage_journal_enabled | to_nice_json }}
-  {% if mongodb_storage_engine == 'mmapv1' -%}
-  mmapv1:
-    quota:
-      enforced: {{ mongodb_storage_quota_enforced | to_nice_json }}
-      maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
-    smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
-  {% endif -%}
-  {% if mongodb_storage_engine == 'wiredTiger' -%}
-  wiredTiger:
-    engineConfig:
-      {% if mongodb_wiredtiger_cache_size is defined -%}
-      cacheSizeGB: {{ mongodb_wiredtiger_cache_size }}
-      {% endif -%}
-      directoryForIndexes: {{ mongodb_wiredtiger_directory_for_indexes | to_nice_json }}
-  {%- endif %}
-  {%- if mongodb_config['storage'] is defined and mongodb_config['storage'] is iterable %}
-  {%- for item in mongodb_config['storage'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
+{{ mongo_storage | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
 
 systemLog:
-  destination: {{ mongodb_systemlog_destination }}
-  {% if mongodb_systemlog_destination == 'file' -%}
-  logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
-  logRotate: {{ mongodb_systemlog_logrotate }}
-  path: {{ mongodb_systemlog_path }}
-  {%- endif %}
-  {%- if mongodb_config['systemLog'] is defined and mongodb_config['systemLog'] is iterable %}
-  {%- for item in mongodb_config['systemLog'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
+{{ mongo_systemlog | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
 
+{% if mongo_operationprofiling != '' %}
 operationProfiling:
-  slowOpThresholdMs: {{ mongodb_operation_profiling_slow_op_threshold_ms }}
-  mode: {{ mongodb_operation_profiling_mode }}
-  {%- if mongodb_config['operationProfiling'] is defined and mongodb_config['operationProfiling'] is iterable %}
-  {%- for item in mongodb_config['operationProfiling'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
+{{ mongo_operationprofiling | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
+{% else %}
+#operationProfiling:
+{% endif %}
 
-{% if mongodb_major_version is version("4.0", ">=") -%}
 cloud:
   monitoring:
     free:
@@ -116,11 +42,17 @@ cloud:
   {{ item }}
   {% endfor %}
   {% endif %}
-{% endif %}
 
 {% if mongodb_set_parameters -%}
 setParameter:
   {% for key, value in mongodb_set_parameters.items() -%}
   {{ key }}: {{ value }}
   {% endfor %}
+{% endif %}
+
+{% if mongodb_auditlog %}
+auditLog:
+{{ mongo_auditlog | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
+{% else %}
+#auditLog:
 {% endif %}

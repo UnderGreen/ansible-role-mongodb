@@ -1,0 +1,9 @@
+[default]
+region={{ mongodb_backup_region }}
+
+{% if customer.mongodb_backup_iam_role_arn is defined -%}
+[profile mongodb_backup]
+role_arn = {{ customer.mongodb_backup_iam_role_arn }}
+credential_source = Ec2InstanceMetadata
+source_profile = default
+{% endif %}

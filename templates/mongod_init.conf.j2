@@ -2,10 +2,6 @@
 
 net:
   bindIp: '127.0.0.1'
-  {% if mongodb_major_version is version("3.6", "<") -%}
-  http:
-    enabled: {{ mongodb_net_http_enabled | to_nice_json }}
-  {% endif -%}
   ipv6: {{ mongodb_net_ipv6 | to_nice_json }}
   maxIncomingConnections: {{ mongodb_net_maxconns }}
   port: {{ mongodb_net_port }}
@@ -20,31 +16,7 @@ security:
   authorization: 'disabled'
 
 storage:
-  dbPath: {{ mongodb_storage_dbpath }}
-  directoryPerDB: {{ mongodb_storage_dirperdb | to_nice_json }}
-  engine: {{ mongodb_storage_engine }}
-  journal:
-    enabled: {{ mongodb_storage_journal_enabled | to_nice_json }}
-  {% if mongodb_storage_engine == 'mmapv1' -%}
-  mmapv1:
-    quota:
-      enforced: {{ mongodb_storage_quota_enforced | to_nice_json }}
-      maxFilesPerDB: {{ mongodb_storage_quota_maxfiles }}
-    smallFiles: {{ mongodb_storage_smallfiles | to_nice_json }}
-  {% endif -%}
-  {% if mongodb_storage_engine == 'wiredTiger' -%}
-  wiredTiger:
-    engineConfig:
-      {% if mongodb_wiredtiger_cache_size is defined -%}
-      cacheSizeGB: {{ mongodb_wiredtiger_cache_size }}
-      {% endif -%}
-      directoryForIndexes: {{ mongodb_wiredtiger_directory_for_indexes | to_nice_json }}
-  {% endif %}
+{{ mongo_storage | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
 
 systemLog:
-  destination: {{ mongodb_systemlog_destination }}
-  {% if mongodb_systemlog_destination == 'file' -%}
-  logAppend: {{ mongodb_systemlog_logappend | to_nice_json }}
-  logRotate: {{ mongodb_systemlog_logrotate }}
-  path: {{ mongodb_systemlog_path }}
-  {% endif -%}
+{{ mongo_systemlog | to_nice_yaml(indent=2) | indent(width=2, first=True) }}

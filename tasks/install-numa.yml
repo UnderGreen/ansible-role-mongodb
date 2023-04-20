@@ -1,0 +1,21 @@
+---
+# tasks file for installing numa
+
+- name: Check if NUMA is available on host
+  ansible.builtin.command: "ls -1 /proc/1/numa_maps"
+  register: numa_available
+  ignore_errors: true
+  changed_when: false
+  check_mode: false
+  when: mongodb_use_numa | bool
+
+- name: Don't use NUMA if it is unavailable on host
+  ansible.builtin.set_fact:
+    mongodb_use_numa: false
+  when: (mongodb_use_numa | bool and numa_available.rc != 0)
+
+- name: Install numactl package
+  ansible.builtin.apt:
+    name: numactl
+    state: present
+  when: mongodb_use_numa | bool
