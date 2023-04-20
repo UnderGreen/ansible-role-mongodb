@@ -158,6 +158,7 @@ mongo_operationprofiling:
   mode: "{{ mongodb_operation_profiling_mode }}"
 
 mongo_auditlog:
-  destination: file
+  destination: "{{ mongodb_auditlog_destination }}"
   format: "{{ mongodb_auditlog_format }}"
   path: "{{ mongodb_auditlog_path }}"
+  filter: "{{ mongodb_auditlog_filter }}"
