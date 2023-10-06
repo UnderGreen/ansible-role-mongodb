@@ -9,13 +9,6 @@
     - mongodb_disable_transparent_hugepages | bool
     - ansible_service_mgr == "systemd"
 
-- name: Add APT key
-  apt_key:
-    keyserver: "{{ mongodb_apt_keyserver if not mongodb_apt_key_from_url|bool else omit }}"
-    url: "{{ mongodb_apt_key_url[mongodb_major_version] if mongodb_apt_key_from_url|bool else omit }}"
-    id: "{{ mongodb_apt_key_id[mongodb_major_version] }}"
-  when: mongodb_package == 'mongodb-org'
-
 - name: Fail when used wrong mongodb_version variable
   fail:
     msg: "mongodb_version variable should be '3.6' or '4.0', '4.2' or '4.4'"
