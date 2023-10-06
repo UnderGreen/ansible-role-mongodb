@@ -23,8 +23,6 @@ storage:
   dbPath: {{ mongodb_storage_dbpath }}
   directoryPerDB: {{ mongodb_storage_dirperdb | to_nice_json }}
   engine: {{ mongodb_storage_engine }}
-  journal:
-    enabled: {{ mongodb_storage_journal_enabled | to_nice_json }}
   {% if mongodb_storage_engine == 'mmapv1' -%}
   mmapv1:
     quota:
