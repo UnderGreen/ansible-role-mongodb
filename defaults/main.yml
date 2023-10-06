@@ -17,7 +17,7 @@ mongodb_apt_key_url:
   "4.4": "https://www.mongodb.org/static/pgp/server-4.4.asc"
 
 mongodb_pymongo_from_pip: true                   # Install latest PyMongo via PIP or package manager
-mongodb_pymongo_pip_version: 3.11.3
+mongodb_pymongo_pip_version: 4
 
 mongodb_user_update_password: "on_create"        # MongoDB user password update default policy
 mongodb_manage_service: true

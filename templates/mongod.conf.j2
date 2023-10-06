@@ -61,8 +61,6 @@ storage:
   dbPath: {{ mongodb_storage_dbpath }}
   directoryPerDB: {{ mongodb_storage_dirperdb | to_nice_json }}
   engine: {{ mongodb_storage_engine }}
-  journal:
-    enabled: {{ mongodb_storage_journal_enabled | to_nice_json }}
   {% if mongodb_storage_engine == 'mmapv1' -%}
   mmapv1:
     quota:
@@ -105,18 +103,6 @@ operationProfiling:
   {{ item }}
   {% endfor %}
   {% endif %}
-
-{% if mongodb_major_version is version("4.0", ">=") -%}
-cloud:
-  monitoring:
-    free:
-      state: {{ mongodb_cloud_monitoring_free_state }}
-  {%- if mongodb_config['cloud'] is defined and mongodb_config['cloud'] is iterable %}
-  {%- for item in mongodb_config['cloud'] -%}
-  {{ item }}
-  {% endfor %}
-  {% endif %}
-{% endif %}
 
 {% if mongodb_set_parameters -%}
 setParameter:

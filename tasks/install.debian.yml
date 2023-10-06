@@ -23,14 +23,10 @@
         (mongodb_version is not defined
          or mongodb_repository[mongodb_major_version] is not defined))
 
-- name: Add APT repository
-  apt_repository:
-    repo: "{{ mongodb_repository[version_item] }}"
-    update_cache: true
-  with_items: "{{ mongodb_major_version }}"
-  loop_control:
-    loop_var: version_item
-  when: mongodb_package == 'mongodb-org'
+- name: Import gpg key for repo
+  apt_key:
+    url: https://www.mongodb.org/static/pgp/server-{{ mongodb_major_version }}.asc
+    state: present
 
 - name: Install MongoDB package
   apt:
