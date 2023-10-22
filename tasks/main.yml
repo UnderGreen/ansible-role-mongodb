@@ -81,7 +81,7 @@
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   no_log: true
-  tags: [mongodb]
+  tags: [mongodb, mongodb_normal_users]
 
 - name: create normal users without replicaset
   mongodb_user:
@@ -100,7 +100,7 @@
   when: ( mongodb_security_authorization == 'enabled'
           and not mongodb_replication_replset )
   no_log: true
-  tags: [mongodb]
+  tags: [mongodb, mongodb_normal_users]
 
 - name: create oplog user with replicaset
   mongodb_user:
@@ -122,7 +122,7 @@
         and mongodb_security_authorization == 'enabled'
         and mongodb_master is defined and mongodb_master )
   no_log: true
-  tags: [mongodb]
+  tags: [mongodb, mongodb_oplog_users]
 
 - name: service started
   service:
