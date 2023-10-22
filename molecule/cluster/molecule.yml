@@ -46,7 +46,7 @@ provisioner:
     converge: ${MOLECULE_PLAYBOOK:-../default/converge.yml}
     prepare:  ${MOLECULE_PLAYBOOK:-../default/prepare.yml}
   env:
-    MONGODB_VERSION: ${MONGODB_VERSION:-4.4}
+    MONGODB_VERSION: ${MONGODB_VERSION:-5.0}
     MONGODB_PACKAGE: ${MONGODB_PACKAGE:-mongodb-org}
     AUTH_STATE: ${AUTH_STATE:-disabled}
     REPLICASET: ${REPLICASET:-testrs}
