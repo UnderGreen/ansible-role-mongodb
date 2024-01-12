@@ -84,9 +84,6 @@ mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log   # Log f
 mongodb_operation_profiling_slow_op_threshold_ms: 100
 mongodb_operation_profiling_mode: "off"
 
-## cloud options (MongoDB >= 4.0)
-mongodb_cloud_monitoring_free_state: "runtime"
-
 ## replication Options
 mongodb_replication_replset: ""                   # Enable replication
 mongodb_replication_replindexprefetch: "all"      # specify index prefetching behavior (if secondary) [none|_id_only|all]

@@ -107,10 +107,6 @@ operationProfiling:
   {% endif %}
 
 {% if mongodb_major_version is version("4.0", ">=") -%}
-cloud:
-  monitoring:
-    free:
-      state: {{ mongodb_cloud_monitoring_free_state }}
   {%- if mongodb_config['cloud'] is defined and mongodb_config['cloud'] is iterable %}
   {%- for item in mongodb_config['cloud'] -%}
   {{ item }}
